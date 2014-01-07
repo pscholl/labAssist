@@ -1,4 +1,4 @@
-package com.google.glass.widget;
+ackage com.google.glass.widget;
 
 import android.content.Context;
 import android.graphics.Typeface;

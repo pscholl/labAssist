@@ -5,6 +5,18 @@
 	<string name="action_settings">Settings</string>
 	<string name="hello_world">Hello world!</string>
 	<string name="show_labassist_voice_trigger">show protocol</string>
-	<string name="textview_default">Hello World! and alle te asfgjk also very mich</string>
+	<string name="textview_default">Hello World!</string>
+	<string name="textview_middle_default">&quot;ok, glass&quot;</string>
 
+	<string-array name="list_default">
+		<item>item 1</item>
+		<item>item 2</item>
+		<item>item 3</item>
+		<item>item 1</item>
+		<item>item 2</item>
+		<item>item 3</item>
+		<item>item 1</item>
+		<item>item 2</item>
+		<item>item 3</item>
+	</string-array>
 </resources>
