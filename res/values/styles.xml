@@ -21,5 +21,7 @@
 		<item name="android:windowFullscreen">true</item>
 		<item name="android:windowActionBar">false</item>
 	</style>
+	
+	<color name="white">#ffffff</color>
 
 </resources>

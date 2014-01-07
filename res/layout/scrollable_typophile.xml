@@ -3,13 +3,16 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent" >
 
-    <TextView
-    	android:id="@+id/textView1"
+    <view
+    	android:id="@+id/typophile_card"
     	android:layout_width="match_parent"
     	android:layout_height="wrap_content"
-    	android:layout_gravity="center_vertical"
+    	android:layout_gravity="clip_vertical"
     	android:gravity="center_vertical|center_horizontal"
     	android:scrollHorizontally="false"
-    	android:text="@string/textview_default" />
+    	android:text="@string/textview_default"
+    	android:textColor="@color/white"
+    	android:textSize="@dimen/default_text_size"
+    	class="com.google.glass.widget.TypophileTextView" />
 
 </ScrollView>
