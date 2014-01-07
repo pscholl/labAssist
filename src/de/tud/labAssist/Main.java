@@ -1,5 +1,6 @@
 package de.tud.labAssist;
 
+import android.annotation.SuppressLint;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -10,11 +11,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
 import com.google.glass.input.VoiceInputHelper;
@@ -109,7 +107,7 @@ public class Main extends FragmentActivity {
       if (num == mLastNum  && mScrollView != null)
         return; // nothing to do
       
-      String tag  = String.format("card_view_%d",num);
+      String tag  = String.format(ScreenSlidePageFragment.VIEW_TAG,num);
       mScrollView = (ScrollView) mPager.findViewWithTag(tag);
       mChildView  = mScrollView.getChildAt(0);
       mLastNum    = num;

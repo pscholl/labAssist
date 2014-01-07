@@ -15,4 +15,5 @@
     	android:textSize="@dimen/default_text_size"
     	class="com.google.glass.widget.TypophileTextView" />
 
+    
 </ScrollView>
