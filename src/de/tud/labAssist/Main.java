@@ -1,6 +1,12 @@
 package de.tud.labAssist;
 
-import android.annotation.SuppressLint;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Scanner;
+
+import android.content.res.AssetManager;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -11,9 +17,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import com.google.glass.input.VoiceInputHelper;
 import com.google.glass.util.PowerHelper;
@@ -21,9 +30,8 @@ import com.google.glass.voice.VoiceCommand;
 import com.google.glass.voice.VoiceConfig;
 
 public class Main extends FragmentActivity {
-
-  public static final int NUM_ITEMS = 5;
   protected static final float SWIPE_TRESHOLD = 400;
+  private static final String TAG = "labAssist";
   private ViewPager mPager;
   private PagerAdapter mPagerAdapter;
   private VoiceInputHelper mVoiceInputHelper;
@@ -33,10 +41,12 @@ public class Main extends FragmentActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
+    setContentView(R.layout.activity_main); 
     
     mPager = (ViewPager) findViewById(R.id.pager);
-    mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+    mPagerAdapter = new MarkdownPager(
+        getSupportFragmentManager(),
+        getAssetAsString("dna_extraction_from_onions.pd"));
     mPager.setAdapter(mPagerAdapter);
     
     mVoiceInputHelper = new VoiceInputHelper(this, new PageFlipper(),
@@ -45,6 +55,19 @@ public class Main extends FragmentActivity {
     mScroller = new ScreenSlideScroller(mPager);
   }
   
+  private String getAssetAsString(String filename) {
+    try {
+      InputStream is = getAssets().open(filename);
+      Scanner scanner = new Scanner(is,"UTF-8").useDelimiter("\\A");
+      String str = scanner.hasNext() ? scanner.next() : "";
+      scanner.close();
+      return str;
+    } catch (IOException e) {
+      Log.e(TAG, String.format("error while opening %s",filename), e);
+      return "";
+    }
+  }
+
   @Override
   protected void onResume() {
     super.onResume();
@@ -107,8 +130,7 @@ public class Main extends FragmentActivity {
       if (num == mLastNum  && mScrollView != null)
         return; // nothing to do
       
-      String tag  = String.format(ScreenSlidePageFragment.VIEW_TAG,num);
-      mScrollView = (ScrollView) mPager.findViewWithTag(tag);
+      mScrollView = (ScrollView) mPager.findViewWithTag(MarkdownPager.MarkdownFragment.getScrollViewTag(num));
       mChildView  = mScrollView.getChildAt(0);
       mLastNum    = num;
     }
@@ -132,6 +154,9 @@ public class Main extends FragmentActivity {
       
       switchViews(mPager.getCurrentItem());
       
+      if (mScrollView == null)
+        return; // nothing to do
+      
       int displayed_size = mScrollView.getHeight(),
             content_size = mChildView.getHeight();
       
@@ -142,24 +167,6 @@ public class Main extends FragmentActivity {
       
       float factor = (((float) (content_size - displayed_size))/TOTAL_ANGLE);
       mScrollView.scrollTo(0, (int) Math.ceil((cur-FROM_ANGLE_RAD)*factor));
-    }
-  }
-  
-  private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
-    public ScreenSlidePagerAdapter(android.support.v4.app.FragmentManager fm) {
-      super(fm);
-    }
-
-    @Override
-    public Fragment getItem(int num) {
-      ScreenSlidePageFragment f = new ScreenSlidePageFragment();
-      f.setNum(num);
-      return f;
-    }
-
-    @Override
-    public int getCount() {
-      return NUM_ITEMS;
     }
   }
   
@@ -193,7 +200,7 @@ public class Main extends FragmentActivity {
       
       else if ( "forward".equals(literal) || "next".equals(literal)) {
         int cur = mPager.getCurrentItem() + 1;
-        if (cur >= NUM_ITEMS) cur = NUM_ITEMS;
+        if (cur >= mPagerAdapter.getCount()) cur = mPagerAdapter.getCount();
         mPager.setCurrentItem(cur,true);
         return null;
       }

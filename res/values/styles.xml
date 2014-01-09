@@ -23,5 +23,6 @@
 	</style>
 	
 	<color name="white">#ffffff</color>
+	<color name="blacktint">#aa000000</color>
 
 </resources>

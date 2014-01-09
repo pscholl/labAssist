@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent" >
-
-    <view
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:padding="25dp" >
+	
+    <ScrollView
+    	android:id="@+id/scrollView"
+    	android:layout_width="match_parent"
+    	android:layout_height="150dp"
+    	android:layout_gravity="fill_horizontal|top" >
+    	
+   	    <TextView
     	android:id="@+id/typophile_card"
     	android:layout_width="match_parent"
     	android:layout_height="wrap_content"
@@ -12,8 +20,52 @@
     	android:scrollHorizontally="false"
     	android:text="@string/textview_default"
     	android:textColor="@color/white"
-    	android:textSize="@dimen/default_text_size"
-    	class="com.google.glass.widget.TypophileTextView" />
-
+    	android:textSize="@dimen/default_text_size"/>
+    </ScrollView>
     
-</ScrollView>
+    <RelativeLayout
+    	android:id="@+id/bottom_bar"
+    	android:layout_width="match_parent"
+    	android:layout_height="28dp"
+    	android:layout_gravity="bottom|center_vertical" >
+
+		<TextView
+			android:id="@+id/hint"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_alignParentBottom="false"
+			android:layout_alignParentLeft="false"
+			android:layout_alignParentRight="false"
+			android:layout_alignParentTop="true"
+			android:layout_centerInParent="true"
+			android:layout_centerVertical="true"
+			android:background="@color/blacktint"
+			android:gravity="center_vertical|center_horizontal"
+			android:scrollHorizontally="false"
+			android:text="@string/textview_middle_default"
+			android:textColor="@color/white"
+			android:textSize="@dimen/middle_text_size" />
+
+		<!-- 
+		<ImageView
+			android:id="@+id/imageView1"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_centerVertical="true"
+			android:adjustViewBounds="true"
+			android:src="@drawable/bio" />
+
+		<ImageView
+			android:id="@+id/ImageView2"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentTop="true"
+			android:layout_toRightOf="@id/imageView1"
+			android:adjustViewBounds="true"
+			android:src="@drawable/chemical" />
+			-->
+
+	</RelativeLayout>
+    
+</FrameLayout>
