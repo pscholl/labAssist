@@ -4,26 +4,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
-import android.content.res.AssetManager;
-import android.graphics.Point;
-import android.graphics.Rect;
+import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioManager;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
+import com.google.android.glass.media.Sounds;
 import com.google.glass.input.VoiceInputHelper;
 import com.google.glass.util.PowerHelper;
 import com.google.glass.voice.VoiceCommand;
@@ -33,15 +28,16 @@ public class Main extends FragmentActivity {
   protected static final float SWIPE_TRESHOLD = 400;
   private static final String TAG = "labAssist";
   private ViewPager mPager;
-  private PagerAdapter mPagerAdapter;
+  private MarkdownPager mPagerAdapter;
   private VoiceInputHelper mVoiceInputHelper;
   private ScreenSlideScroller mScroller;
+  private AudioManager mAudio;
    
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main); 
+    setContentView(R.layout.activity_main);
     
     mPager = (ViewPager) findViewById(R.id.pager);
     mPagerAdapter = new MarkdownPager(
@@ -53,6 +49,8 @@ public class Main extends FragmentActivity {
         VoiceInputHelper.newUserActivityObserver(this));
     
     mScroller = new ScreenSlideScroller(mPager);
+    
+    mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
   }
   
   private String getAssetAsString(String filename) {
@@ -172,7 +170,7 @@ public class Main extends FragmentActivity {
   
   private class PageFlipper extends StubVoiceListener {
     private final VoiceConfig INITIAL_VC = new VoiceConfig(
-        "pageflipper", new String[]{"back", "forward", "next"});
+        "pageflipper", new String[]{"go back", "previous", "go forward", "next", "check", "done"});
     private PowerHelper mPower;
     
     @Override
@@ -191,18 +189,25 @@ public class Main extends FragmentActivity {
       String literal = vc.getLiteral();
       mPower.stayAwake(5*1000); // stay awake for the next 5s
       
-      if ( "back".equals(literal) ) {
+      if ( "go back".equals(literal) || "previous".equals(literal) ) {
         int cur = mPager.getCurrentItem() - 1;
         if (cur < 0) cur = 0;
         mPager.setCurrentItem(cur, true);
-        return null;
+        mAudio.playSoundEffect(Sounds.TAP);
       }
       
-      else if ( "forward".equals(literal) || "next".equals(literal)) {
+      else if ( "go forward".equals(literal) || "next".equals(literal)) {
         int cur = mPager.getCurrentItem() + 1;
         if (cur >= mPagerAdapter.getCount()) cur = mPagerAdapter.getCount();
         mPager.setCurrentItem(cur,true);
-        return null;
+        mAudio.playSoundEffect(Sounds.TAP);
+      }
+      
+      else if ( "check".equals(literal) || "done".equals(literal) ) {
+        int cur = mPager.getCurrentItem();
+        mAudio.playSoundEffect(Sounds.SUCCESS);
+        if ( mPagerAdapter.markItemAsDone(cur) )
+          mPager.setCurrentItem(cur+1, true);
       }
      
       return null;
