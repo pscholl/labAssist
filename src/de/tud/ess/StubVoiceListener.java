@@ -1,4 +1,4 @@
-package de.tud.labAssist;
+package de.tud.ess;
 
 import com.google.glass.input.VoiceListener;
 import com.google.glass.logging.FormattingLogger;
