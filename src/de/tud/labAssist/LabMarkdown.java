@@ -16,7 +16,6 @@ import java.util.Locale;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
@@ -31,8 +30,6 @@ import android.widget.TextView;
 
 import com.google.android.glass.widget.CardScrollAdapter;
 import com.google.glass.widget.RobotoTypefaces;
-
-import de.tud.labAssist.LabMarkdown.Visitor;
 
 public class LabMarkdown extends CardScrollAdapter {
 
@@ -52,8 +49,7 @@ public class LabMarkdown extends CardScrollAdapter {
 
     public void visit(Element e) {
       boolean decend = true;
-      String msg = String.format("%" + indent + "s %s: %s [%s]", " ", e
-          .getType().name(), e.getText(), e.getAttributes().toString());
+      String msg = "";
       indent++;
 
       switch (e.getType()) {
@@ -76,11 +72,12 @@ public class LabMarkdown extends CardScrollAdapter {
         decend = visitDoubleEmphasised(e);
         break;
       default:
-        msg += "ignored";
+        msg = "ignored";
         break;
       }
-
-      Log.d("markdown", msg);
+      //msg = String.format("%" + indent + "s %s: %s [%s]", " ", e
+      //    .getType().name(), e.getText(), e.getAttributes().toString());
+      //Log.d("markdown", msg);
 
       if (decend)
         for (int i = 0; i < e.size(); i++)
@@ -274,9 +271,6 @@ public class LabMarkdown extends CardScrollAdapter {
         return;
       }
 
-      Log.e("markdown",
-          String.format("add Image %s with id %d", name, mNumImages));
-
       RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(
           LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
       p.addRule(RelativeLayout.ALIGN_PARENT_TOP);
@@ -347,13 +341,11 @@ public class LabMarkdown extends CardScrollAdapter {
 
   @Override
   public int findIdPosition(Object key) {
-    Log.e("markdown", String.format("findid %s", key.toString()));
     return findItemPosition(key);
   }
 
   @Override
   public int findItemPosition(Object item) {
-    Log.e("markdown", String.format("findItem %s", item.toString()));
     return -1;
   }
 
@@ -364,21 +356,12 @@ public class LabMarkdown extends CardScrollAdapter {
 
   @Override
   public Object getItem(int idx) {
-    Log.e("markdown", String.format("getItem %d", idx));
     return mElements.get(idx);
   }
 
   @Override
   public View getView(int idx, View v, ViewGroup vg) {
     ProtocolStep ps = mElements.get(idx);
-    if (v != null)
-      Log.e("markdown",
-          String.format("previous getView %d %s", idx, v.toString()));
-    if (vg != null)
-      Log.e("markdown", String.format("getView parent %s", vg.toString()));
-    Log.e("markdown", String.format("toView on %s", ps.toString()));
-    v = ps.toView(v);
-    Log.e("markdown", String.format("getView %d %s", idx, v.toString()));
-    return v;
+    return ps.toView(v);
   }
 }
