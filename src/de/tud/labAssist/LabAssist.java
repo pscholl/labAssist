@@ -2,7 +2,6 @@ package de.tud.labAssist;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Scanner;
 
@@ -11,11 +10,10 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.widget.CardScrollView;
@@ -46,6 +44,7 @@ public class LabAssist extends FragmentActivity {
     mCardScrollView = (CardScrollView) findViewById(R.id.scrollview);
     mCardScrollView.setAdapter(lm);
     mCardScrollView.setOnItemClickListener(new LabOnClickListener());
+    mCardScrollView.setOnItemSelectedListener(new LogItemSelecter());
 
     mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
   }
@@ -68,6 +67,8 @@ public class LabAssist extends FragmentActivity {
     super.onResume();
     mCardScrollView.activate();
     mVoiceInputHelper.addVoiceServiceListener();
+    
+    Log.w(TAG, "onResume");
   }
 
   @Override
@@ -75,6 +76,8 @@ public class LabAssist extends FragmentActivity {
     mVoiceInputHelper.removeVoiceServiceListener();
     mCardScrollView.deactivate();
     super.onPause();
+    
+    Log.w(TAG, "onPause");
   }
 
   protected Method mAnimateFunc;
@@ -122,12 +125,8 @@ public class LabAssist extends FragmentActivity {
           int cur = mCardScrollView.getSelectedItemPosition();
           ProtocolStep step = (ProtocolStep) mCardScrollView
               .getItemAtPosition(cur);
-
-          boolean done = step.markAsDone();
-          mCardScrollView.getAdapter().getView(cur, mCardScrollView.getSelectedView(), null);
-          if (done)
-            callAnimateTo(cur + 1, ANIMATE_GOTO);
-             
+          
+          markAsDone(step, cur);
         } else {
           mAudio.playSoundEffect(Sounds.ERROR);
           return null;
@@ -139,6 +138,7 @@ public class LabAssist extends FragmentActivity {
       return INITIAL_VC;
     }
   }
+  
 
   public class LabOnClickListener implements OnItemClickListener {
 
@@ -147,11 +147,7 @@ public class LabAssist extends FragmentActivity {
       ProtocolStep step = (ProtocolStep) mCardScrollView.getItemAtPosition(cur);
 
       mAudio.playSoundEffect(Sounds.TAP);
-
-      boolean done = step.markAsDone();
-      mCardScrollView.getAdapter().getView(cur, view, null);
-      if (done)
-        callAnimateTo(cur + 1, ANIMATE_GOTO);
+      markAsDone(step, cur);
     }
 
   }
@@ -168,6 +164,29 @@ public class LabAssist extends FragmentActivity {
       mAnimateFunc.invoke(mCardScrollView, position, animate);
     } catch (Exception e) {
       Log.e(TAG, e.toString());
+    }
+  }
+
+  protected void markAsDone(ProtocolStep step, int pos) {
+    boolean done = step.markAsDone();
+    mCardScrollView.getAdapter().getView(pos, mCardScrollView.getSelectedView(), null);
+    if (done)
+      callAnimateTo(pos + 1, ANIMATE_GOTO);
+    
+    Log.w(TAG, String.format("marked item %d as done (%b)", pos, done));
+  }
+  
+  public class LogItemSelecter implements OnItemSelectedListener {
+
+    @Override
+    public void onItemSelected(AdapterView<?> av, View v, int pos, long id) {
+      Log.w(TAG, String.format("switched to item %d", pos));
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> arg0) {
+      // TODO Auto-generated method stub
+
     }
   }
 
