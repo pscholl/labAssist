@@ -71,13 +71,16 @@ public class LabMarkdown extends CardScrollAdapter {
       case DOUBLE_EMPHASIS:
         decend = visitDoubleEmphasised(e);
         break;
+      case STRIKETHROUGH:
+        decend = visitStrikeThrough(e);
+        break;
       default:
         msg = "ignored";
         break;
       }
-      //msg = String.format("%" + indent + "s %s: %s [%s]", " ", e
-      //    .getType().name(), e.getText(), e.getAttributes().toString());
-      //Log.d("markdown", msg);
+//      msg = String.format("%" + indent + "s %s: %s [%s]", " ", e.getType()
+//          .name(), e.getText(), e.getAttributes().toString());
+//      Log.d("markdown", msg);
 
       if (decend)
         for (int i = 0; i < e.size(); i++)
@@ -86,12 +89,33 @@ public class LabMarkdown extends CardScrollAdapter {
       indent--;
     }
 
-    protected boolean visitText(Element e) { return true; };
-    protected boolean visitHeader(Element e) { return true; };
-    protected boolean visitParagraph(Element e) { return true; };
-    protected boolean visitListItem(Element e) { return true; };
-    protected boolean visitEmphasised(Element e) { return true; };
-    protected boolean visitDoubleEmphasised(Element e) { return true; };
+    protected boolean visitStrikeThrough(Element e) {
+      return true;
+    }
+
+    protected boolean visitText(Element e) {
+      return true;
+    };
+
+    protected boolean visitHeader(Element e) {
+      return true;
+    };
+
+    protected boolean visitParagraph(Element e) {
+      return true;
+    };
+
+    protected boolean visitListItem(Element e) {
+      return true;
+    };
+
+    protected boolean visitEmphasised(Element e) {
+      return true;
+    };
+
+    protected boolean visitDoubleEmphasised(Element e) {
+      return true;
+    };
   }
 
   public class ProtocolStep extends LinkedList<Element> {
@@ -111,32 +135,42 @@ public class LabMarkdown extends CardScrollAdapter {
     public MarkAsDoneVisitor(ProtocolStep ps) {
       this.visit(ps);
     }
-    
+
     @Override
     protected boolean visitHeader(Element e) {
       return false; // ignore everything below header
     }
     
     @Override
+    protected boolean visitEmphasised(Element e) {
+      return visitText(e);
+    }
+    
+    @Override
+    protected boolean visitDoubleEmphasised(Element e) {
+      return visitText(e);
+    }
+
+    @Override
     protected boolean visitText(Element e) {
       String s = e.getText().trim();
-      
-      if ( s.length() == 0 || 
-          (s.startsWith("[") && s.endsWith("]")) )
+
+      if (s.length() == 0 || (s.startsWith("[") && s.endsWith("]")))
         return true;
-      
+
       if (!mMarkedOneAsDone) {
-        e.setType(Type.DOUBLE_EMPHASIS);
+        e.setType(Type.STRIKETHROUGH);
         mMarkedOneAsDone = true;
       } else {
-        /* if we visit another TEXT in this run, then 
-         * there is another step that needs to be 
-         * marked as done.  */
+        /*
+         * if we visit another TEXT in this run, then there is another step that
+         * needs to be marked as done.
+         */
         mProtocolStepDone = false;
       }
       return true;
     }
-    
+
     public boolean getResult() {
       return mProtocolStepDone;
     }
@@ -150,20 +184,19 @@ public class LabMarkdown extends CardScrollAdapter {
     protected int mNumImages = 0;
 
     public ToViewVisitor(ProtocolStep p, View v) {
-      if ( v != null )
+      if (v != null)
         mView = v;
       else
         mView = mInflater.inflate(R.layout.card, null);
-        
+
       mList = (ViewGroup) mView.findViewById(R.id.list);
       mFooter = (RelativeLayout) mView.findViewById(R.id.footer);
-      
-      if ( mList==null || mFooter==null )
-      {
+
+      if (mList == null || mFooter == null) {
         Log.e("markdown", "supply a view generated from R.layour.card!");
         return;
       }
-      
+
       mFooter.removeAllViews();
       mList.removeAllViews();
 
@@ -178,7 +211,7 @@ public class LabMarkdown extends CardScrollAdapter {
       SpannableStringBuilder builder = new SpannableStringBuilder();
       builder.append(mText.getText());
       builder.append(e.getText());
-      builder.setSpan(new StrikethroughSpan(), mText.getText().length(),
+      builder.setSpan(new StyleSpan(Typeface.BOLD), mText.getText().length(),
           builder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
       mText.setText(builder);
       return true;
@@ -188,7 +221,18 @@ public class LabMarkdown extends CardScrollAdapter {
       SpannableStringBuilder builder = new SpannableStringBuilder();
       builder.append(mText.getText());
       builder.append(e.getText().trim());
-      builder.setSpan(new StyleSpan(Typeface.BOLD), mText.getText().length(),
+      builder.setSpan(new StyleSpan(Typeface.ITALIC), mText.getText().length(),
+          builder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+      mText.setText(builder);
+      return true;
+    }
+    
+    @Override
+    protected boolean visitStrikeThrough(Element e) {
+      SpannableStringBuilder builder = new SpannableStringBuilder();
+      builder.append(mText.getText());
+      builder.append(e.getText().trim());
+      builder.setSpan(new StrikethroughSpan(), mText.getText().length(),
           builder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
       mText.setText(builder);
       return true;
@@ -197,10 +241,9 @@ public class LabMarkdown extends CardScrollAdapter {
     protected boolean visitHeader(Element e) {
       TextView hint = (TextView) mInflater.inflate(R.layout.hint, null);
       hint.setTypeface(mRoboto);
-      
+
       String header = e.getChild(0).getText();
       hint.setText(header);
-     
 
       /* special case for the pictograms */
       header = header.toLowerCase(Locale.GERMAN);
@@ -211,7 +254,7 @@ public class LabMarkdown extends CardScrollAdapter {
         addImage("bio");
       if (header.contains("tools") || header.contains("utensils"))
         addImage("tools");
-      
+
       RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(
           android.widget.RelativeLayout.LayoutParams.WRAP_CONTENT,
           android.widget.RelativeLayout.LayoutParams.WRAP_CONTENT);
