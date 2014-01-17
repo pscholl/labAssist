@@ -86,7 +86,8 @@ public class LabAssist extends FragmentActivity {
   protected class StepSwitcher extends StubVoiceListener {
     protected static final String NEXT = "next";
     protected static final String PREVIOUS = "previous";
-    protected static final String DONE = "done";
+    protected static final String DONE = "mark as done";
+    protected static final String MARK = "mark";
     protected static final String CHECK = "check";
     protected static final String GOFORWARD = "go forward";
     protected static final String GOBACK = "go back";
@@ -121,7 +122,7 @@ public class LabAssist extends FragmentActivity {
           callAnimateTo(cur + 1, ANIMATE_GOTO);
         }
 
-        else if (CHECK.equals(literal) || DONE.equals(literal)) {
+        else if (CHECK.equals(literal) || DONE.equals(literal) || MARK.equals(literal)) {
           int cur = mCardScrollView.getSelectedItemPosition();
           ProtocolStep step = (ProtocolStep) mCardScrollView
               .getItemAtPosition(cur);
