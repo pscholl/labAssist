@@ -10,6 +10,7 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -23,21 +24,31 @@ import com.google.glass.voice.VoiceCommand;
 import com.google.glass.voice.VoiceConfig;
 
 import de.tud.ess.StubVoiceListener;
+import de.tud.ess.VoiceMenu;
+import de.tud.ess.VoiceMenu.VoiceMenuListener;
 import de.tud.labAssist.LabMarkdown.ProtocolStep;
 
-public class LabAssist extends FragmentActivity {
+public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   private static final String TAG = "labAssist";
-  private VoiceInputHelper mVoiceInputHelper;
   private AudioManager mAudio;
   protected CardScrollView mCardScrollView;
+  protected VoiceMenu mVoiceMenu;
+  
+  protected static final String NEXT = "next";
+  protected static final String PREVIOUS = "previous";
+  protected static final String DONE = "mark as done";
+  protected static final String MARK = "mark";
+  protected static final String CHECK = "check";
+  protected static final String GOFORWARD = "go forward";
+  protected static final String GOBACK = "go back";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main);
 
-    mVoiceInputHelper = new VoiceInputHelper(this, new StepSwitcher(),
-        VoiceInputHelper.newUserActivityObserver(this));
+    mVoiceMenu = new VoiceMenu(this, "ok glass", NEXT, PREVIOUS,
+        DONE, MARK, CHECK, GOFORWARD, GOBACK);
 
     LabMarkdown lm = new LabMarkdown(this,
         getAssetAsString("dna_extraction_from_onions.pd"));
@@ -66,14 +77,14 @@ public class LabAssist extends FragmentActivity {
   protected void onResume() {
     super.onResume();
     mCardScrollView.activate();
-    mVoiceInputHelper.addVoiceServiceListener();
+    mVoiceMenu.setListener(this);
     
     Log.w(TAG, "onResume");
   }
 
   @Override
   protected void onPause() {
-    mVoiceInputHelper.removeVoiceServiceListener();
+    mVoiceMenu.setListener(null);
     mCardScrollView.deactivate();
     super.onPause();
     
@@ -82,65 +93,7 @@ public class LabAssist extends FragmentActivity {
 
   protected Method mAnimateFunc;
   protected static final int ANIMATE_GOTO = 2;
-
-  protected class StepSwitcher extends StubVoiceListener {
-    protected static final String NEXT = "next";
-    protected static final String PREVIOUS = "previous";
-    protected static final String DONE = "mark as done";
-    protected static final String MARK = "mark";
-    protected static final String CHECK = "check";
-    protected static final String GOFORWARD = "go forward";
-    protected static final String GOBACK = "go back";
-    protected final VoiceConfig INITIAL_VC = new VoiceConfig("pageflipper",
-        new String[] { GOBACK, GOFORWARD, NEXT, PREVIOUS, CHECK, DONE });
-    protected PowerHelper mPower;
-
-    @Override
-    public void onVoiceServiceConnected() {
-      mPower = new PowerHelper(getApplicationContext());
-      mVoiceInputHelper.setVoiceConfig(INITIAL_VC, false); // screenoff=true
-    }
-
-    @Override
-    public void onVoiceServiceDisconnected() {
-      mPower = null;
-    }
-
-    @Override
-    public VoiceConfig onVoiceCommand(VoiceCommand vc) {
-      String literal = vc.getLiteral();
-      mPower.stayAwake(5 * 1000); // stay awake for the next 5s
-
-      try {
-        if (GOBACK.equals(literal) || PREVIOUS.equals(literal)) {
-          int cur = mCardScrollView.getSelectedItemPosition();
-          callAnimateTo(cur - 1, ANIMATE_GOTO);
-        }
-
-        else if (GOFORWARD.equals(literal) || NEXT.equals(literal)) {
-          int cur = mCardScrollView.getSelectedItemPosition();
-          callAnimateTo(cur + 1, ANIMATE_GOTO);
-        }
-
-        else if (CHECK.equals(literal) || DONE.equals(literal) || MARK.equals(literal)) {
-          int cur = mCardScrollView.getSelectedItemPosition();
-          ProtocolStep step = (ProtocolStep) mCardScrollView
-              .getItemAtPosition(cur);
-          
-          markAsDone(step, cur);
-        } else {
-          mAudio.playSoundEffect(Sounds.ERROR);
-          return null;
-        }
-      } catch (Exception e) {
-        Log.e(TAG, e.toString());
-      }
-
-      return INITIAL_VC;
-    }
-  }
   
-
   public class LabOnClickListener implements OnItemClickListener {
 
     @Override
@@ -186,8 +139,35 @@ public class LabAssist extends FragmentActivity {
 
     @Override
     public void onNothingSelected(AdapterView<?> arg0) {
-      // TODO Auto-generated method stub
+    }
+  }
 
+  
+  @Override
+  public void onItemSelected(String literal) {
+    try {
+      if (GOBACK.equals(literal) || PREVIOUS.equals(literal)) {
+        int cur = mCardScrollView.getSelectedItemPosition();
+        callAnimateTo(cur - 1, ANIMATE_GOTO);
+      }
+
+      else if (GOFORWARD.equals(literal) || NEXT.equals(literal)) {
+        int cur = mCardScrollView.getSelectedItemPosition();
+        callAnimateTo(cur + 1, ANIMATE_GOTO);
+      }
+
+      else if (CHECK.equals(literal) || DONE.equals(literal) || MARK.equals(literal)) {
+        int cur = mCardScrollView.getSelectedItemPosition();
+        ProtocolStep step = (ProtocolStep) mCardScrollView
+            .getItemAtPosition(cur);
+        
+        markAsDone(step, cur);
+      } else {
+        mAudio.playSoundEffect(Sounds.ERROR);
+        return;
+      }
+    } catch (Exception e) {
+      Log.e(TAG, e.toString());
     }
   }
 
