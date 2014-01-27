@@ -1,5 +1,6 @@
 package de.tud.labAssist;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
@@ -13,6 +14,7 @@ import de.tud.ess.VoiceMenu.VoiceMenuListener;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.widget.FrameLayout;
 
@@ -52,9 +54,17 @@ public class Launcher extends Activity implements VoiceMenuListener {
       for (String path : getAssets().list(""))
         if (path.trim().endsWith(".md"))
           paths.add(path.trim().substring(0, path.trim().length()-3));
-        else
-          Log.e("LabLauncher", path);
       
+      File dir = getExternalFilesDir(null);
+      if (dir == null)
+        return (String[]) paths.toArray(new String[paths.size()]);
+      
+      Log.e("labLauncher", String.format("External directory is %s", dir.toString()));
+      
+      for (String path : dir.list())
+        if (path.trim().endsWith(".md"))
+          paths.add(path.trim().substring(0,path.trim().length()-3));
+
       return (String[]) paths.toArray(new String[paths.size()]);
     } catch (IOException e) {
       Log.e("LabLauncher", e.toString());

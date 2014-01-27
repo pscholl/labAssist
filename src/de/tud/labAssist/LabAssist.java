@@ -1,5 +1,8 @@
 package de.tud.labAssist;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -61,7 +64,26 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       return;      
     }
     
-    LabMarkdown lm = new LabMarkdown(this, getAssetAsString(file));
+    String mdown = null; 
+    
+    try {
+      mdown = toString(getAssets().open(file));
+    } catch (IOException e) {
+      File ext = getExternalFilesDir(null);
+      if (ext == null) {
+        Log.e(TAG, "external storage not mounted");
+        return;
+      }
+      try {
+        mdown = toString(new FileInputStream(new File(ext,file)));
+      } catch (FileNotFoundException e1) {
+        e1.printStackTrace();
+      }
+      e.printStackTrace();
+    }
+
+    
+    LabMarkdown lm = new LabMarkdown(this, mdown);
     mCardScrollView = (CardScrollView) findViewById(R.id.cardscroll);
     mCardScrollView.setAdapter(lm);
     mCardScrollView.setOnItemClickListener(new LabOnClickListener());
@@ -70,17 +92,11 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
   }
 
-  private String getAssetAsString(String filename) {
-    try {
-      InputStream is = getAssets().open(filename);
-      Scanner scanner = new Scanner(is, "UTF-8").useDelimiter("\\A");
-      String str = scanner.hasNext() ? scanner.next() : "";
-      scanner.close();
-      return str;
-    } catch (IOException e) {
-      Log.e(TAG, String.format("error while opening %s", filename), e);
-      return null;
-    }
+  private String toString(InputStream is) {
+    Scanner scanner = new Scanner(is, "UTF-8").useDelimiter("\\A");
+    String str = scanner.hasNext() ? scanner.next() : "";
+    scanner.close();
+    return str;
   }
 
   @Override

@@ -7,6 +7,8 @@ import in.uncod.android.bypass.Element.Type;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,6 +49,7 @@ public class LabMarkdown extends CardScrollAdapter {
   protected Typeface mRoboto;
   protected LayoutInflater mInflater;
   protected AssetManager mAssets;
+  protected File mFileDir;
 
   public class ProtocolStep extends LinkedList<Element> {
     public View toView(View v) {
@@ -330,8 +333,13 @@ public class LabMarkdown extends CardScrollAdapter {
       try {
         is = mAssets.open(text);
       } catch (IOException e) {
-        e.printStackTrace();
-        return null;
+        if (mFileDir == null) return null;
+          try {
+            is = new FileInputStream(new File(mFileDir,text));
+          } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+          }
+
       }
       
       Options o = new Options();
@@ -416,8 +424,10 @@ public class LabMarkdown extends CardScrollAdapter {
     
     @Override
     protected boolean visitHeader(Element e) {
-      mCur = new ProtocolStep();
-      mList.add(mCur);
+      if (mCur.size() != 0) {
+        mCur = new ProtocolStep();
+        mList.add(mCur);
+      }
       return true;
     }
   }
@@ -439,6 +449,7 @@ public class LabMarkdown extends CardScrollAdapter {
 
     mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     mAssets = c.getAssets();
+    mFileDir = c.getExternalFilesDir(null);
     mRoboto = RobotoTypefaces.getTypeface(c, RobotoTypefaces.WEIGHT_THIN);
   }
 
