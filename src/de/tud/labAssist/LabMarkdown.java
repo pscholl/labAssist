@@ -9,14 +9,21 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.graphics.Typeface;
+import android.opengl.Visibility;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.style.CharacterStyle;
 import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
@@ -31,92 +38,15 @@ import android.widget.TextView;
 import com.google.android.glass.widget.CardScrollAdapter;
 import com.google.glass.widget.RobotoTypefaces;
 
-public class LabMarkdown extends CardScrollAdapter {
+import de.tud.ess.HeadImageView;
 
+public class LabMarkdown extends CardScrollAdapter {
   protected File mFile;
   protected Document mDoc;
   protected List<ProtocolStep> mElements;
   protected Typeface mRoboto;
   protected LayoutInflater mInflater;
-
-  public class Visitor {
-    protected int indent = 1;
-
-    public void visit(ProtocolStep s) {
-      for (Element e : s)
-        visit(e);
-    }
-
-    public void visit(Element e) {
-      boolean decend = true;
-      String msg = "";
-      indent++;
-
-      switch (e.getType()) {
-      case TEXT:
-        decend = visitText(e);
-        break;
-      case HEADER:
-        decend = visitHeader(e);
-        break;
-      case PARAGRAPH:
-        decend = visitParagraph(e);
-        break;
-      case LIST_ITEM:
-        decend = visitListItem(e);
-        break;
-      case EMPHASIS:
-        decend = visitEmphasised(e);
-        break;
-      case DOUBLE_EMPHASIS:
-        decend = visitDoubleEmphasised(e);
-        break;
-      case STRIKETHROUGH:
-        decend = visitStrikeThrough(e);
-        break;
-      default:
-        msg = "ignored";
-        break;
-      }
-//      msg = String.format("%" + indent + "s %s: %s [%s]", " ", e.getType()
-//          .name(), e.getText(), e.getAttributes().toString());
-//      Log.d("markdown", msg);
-
-      if (decend)
-        for (int i = 0; i < e.size(); i++)
-          visit(e.getChild(i));
-
-      indent--;
-    }
-
-    protected boolean visitStrikeThrough(Element e) {
-      return true;
-    }
-
-    protected boolean visitText(Element e) {
-      return true;
-    };
-
-    protected boolean visitHeader(Element e) {
-      return true;
-    };
-
-    protected boolean visitParagraph(Element e) {
-      return true;
-    };
-
-    protected boolean visitListItem(Element e) {
-      return true;
-    };
-
-    protected boolean visitEmphasised(Element e) {
-      return true;
-    };
-
-    protected boolean visitDoubleEmphasised(Element e) {
-      return true;
-    };
-  }
+  protected AssetManager mAssets;
 
   public class ProtocolStep extends LinkedList<Element> {
     public View toView(View v) {
@@ -176,30 +106,120 @@ public class LabMarkdown extends CardScrollAdapter {
     }
   }
 
+  
+  public class Visitor {
+    protected int indent = 1;
+
+    public Object visit(ProtocolStep s) {
+      Object o = null;
+      for (Element e : s)
+        o = visit(e);
+      return o;
+    }
+    
+    public Object visit(Document d) {
+      Object o = null;
+      for (int i=0; i<d.getElementCount(); i++) {
+        Element e = d.getElement(i);
+        o = visit(e);
+      }
+      return o;
+    }
+
+    public Object visit(Element e) {
+      boolean decend = true;
+      String msg = "";
+      indent++;
+
+      switch (e.getType()) {
+      case TEXT:
+        decend = visitText(e);
+        break;
+      case HEADER:
+        decend = visitHeader(e);
+        break;
+      case PARAGRAPH:
+        decend = visitParagraph(e);
+        break;
+      case LIST_ITEM:
+        decend = visitListItem(e);
+        break;
+      case EMPHASIS:
+        decend = visitEmphasised(e);
+        break;
+      case DOUBLE_EMPHASIS:
+        decend = visitDoubleEmphasised(e);
+        break;
+      case STRIKETHROUGH:
+        decend = visitStrikeThrough(e);
+        break;
+      case IMAGE:
+        decend = visitImage(e);
+        break;
+      default:
+        msg = "ignored";
+        break;
+      }
+      msg = String.format("%" + indent + "s %s: %s [%s]", " ", e.getType()
+          .name(), e.getText(), e.getAttributes().toString());
+      Log.d("markdown", msg);
+
+      if (decend)
+        for (int i = 0; i < e.size(); i++)
+          visit(e.getChild(i));
+
+      indent--;
+      return null;
+    }
+
+    protected boolean visitImage(Element e) {
+      return true;
+    }
+
+    protected boolean visitStrikeThrough(Element e) {
+      return true;
+    }
+
+    protected boolean visitText(Element e) {
+      return true;
+    };
+
+    protected boolean visitHeader(Element e) {
+      return true;
+    };
+
+    protected boolean visitParagraph(Element e) {
+      return true;
+    };
+
+    protected boolean visitListItem(Element e) {
+      return true;
+    };
+
+    protected boolean visitEmphasised(Element e) {
+      return true;
+    };
+
+    protected boolean visitDoubleEmphasised(Element e) {
+      return true;
+    };
+  }
+
   public class ToViewVisitor extends Visitor {
-    protected View mView;
-    protected TextView mText;
+    protected int mNumPictograms = 0;
+    protected ViewGroup mView;
     protected ViewGroup mList;
-    protected RelativeLayout mFooter;
-    protected int mNumImages = 0;
+    protected TextView mText;
+    protected ViewGroup mFooter;
 
     public ToViewVisitor(ProtocolStep p, View v) {
-      if (v != null)
-        mView = v;
-      else
-        mView = mInflater.inflate(R.layout.card, null);
-
+      if (v != null) mView = (ViewGroup) v;
+      else  mView = (ViewGroup) mInflater.inflate(R.layout.card, null);
+      
       mList = (ViewGroup) mView.findViewById(R.id.list);
-      mFooter = (RelativeLayout) mView.findViewById(R.id.footer);
-
-      if (mList == null || mFooter == null) {
-        Log.e("markdown", "supply a view generated from R.layour.card!");
-        return;
-      }
-
-      mFooter.removeAllViews();
       mList.removeAllViews();
-
+      
+      mView.removeView(mView.findViewById(R.id.footer));
       this.visit(p);
     }
 
@@ -207,42 +227,54 @@ public class LabMarkdown extends CardScrollAdapter {
       return mView;
     }
 
-    protected boolean visitDoubleEmphasised(Element e) {
+    protected boolean visitParagraph(Element e) {
+      mText = (TextView) mInflater.inflate(R.layout.textview, mList, false);
+      mText.setTypeface(mRoboto);
+      
+      /* do not add to list here, since this might be a paragraph not
+       * containing text! Instead add it in appendText. */
+
+      return true;
+    }
+    
+    protected void appendText(String text, CharacterStyle styleSpan) {
+      if (text.trim().length() == 0)
+        return;
+      
       SpannableStringBuilder builder = new SpannableStringBuilder();
       builder.append(mText.getText());
-      builder.append(e.getText());
-      builder.setSpan(new StyleSpan(Typeface.BOLD), mText.getText().length(),
+      builder.append(text);
+      builder.setSpan(styleSpan, mText.getText().length(),
           builder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
       mText.setText(builder);
+      
+      if (mText.getParent() == null)
+        mList.addView(mText);
+    }
+    
+    protected boolean visitDoubleEmphasised(Element e) {
+      appendText(e.getText(), new StyleSpan(Typeface.BOLD));
       return true;
     }
 
     protected boolean visitEmphasised(Element e) {
-      SpannableStringBuilder builder = new SpannableStringBuilder();
-      builder.append(mText.getText());
-      builder.append(e.getText().trim());
-      builder.setSpan(new StyleSpan(Typeface.ITALIC), mText.getText().length(),
-          builder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-      mText.setText(builder);
+      appendText(e.getText(), new StyleSpan(Typeface.ITALIC));
       return true;
     }
     
     @Override
     protected boolean visitStrikeThrough(Element e) {
-      SpannableStringBuilder builder = new SpannableStringBuilder();
-      builder.append(mText.getText());
-      builder.append(e.getText().trim());
-      builder.setSpan(new StrikethroughSpan(), mText.getText().length(),
-          builder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-      mText.setText(builder);
+      appendText(e.getText(), new StrikethroughSpan());
       return true;
     }
 
     protected boolean visitHeader(Element e) {
-      TextView hint = (TextView) mInflater.inflate(R.layout.hint, null);
-      hint.setTypeface(mRoboto);
-
       String header = e.getChild(0).getText();
+      if (header.trim().equals("-donotshow"))
+        return false;
+      
+      TextView hint = (TextView) mInflater.inflate(R.layout.hint, getFooter(), false);
+      hint.setTypeface(mRoboto);
       hint.setText(header);
 
       /* special case for the pictograms */
@@ -260,17 +292,52 @@ public class LabMarkdown extends CardScrollAdapter {
           android.widget.RelativeLayout.LayoutParams.WRAP_CONTENT);
       p.addRule(RelativeLayout.ALIGN_PARENT_TOP);
       p.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-      mFooter.addView(hint, p);
+      getFooter().addView(hint, p);
 
       return false;
     }
+    
+    protected ViewGroup getFooter() {
+      if (mFooter == null) {
+        mFooter = (ViewGroup) mInflater.inflate(R.layout.footer, mView, false);
+        mView.addView(mFooter);
+      }
+      
+      return mFooter;
+    }
 
-    protected boolean visitParagraph(Element e) {
-      mText = (TextView) mInflater.inflate(R.layout.textview, null);
-      mText.setTypeface(mRoboto);
-      mList.addView(mText);
+    @Override
+    protected boolean visitImage(Element e) {
+      HeadImageView mIm = (HeadImageView) mInflater.inflate(R.layout.imview, mList, false);
+      Bitmap bm = loadImage(e.getText());
+      
+      if (bm == null)
+        return true;
+      
+      mIm.setImageBitmap(bm);
+      
+      String alt = e.getAttribute("alt");
+      if (alt!=null && alt.equals("bars")) {
+        // TODO: special hook, reate horizontal layout with layout
+      } else {
+        mList.addView(mIm);
+      }
+      return false;
+    }
 
-      return true;
+    protected Bitmap loadImage(String text) {
+      InputStream is = null;
+      try {
+        is = mAssets.open(text);
+      } catch (IOException e) {
+        e.printStackTrace();
+        return null;
+      }
+      
+      Options o = new Options();
+      o.inSampleSize = 4; // downsample
+      Bitmap b  = BitmapFactory.decodeStream(is, null, o);
+      return b;
     }
 
     protected boolean visitListItem(Element e) {
@@ -293,20 +360,15 @@ public class LabMarkdown extends CardScrollAdapter {
         addImage(txt.substring(1, txt.length() - 1));
       else if (txt.length() == 0)
         ;
-      else { // pass thorugh Spannable to keep styles from previously added text
-        SpannableStringBuilder builder = new SpannableStringBuilder();
-        builder.append(mText.getText());
-        builder.append(" ");
-        builder.append(txt);
-        mText.setText(builder);
-      }
+      else
+        appendText(txt, new StyleSpan(Typeface.NORMAL));
 
       return true;
     }
 
     /** adds an image to the view on the lower left side */
     protected void addImage(String name) {
-      ImageView im = (ImageView) mInflater.inflate(R.layout.image, null);
+      ImageView im = (ImageView) mInflater.inflate(R.layout.image, getFooter(), false);
       try {
         im.setImageResource(R.drawable.class.getField(name).getInt(null));
       } catch (Exception e) {
@@ -319,16 +381,45 @@ public class LabMarkdown extends CardScrollAdapter {
       p.addRule(RelativeLayout.ALIGN_PARENT_TOP);
       p.setMargins(0, 0, 10, 0);
 
-      if (mNumImages == 0)
+      if (mNumPictograms == 0)
         p.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
       else
-        p.addRule(RelativeLayout.RIGHT_OF, mNumImages);
+        p.addRule(RelativeLayout.RIGHT_OF, mNumPictograms);
 
-      mNumImages++;
-      im.setId(mNumImages);
-      mFooter.addView(im, p);
+      mNumPictograms++;
+      im.setId(mNumPictograms);
+      getFooter().addView(im, p);
     }
 
+  }
+  
+  public class SegmentationVisitor extends Visitor {
+
+    protected LinkedList<ProtocolStep> mList;
+    protected ProtocolStep mCur;
+
+    public List<ProtocolStep> visit(Document d) {
+      mList = new LinkedList<ProtocolStep>();
+      mCur  = new ProtocolStep();
+      mList.add(mCur);
+      return (List<ProtocolStep>) super.visit(d);
+    }
+    
+    public List<ProtocolStep> visit(Element e) {
+      super.visit(e);
+      
+      if (e.getParent() == null)
+        mCur.add(e); /* only add top-level elements */
+      
+      return (List<ProtocolStep>) mList;
+    }
+    
+    @Override
+    protected boolean visitHeader(Element e) {
+      mCur = new ProtocolStep();
+      mList.add(mCur);
+      return true;
+    }
   }
 
   public LabMarkdown(Context c, File mDownFile) throws IOException {
@@ -343,30 +434,12 @@ public class LabMarkdown extends CardScrollAdapter {
 
   private void init(Context c, String md) {
     Bypass bp = new Bypass();
-    mDoc = bp.processMarkdown(md);
+    mDoc      = bp.processMarkdown(md);
+    mElements = (new SegmentationVisitor()).visit(mDoc);
 
-    mElements = new LinkedList<ProtocolStep>();
-
-    /* intialize the mMap by inserting all top-level elements */
-    ProtocolStep s = new ProtocolStep();
-    mElements.add(s);
-    for (int i = 0; i < mDoc.getElementCount(); i++) {
-      Element e = mDoc.getElement(i);
-
-      if (e.getType().equals(Type.HEADER)) {
-        int level = Integer.valueOf(e.getAttribute("level"));
-        if (level == 1) {
-          s = new ProtocolStep();
-          mElements.add(s);
-        }
-      }
-
-      s.add(e);
-
-      mInflater = (LayoutInflater) c
-          .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-      mRoboto = RobotoTypefaces.getTypeface(c, RobotoTypefaces.WEIGHT_THIN);
-    }
+    mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    mAssets = c.getAssets();
+    mRoboto = RobotoTypefaces.getTypeface(c, RobotoTypefaces.WEIGHT_THIN);
   }
 
   protected static String readFileAsString(String string) throws IOException {
