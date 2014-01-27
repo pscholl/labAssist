@@ -10,20 +10,15 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Toast;
 
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.widget.CardScrollView;
-import com.google.glass.input.VoiceInputHelper;
-import com.google.glass.util.PowerHelper;
-import com.google.glass.voice.VoiceCommand;
-import com.google.glass.voice.VoiceConfig;
 
-import de.tud.ess.StubVoiceListener;
 import de.tud.ess.VoiceMenu;
 import de.tud.ess.VoiceMenu.VoiceMenuListener;
 import de.tud.labAssist.LabMarkdown.ProtocolStep;
@@ -45,14 +40,29 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    
+    if (!getIntent().hasExtra(Launcher.FILENAME))
+    {
+      Log.e(TAG, String.format("missing argument for '%s'", Launcher.FILENAME));
+      Toast.makeText(this, "no document supplied", Toast.LENGTH_LONG).show();
+      return;
+    }
+    
     setContentView(R.layout.main);
 
     mVoiceMenu = new VoiceMenu(this, "ok glass", NEXT, PREVIOUS,
         DONE, MARK, CHECK, GOFORWARD, GOBACK);
-
-    LabMarkdown lm = new LabMarkdown(this,
-        getAssetAsString("dna_extraction_from_onions.pd"));
-    mCardScrollView = (CardScrollView) findViewById(R.id.scrollview);
+    
+    String file = getIntent().getExtras().getString(Launcher.FILENAME);
+    
+    if (file==null)
+    {
+      Toast.makeText(this, "file not found", Toast.LENGTH_LONG).show();
+      return;      
+    }
+    
+    LabMarkdown lm = new LabMarkdown(this, getAssetAsString(file));
+    mCardScrollView = (CardScrollView) findViewById(R.id.cardscroll);
     mCardScrollView.setAdapter(lm);
     mCardScrollView.setOnItemClickListener(new LabOnClickListener());
     mCardScrollView.setOnItemSelectedListener(new LogItemSelecter());
@@ -69,7 +79,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       return str;
     } catch (IOException e) {
       Log.e(TAG, String.format("error while opening %s", filename), e);
-      return "";
+      return null;
     }
   }
 

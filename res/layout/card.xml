@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/mainView"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:layout_margin="20dp"
 	android:orientation="vertical" >
 
+	<!-- <include layout="@layout/scrollist"/> -->
+
 	<FrameLayout
 		android:layout_width="match_parent"
-		android:layout_height="190dp" >
+		android:layout_height="0dp"
+		android:layout_weight="1" >
 
 		<view
 			android:id="@+id/scrollView"
@@ -23,26 +27,14 @@
 				android:layout_gravity="top"
 				android:gravity="center_vertical"
 				android:orientation="vertical" >
-  
-<!-- 				<include layout="@layout/textview" /> -->
-<!-- 				<include layout="@layout/horizontal_bar" /> -->
-<!-- 								<include layout="@layout/textview" /> -->
-<!-- 				<include layout="@layout/horizontal_bar" /> -->
+
+				<!-- <include layout="@layout/textview" /> -->
+				<!-- <include layout="@layout/horizontal_bar" /> -->
+				<!-- <include layout="@layout/textview" /> -->
+				<!-- <include layout="@layout/horizontal_bar" /> -->
 
 			</LinearLayout>
-
 		</view>
 	</FrameLayout>
-
-	<RelativeLayout
-		android:id="@+id/footer"
-		android:layout_width="match_parent"
-		android:layout_height="30dp"
-		android:layout_marginLeft="20dp"
-		android:layout_marginRight="20dp" >
-
-<!-- 				<include layout="@layout/hint" /> -->
-
-	</RelativeLayout>
 
 </LinearLayout>
