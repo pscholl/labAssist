@@ -4,22 +4,21 @@ DNA Extraction from Onions
 
  - 1x large onion
  - 3ml dish soap
- - waterbath (50°-60° C)
- - freezing water
+ - 1l hot water (50°-60° C)
+ - 1l iced water
  - mild detergent
- - freezing alcohol (rectified spirit or ethanol)
+ - 20ml iced alcohol (rectified spirit or ethanol)
  - salt
 
 # Utensils
 
- - 1x500ml, 1x200ml, 1x100ml beaker
- - *teaspoon*
- - **kitchen knife** bladida
- - ~~1x paper plate~~
- - mortar or hand-held blender
+ - 2x500ml, 1x200ml, 1x100ml beaker
+ - teaspoon
+ - kitchen knife
+ - mortar
  - funnel
  - 3x test tubes
- - 1x coffee filter
+ - 1x tea filter
 
 # prepare the solvent agent
 
@@ -28,21 +27,30 @@ DNA Extraction from Onions
 
 # prepare the onion
 
- - mince onion into small pieces [incubate]
+ - mince onion into small pieces (1cm) [incubate]
+ - suspend 20-50mg into 200ml beaker [dispense]
  - combine with 1mg detergent [combine]
- - suspend into 200ml beaker and stir [dispense]
+ - stir for 30secs [incubate]
+
+# prepare hot water bath
+
+ fill 500ml beaker with hot water (50°-60°) [dispense]
 
 # heat mixture
 
- put 200ml beaker into waterbath for 15mins [incubate]
+ put 200ml beaker into waterbath for 10mins [incubate]
+
+# prepare cold water bath
+
+ fill 500ml with iced water [dispense]
 
 # freeze mixture
 
- put 200ml beaker into freezing water for 10mins [incubate] 
+ put 200ml beaker into freezing water for 5mins [incubate] 
 
 # homogenize mixture
 
- use mortar or blender to homogenize mixture for 1min [incubate]
+ use mortar to homogenize mixture for 1min [incubate]
 
 # separate mixture
 
