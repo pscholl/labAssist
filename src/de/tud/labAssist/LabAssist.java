@@ -101,7 +101,6 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     mCardScrollView = (CardScrollView) findViewById(R.id.cardscroll);
     mCardScrollView.setAdapter(lm);
     mCardScrollView.setOnItemClickListener(new LabOnClickListener());
-    mCardScrollView.setOnItemSelectedListener(new ItemSwitchLogger());
     mCardScrollView.setOnItemSelectedListener(new VoiceConfigChanger());
 
     mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -123,7 +122,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     mVoiceMenu.setListener(this);
     getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
     
-    Log.w(TAG, "onResume");
+    Log.e(TAG, "onResume");
   }
 
   @Override
@@ -132,7 +131,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     mCardScrollView.deactivate();
     super.onPause();
     
-    Log.w(TAG, "onPause");
+    Log.e(TAG, "onPause");
   }
 
   protected Method mAnimateFunc;
@@ -148,6 +147,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       if (step.hasZoomAbleImage()) {
         HeadImageView v = (HeadImageView) view.findViewById(R.id.imview);
         v.setScaleFactor(v.getScaleFactor() + SCALE_STEP);
+        Log.e(TAG, "zoomed in (via tap)");
       }
       else if (step.hasCheckableItems()) 
         markAsDone(step, cur);
@@ -168,6 +168,8 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     } catch (Exception e) {
       Log.e(TAG, e.toString());
     }
+    
+    Log.e(TAG, String.format("switch to item (%d)", position));
   }
 
   protected void markAsDone(ProtocolStep step, int pos) {
@@ -176,17 +178,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     if (done)
       callAnimateTo(pos + 1, ANIMATE_GOTO);
     
-    Log.w(TAG, String.format("marked item %d as done (%b)", pos, done));
-  }
-  
-  public class ItemSwitchLogger implements OnItemSelectedListener {
-    @Override
-    public void onItemSelected(AdapterView<?> av, View v, int pos, long id) {
-      Log.w(TAG, String.format("switched to item %d", pos));
-    }
-    @Override
-    public void onNothingSelected(AdapterView<?> arg0) {
-    }
+    Log.e(TAG, String.format("marked item %d as done (%b)", pos, done));
   }
   
   public class VoiceConfigChanger implements OnItemSelectedListener {
@@ -220,10 +212,14 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
         callAnimateTo(cur + 1, ANIMATE_GOTO);
       else if (CHECK.equals(literal) || DONE.equals(literal) || MARK.equals(literal))
         markAsDone(step, cur);
-      else if (ZOOM_IN.equals(literal))
+      else if (ZOOM_IN.equals(literal)) {
         im.setScaleFactor( im.getScaleFactor() + SCALE_STEP );
-      else if (ZOOM_OUT.equals(literal))
+        Log.e(TAG, "zoomed in");
+      }
+      else if (ZOOM_OUT.equals(literal)) {
         im.setScaleFactor( im.getScaleFactor() - SCALE_STEP );
+        Log.e(TAG, "zoomed out");
+      }
       else if (RED.equals(literal) || BLUE.equals(literal))
         updateBarText(barText, literal, null);
       else if (LEFT.equals(literal) || RIGHT.equals(literal) || MIDDLE.equals(literal))

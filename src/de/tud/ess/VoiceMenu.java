@@ -116,6 +116,7 @@ public class VoiceMenu extends StubVoiceListener {
     
     for (String item : mItems) {
       if ( item.equals(literal) ) {
+        Log.e("labAssist", String.format("command %s", literal));
         mListener.onItemSelected(item);
         shutdown();
         return mVoiceConfig;
@@ -140,6 +141,8 @@ public class VoiceMenu extends StubVoiceListener {
     if (mShowing)
       return;
    
+    Log.e("labAssist", "voice menu started");
+    
     mRoot = (ViewGroup) ((ViewGroup) mContext.getWindow().getDecorView()).getRootView();   
     
     mLayout = new RelativeLayout(mContext);
