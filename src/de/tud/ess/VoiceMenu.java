@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.StateListDrawable;
 import android.media.AudioManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -74,17 +75,12 @@ public class VoiceMenu extends StubVoiceListener {
     mVoiceInputHelper = new VoiceInputHelper(
         mContext, this,
         VoiceInputHelper.newUserActivityObserver(mContext));
-    
-    String[] hotwords = new String[items.length+1];
-    for (int i=0; i<items.length; i++)
-      hotwords[i+1] = items[i];
-    hotwords[0] = hotword;
-    
+       
     mActivationWord = hotword;
     mVoiceConfig = new VoiceConfig(
-        c.getApplicationInfo().name, hotwords);
-    
-    mItems = items;
+        c.getApplicationInfo().name, new String[] {});
+    setCommands(items);
+
     mPower = new PowerHelper(mContext);
     mAudio = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
   }
@@ -110,6 +106,7 @@ public class VoiceMenu extends StubVoiceListener {
     mPower.stayAwake(6000);
     
     if (mListener == null) {
+      mVoiceInputHelper.removeVoiceServiceListener();
       shutdown();
       return mVoiceConfig;
     }
@@ -131,7 +128,6 @@ public class VoiceMenu extends StubVoiceListener {
   public void shutdown() {
     if (mScroll != null)
     {
-      mVoiceInputHelper.removeVoiceServiceListener();
       mScroll.deactivate();
       mRoot.removeView(mLayout);
       mScroll = null;
@@ -141,9 +137,9 @@ public class VoiceMenu extends StubVoiceListener {
   }
   
   public void show() {
-    if (mShowing )
+    if (mShowing)
       return;
-    
+   
     mRoot = (ViewGroup) ((ViewGroup) mContext.getWindow().getDecorView()).getRootView();   
     
     mLayout = new RelativeLayout(mContext);
@@ -202,5 +198,16 @@ public class VoiceMenu extends StubVoiceListener {
         return false;
       }
     });
+  }
+
+  public void setCommands(String[] items) {
+    mItems = items;
+    String[] hotwords = new String[items.length+1];
+    for (int i=0; i<items.length; i++)
+      hotwords[i+1] = items[i];
+    hotwords[0] = mActivationWord;
+    
+    mVoiceConfig.setPhrases(hotwords);
+    mVoiceInputHelper.setVoiceConfig(mVoiceConfig, false);
   }
 }

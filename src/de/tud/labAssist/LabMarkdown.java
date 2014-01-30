@@ -22,7 +22,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Typeface;
-import android.opengl.Visibility;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.CharacterStyle;
@@ -52,6 +51,8 @@ public class LabMarkdown extends CardScrollAdapter {
   protected File mFileDir;
 
   public class ProtocolStep extends LinkedList<Element> {
+    protected CheckableZoomableVisitor mChecker;
+
     public View toView(View v) {
       return new ToViewVisitor(this, v).getView();
     }
@@ -59,8 +60,52 @@ public class LabMarkdown extends CardScrollAdapter {
     public boolean markAsDone() {
       return new MarkAsDoneVisitor(this).getResult();
     }
+
+    public boolean hasCheckableItems() {
+      return getZoomableCheckableVisitor().isCheckable;
+    }
+    
+    public boolean hasZoomAbleImage() {
+      return getZoomableCheckableVisitor().isZoomable;
+    }
+    
+    public boolean hasAttentionChallenge() {
+      return getZoomableCheckableVisitor().isBarView;
+    }
+
+    protected CheckableZoomableVisitor getZoomableCheckableVisitor() {
+      if (mChecker == null)
+        mChecker = new CheckableZoomableVisitor(this);
+      return mChecker;
+    }
   }
 
+  public class CheckableZoomableVisitor extends Visitor {
+    public boolean isCheckable = false;
+    public boolean isZoomable  = false; 
+    public boolean isBarView   = false;
+    
+    public CheckableZoomableVisitor(ProtocolStep protocolStep) {
+      this.visit(protocolStep);
+    }
+
+    @Override
+    protected boolean visitText(Element e) {
+      return isCheckable = true;
+    }
+    
+    @Override
+    protected boolean visitListItem(Element e) {
+      return isCheckable = true;
+    }
+    
+    @Override
+    protected boolean visitImage(Element e) {
+      isBarView = (e.getAttribute("alt")!=null && e.getAttribute("alt").equals("bars"));
+      return isZoomable = true;
+    }
+  }
+  
   public class MarkAsDoneVisitor extends Visitor {
     protected boolean mProtocolStepDone = true;
     protected boolean mMarkedOneAsDone = false;
@@ -311,19 +356,23 @@ public class LabMarkdown extends CardScrollAdapter {
 
     @Override
     protected boolean visitImage(Element e) {
-      HeadImageView mIm = (HeadImageView) mInflater.inflate(R.layout.imview, mList, false);
       Bitmap bm = loadImage(e.getText());
       
       if (bm == null)
         return true;
       
-      mIm.setImageBitmap(bm);
-      
       String alt = e.getAttribute("alt");
       if (alt!=null && alt.equals("bars")) {
-        // TODO: special hook, reate horizontal layout with layout
+        View v = mInflater.inflate(R.layout.barlayout, mList, false);
+        TextView tv = (TextView) v.findViewById(R.id.bartext);
+        HeadImageView im = (HeadImageView) v.findViewById(R.id.imview);
+        im.setImageBitmap(bm);
+        tv.setTypeface(mRoboto);
+        mList.addView(v);
       } else {
-        mList.addView(mIm);
+        HeadImageView im = (HeadImageView) mInflater.inflate(R.layout.imview, mList, false);
+        im.setImageBitmap(bm);
+        mList.addView(im);
       }
       return false;
     }
