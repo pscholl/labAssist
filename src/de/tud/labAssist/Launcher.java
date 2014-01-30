@@ -2,21 +2,16 @@ package de.tud.labAssist;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.google.android.glass.app.VoiceTriggers;
-import com.google.glass.voice.VoiceAnnotationActivity;
-
-import de.tud.ess.VoiceMenu;
-import de.tud.ess.VoiceMenu.VoiceMenuListener;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.widget.FrameLayout;
+import de.tud.ess.VoiceMenu;
+import de.tud.ess.VoiceMenu.VoiceMenuListener;
 
 public class Launcher extends Activity implements VoiceMenuListener {
   
