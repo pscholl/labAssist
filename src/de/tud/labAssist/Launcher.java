@@ -69,6 +69,9 @@ public class Launcher extends Activity implements VoiceMenuListener {
 
   @Override
   public void onItemSelected(String item) {
+    if (item==null)
+      return;
+    
     for (String path : mPaths)
       if (item.equals(path)) {
         Intent i = new Intent();

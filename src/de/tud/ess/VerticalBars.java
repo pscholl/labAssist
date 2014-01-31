@@ -122,9 +122,9 @@ public class VerticalBars extends LinearLayout {
         mBarAnimator = new BarAnimator();
       if (mColorChanger==null)
         mColorChanger = new ColorChanger();
-      post(mBarAnimator);
-      post(mColorChanger);
       
+      postDelayed(mColorChanger, (MIN_DELAY_inS + (new Random()).nextInt(MAX_DELAY_inS-MIN_DELAY_inS))*1000);
+      postDelayed(mBarAnimator, BAR_FREQ_MS);
     } else {
       removeCallbacks(mBarAnimator);
       removeCallbacks(mColorChanger);

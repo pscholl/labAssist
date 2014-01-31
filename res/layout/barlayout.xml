@@ -2,16 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="640px"
 	android:layout_height="360px"
-	android:orientation="horizontal"
-	android:clipChildren="true" >
+	android:clipChildren="true"
+	android:orientation="horizontal" >
 
 	<view
-		android:id="@+id/imview"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/cardscroll"
 		android:layout_width="506px"
 		android:layout_height="fill_parent"
-		class="de.tud.ess.HeadImageView" />
+		android:layout_gravity="center"
+		class="com.google.android.glass.widget.CardScrollView" />
 
 	<LinearLayout
+		android:id="@+id/sidebar"
 		android:layout_width="134px"
 		android:layout_height="fill_parent"
 		android:orientation="vertical" >
@@ -20,16 +23,16 @@
 			android:id="@+id/bartext"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:text="TextView"
 			android:gravity="center"
-			android:textSize="20sp"
-			android:textColor="@android:color/white" />
+			android:text="TextView"
+			android:textColor="@android:color/white"
+			android:textSize="20sp" />
 
-		<view 
+		<view
 			android:id="@+id/bars"
-			android:layout_height="fill_parent"
 			android:layout_width="fill_parent"
-			class="de.tud.ess.VerticalBars"/>
+			android:layout_height="fill_parent"
+			class="de.tud.ess.VerticalBars" />
 	</LinearLayout>
 
 </LinearLayout>
