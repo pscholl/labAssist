@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.widget.CardScrollView;
+import com.google.glass.widget.RobotoTypefaces;
 
 import de.tud.ess.HeadImageView;
 import de.tud.ess.VoiceMenu;
@@ -38,6 +40,8 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   private AudioManager mAudio;
   protected CardScrollView mCardScrollView;
   protected VoiceMenu mVoiceMenu;
+  protected boolean mAttentionChallenge = false;
+  protected TextView mBarText;
   
   protected static final String NEXT = "next";
   protected static final String PREVIOUS = "previous";
@@ -67,8 +71,6 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       return;
     }
     
-    setContentView(R.layout.main);
-
     String file = getIntent().getExtras().getString(Launcher.FILENAME);
     
     if (file==null)
@@ -94,6 +96,14 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       }
       e.printStackTrace();
     }
+    
+    if (file.contains("Lego")) {
+      setContentView(R.layout.barlayout);
+      mAttentionChallenge = true;
+      mBarText = (TextView) findViewById(R.id.bartext);
+      mBarText.setTypeface(RobotoTypefaces.getTypeface(this, RobotoTypefaces.WEIGHT_THIN));
+    } else
+      setContentView(R.layout.main);
 
     mVoiceMenu = new VoiceMenu(this, "ok glass");
     
@@ -203,8 +213,6 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
           .getItemAtPosition(cur);
       HeadImageView im = (HeadImageView) mCardScrollView
           .getSelectedView().findViewById(R.id.imview);
-      TextView barText = (TextView) mCardScrollView
-          .getSelectedView().findViewById(R.id.bartext);
       
       if (GOBACK.equals(literal) || PREVIOUS.equals(literal))
         callAnimateTo(cur - 1, ANIMATE_GOTO);
@@ -221,9 +229,9 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
         Log.e(TAG, "zoomed out");
       }
       else if (RED.equals(literal) || BLUE.equals(literal))
-        updateBarText(barText, literal, null);
+        updateBarText(literal, null);
       else if (LEFT.equals(literal) || RIGHT.equals(literal) || MIDDLE.equals(literal))
-        updateBarText(barText, null, literal);
+        updateBarText(null, literal);
       else
         mAudio.playSoundEffect(Sounds.ERROR);
     } catch (Exception e) {
@@ -233,8 +241,13 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
 
   protected String mBarColor = "";
   protected String mBarPosition = "";
-  protected void updateBarText(TextView barText, String color, String position) {
-    String[] cur = barText.getText().toString().split("-");
+  protected void updateBarText(String color, String position) {    
+    if (mBarText==null) {
+      Log.e(TAG, "setting barText without a view");
+      return;
+    }
+    
+    String[] cur = mBarText.getText().toString().split("-");
     String mBarColor = "", mBarPosition = "";
     
     if (cur.length==1)
@@ -269,7 +282,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       c.add(CHECK);
       c.add(DONE);
     }
-    if (s.hasAttentionChallenge()) {
+    if (mAttentionChallenge ) {
       c.add(LEFT);
       c.add(MIDDLE);
       c.add(RIGHT);

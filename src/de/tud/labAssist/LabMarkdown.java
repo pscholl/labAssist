@@ -48,7 +48,7 @@ public class LabMarkdown extends CardScrollAdapter {
   protected Typeface mRoboto;
   protected LayoutInflater mInflater;
   protected AssetManager mAssets;
-  protected File mFileDir;
+  protected File mFileDir; 
 
   public class ProtocolStep extends LinkedList<Element> {
     protected CheckableZoomableVisitor mChecker;
@@ -68,10 +68,6 @@ public class LabMarkdown extends CardScrollAdapter {
     public boolean hasZoomAbleImage() {
       return getZoomableCheckableVisitor().isZoomable;
     }
-    
-    public boolean hasAttentionChallenge() {
-      return getZoomableCheckableVisitor().isBarView;
-    }
 
     protected CheckableZoomableVisitor getZoomableCheckableVisitor() {
       if (mChecker == null)
@@ -83,7 +79,6 @@ public class LabMarkdown extends CardScrollAdapter {
   public class CheckableZoomableVisitor extends Visitor {
     public boolean isCheckable = false;
     public boolean isZoomable  = false; 
-    public boolean isBarView   = false;
     
     public CheckableZoomableVisitor(ProtocolStep protocolStep) {
       this.visit(protocolStep);
@@ -101,7 +96,6 @@ public class LabMarkdown extends CardScrollAdapter {
     
     @Override
     protected boolean visitImage(Element e) {
-      isBarView = (e.getAttribute("alt")!=null && e.getAttribute("alt").equals("bars"));
       return isZoomable = true;
     }
   }
@@ -360,20 +354,11 @@ public class LabMarkdown extends CardScrollAdapter {
       
       if (bm == null)
         return true;
+
+      HeadImageView im = (HeadImageView) mInflater.inflate(R.layout.imview, mList, false);
+      im.setImageBitmap(bm);
+      mList.addView(im);
       
-      String alt = e.getAttribute("alt");
-      if (alt!=null && alt.equals("bars")) {
-        View v = mInflater.inflate(R.layout.barlayout, mList, false);
-        TextView tv = (TextView) v.findViewById(R.id.bartext);
-        HeadImageView im = (HeadImageView) v.findViewById(R.id.imview);
-        im.setImageBitmap(bm);
-        tv.setTypeface(mRoboto);
-        mList.addView(v);
-      } else {
-        HeadImageView im = (HeadImageView) mInflater.inflate(R.layout.imview, mList, false);
-        im.setImageBitmap(bm);
-        mList.addView(im);
-      }
       return false;
     }
 
