@@ -6,14 +6,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -42,6 +42,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   protected VoiceMenu mVoiceMenu;
   protected boolean mAttentionChallenge = false;
   protected TextView mBarText;
+  protected Process mLogcat;
   
   protected static final String NEXT = "next";
   protected static final String PREVIOUS = "previous";
@@ -63,6 +64,21 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    
+    /* start a logcat instance that logs the current run on the sdcard */
+    String now  = new SimpleDateFormat("yyyy-MMM-dd-HH-mm-ss").format(new Date());
+    String path = new File(getExternalFilesDir(null), "logcat_" + now + ".log").toString();
+    try {
+      mLogcat = Runtime.getRuntime().exec( new String[] {
+          "logcat", "-c" });
+      mLogcat.waitFor();
+      mLogcat = Runtime.getRuntime().exec( new String[] {
+          "logcat", "-v", "time", "-f", path, "-r", "1024", "-s", TAG});
+    } catch (Exception e) {
+      Log.e(TAG, "logcat execution failed: "+e.toString());
+      e.printStackTrace();
+    } 
+    Log.e(TAG, path);
     
     if (!getIntent().hasExtra(Launcher.FILENAME))
     {
@@ -118,6 +134,16 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     //recreateVoiceMenu((ProtocolStep) mCardScrollView.getItemAtPosition(0));
   }
 
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    
+    if (mLogcat != null) {
+      mLogcat.destroy();
+      mLogcat = null;
+    }
+  }
+  
   private String toString(InputStream is) {
     Scanner scanner = new Scanner(is, "UTF-8").useDelimiter("\\A");
     String str = scanner.hasNext() ? scanner.next() : "";
@@ -267,7 +293,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       Log.e(TAG, String.format("user gave new position: %s", position));
     }
     
-    barText.setText(String.format("%s - %s",mBarColor, mBarPosition));
+    mBarText.setText(String.format("%s - %s",mBarColor, mBarPosition));
   }
 
   protected void recreateVoiceMenu(ProtocolStep s) {
