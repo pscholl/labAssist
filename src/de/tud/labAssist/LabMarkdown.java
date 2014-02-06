@@ -83,6 +83,12 @@ public class LabMarkdown extends CardScrollAdapter {
     public CheckableZoomableVisitor(ProtocolStep protocolStep) {
       this.visit(protocolStep);
     }
+    
+    @Override
+    protected boolean visitHeader(Element e) {
+      /* skip all header texts!! */
+      return false; 
+    }
 
     @Override
     protected boolean visitText(Element e) {

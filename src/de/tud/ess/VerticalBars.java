@@ -21,6 +21,7 @@ public class VerticalBars extends LinearLayout {
   
   public class ColorChanger implements Runnable {
     protected Random mRand = new Random();
+    public String mCurrentColor = "blue";
     
     @Override
     public void run() {            
@@ -29,9 +30,11 @@ public class VerticalBars extends LinearLayout {
       
       if (bc == getResources().getColor(R.color.blue)) {
         bc = getResources().getColor(R.color.red);
+        mCurrentColor = "red";
         Log.e(TAG, "bar color changed to RED");
       } else {
         bc = getResources().getColor(R.color.blue);
+        mCurrentColor = "blue";
         Log.e(TAG, "bar color changed to BLUE");
       }
       
@@ -45,10 +48,12 @@ public class VerticalBars extends LinearLayout {
 
   }
 
+  public final String[] pos = new String[] { "left", "middle", "right" };
   public class BarAnimator implements Runnable {
     protected Random mRand = new Random();
     protected int mWithMaxHeight = -1;
-
+    public String mCurrentBar = null;
+    
     @Override
     public void run() {
       int withmaxheight = 0;
@@ -64,7 +69,7 @@ public class VerticalBars extends LinearLayout {
         
         if (mBarGoals[i] < p.height) {
           if (mBarGoals[i] == p.height - 1)
-            mBarGoals[i] = p.height + mRand.nextInt(getHeight() - p.height);
+            mBarGoals[i] = p.height + mRand.nextInt(getHeight() - p.height + 1);
           p.height -= 1;
         } else if (mBarGoals[i] > p.height) {
           if (mBarGoals[i] == p.height + 1)
@@ -84,6 +89,9 @@ public class VerticalBars extends LinearLayout {
       if (mWithMaxHeight != withmaxheight) {
         mWithMaxHeight  = withmaxheight;
         Log.e(TAG, String.format("max height changed to %d", mWithMaxHeight));
+        
+        if (withmaxheight<pos.length)
+          mCurrentBar = pos[withmaxheight];
       }
       
       postDelayed(this, BAR_FREQ_MS);
@@ -144,5 +152,13 @@ public class VerticalBars extends LinearLayout {
   public VerticalBars(Context context) {
     super(context);
     setNumberOfBars(3);
+  }
+
+  public String getCurrentColor() {
+    return mColorChanger.mCurrentColor;
+  }
+
+  public String getCurrentBar() {
+    return mBarAnimator.mCurrentBar;
   }
 }

@@ -31,6 +31,7 @@ import com.google.android.glass.widget.CardScrollView;
 import com.google.glass.widget.RobotoTypefaces;
 
 import de.tud.ess.HeadImageView;
+import de.tud.ess.VerticalBars;
 import de.tud.ess.VoiceMenu;
 import de.tud.ess.VoiceMenu.VoiceMenuListener;
 import de.tud.labAssist.LabMarkdown.ProtocolStep;
@@ -51,13 +52,10 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   protected static final String DONE = "mark as done";
   protected static final String CHECK = "check";
   protected static final String MARK = "mark";
-  protected static final String ZOOM_IN = "grow";
+  protected static final String ZOOM_IN = "enlarge";
   protected static final String ZOOM_OUT = "shrink";
-  protected static final String LEFT   = "left";
-  protected static final String MIDDLE = "middle";
-  protected static final String RIGHT  = "right";
-  protected static final String RED    = "red";
-  protected static final String BLUE   = "blue";
+  protected static final String BAR = "bar";
+  protected static final String COLOR = "colored";
   protected static final String[] STATIC_VOICECOMMANDS = new String[]
       { NEXT, PREVIOUS, GOFORWARD, GOBACK  };
 
@@ -130,8 +128,6 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     mCardScrollView.setOnItemSelectedListener(new VoiceConfigChanger());
 
     mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-    
-    //recreateVoiceMenu((ProtocolStep) mCardScrollView.getItemAtPosition(0));
   }
 
   @Override
@@ -155,6 +151,17 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   protected void onResume() {
     super.onResume();
     mCardScrollView.activate();
+    mCardScrollView.setOnItemSelectedListener(new OnItemSelectedListener(   ) {
+      @Override
+      public void onItemSelected(AdapterView<?> parent, View view,
+          int position, long id) {
+        Log.e(TAG, String.format("switch to item %d", position));
+        
+      }
+
+      @Override
+      public void onNothingSelected(AdapterView<?> parent) { }
+    });
     mVoiceMenu.setListener(this);
     getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
     
@@ -164,6 +171,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   @Override
   protected void onPause() {
     mVoiceMenu.setListener(null);
+    mCardScrollView.setOnItemClickListener(null);
     mCardScrollView.deactivate();
     super.onPause();
     
@@ -205,7 +213,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       Log.e(TAG, e.toString());
     }
     
-    Log.e(TAG, String.format("switch to item (%d)", position));
+    //Log.e(TAG, String.format("switch to item (%d)", position));
   }
 
   protected void markAsDone(ProtocolStep step, int pos) {
@@ -246,23 +254,25 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
         callAnimateTo(cur + 1, ANIMATE_GOTO);
       else if (CHECK.equals(literal) || DONE.equals(literal) || MARK.equals(literal))
         markAsDone(step, cur);
-      else if (ZOOM_IN.equals(literal)) {
+      else if (ZOOM_IN.equals(literal))
         im.setScaleFactor( im.getScaleFactor() + SCALE_STEP );
-        Log.e(TAG, "zoomed in");
-      }
-      else if (ZOOM_OUT.equals(literal)) {
+      else if (ZOOM_OUT.equals(literal))
         im.setScaleFactor( im.getScaleFactor() - SCALE_STEP );
-        Log.e(TAG, "zoomed out");
-      }
-      else if (RED.equals(literal) || BLUE.equals(literal))
-        updateBarText(literal, null);
-      else if (LEFT.equals(literal) || RIGHT.equals(literal) || MIDDLE.equals(literal))
-        updateBarText(null, literal);
+      else if (COLOR.equals(literal))
+        toggleBarText(true,false);
+      else if (BAR.equals(literal))
+        toggleBarText(false,true);
       else
         mAudio.playSoundEffect(Sounds.ERROR);
     } catch (Exception e) {
       Log.e(TAG, e.toString());
     }
+  }
+
+  protected void toggleBarText(boolean color, boolean bar) {
+    VerticalBars v = (VerticalBars) findViewById(R.id.bars);
+    updateBarText(color ? v.getCurrentColor() : null,
+                  bar ? v.getCurrentBar() : null);
   }
 
   protected String mBarColor = "";
@@ -293,7 +303,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       Log.e(TAG, String.format("user gave new position: %s", position));
     }
     
-    mBarText.setText(String.format("%s - %s",mBarColor, mBarPosition));
+    mBarText.setText(String.format("%s - %s",mBarColor.trim(), mBarPosition.trim()));
   }
 
   protected void recreateVoiceMenu(ProtocolStep s) {
@@ -309,12 +319,8 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       c.add(DONE);
     }
     if (mAttentionChallenge ) {
-      c.add(LEFT);
-      c.add(MIDDLE);
-      c.add(RIGHT);
-      
-      c.add(RED);
-      c.add(BLUE);
+      c.add(COLOR);
+      c.add(BAR);
     }
     
     mVoiceMenu.setCommands((String[]) c.toArray(new String[c.size()]));
