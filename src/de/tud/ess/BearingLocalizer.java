@@ -30,6 +30,7 @@ public class BearingLocalizer implements SensorEventListener {
   public static final float DEFAULT_HEADING = 255;
   private int last_state = 0;
   private float mBearing = 0.f;
+  private SensorManager s;
   private static final int LEFT= 2;
   private static final int ENTERED = 1;
   
@@ -50,7 +51,7 @@ public class BearingLocalizer implements SensorEventListener {
       e.printStackTrace();
     }
     
-    SensorManager s = (SensorManager) mContext.getSystemService(mContext.SENSOR_SERVICE);
+    s = (SensorManager) mContext.getSystemService(mContext.SENSOR_SERVICE);
     s.registerListener(this, s.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR), s.SENSOR_DELAY_UI);
   }
 
@@ -82,6 +83,10 @@ public class BearingLocalizer implements SensorEventListener {
     }
   }
 
+  public void deactivate() {
+    s.unregisterListener(this);
+  }
+  
   @Override
   public void onAccuracyChanged(Sensor sensor, int accuracy) {
   }
