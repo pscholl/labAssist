@@ -189,6 +189,8 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     mVoiceMenu.setListener(null);
     mCardScrollView.setOnItemClickListener(null);
     mCardScrollView.deactivate();
+    mBearinglocalizer.deactivate();
+    mBearinglocalizer = null;
     super.onPause();
     
     Log.e(TAG, "onPause");
