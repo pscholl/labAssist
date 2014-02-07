@@ -30,6 +30,8 @@ import com.google.android.glass.media.Sounds;
 import com.google.android.glass.widget.CardScrollView;
 import com.google.glass.widget.RobotoTypefaces;
 
+import de.tud.ess.BearingLocalizer;
+import de.tud.ess.BearingLocalizer.BearingLocalizerListener;
 import de.tud.ess.HeadImageView;
 import de.tud.ess.VerticalBars;
 import de.tud.ess.VoiceMenu;
@@ -44,6 +46,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   protected boolean mAttentionChallenge = false;
   protected TextView mBarText;
   protected Process mLogcat;
+  protected BearingLocalizer    mBearinglocalizer;
   
   protected static final String NEXT = "next";
   protected static final String PREVIOUS = "previous";
@@ -165,6 +168,18 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     });
     mVoiceMenu.setListener(this);
     getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
+    mBearinglocalizer = new BearingLocalizer(getApplicationContext(), 
+        new BearingLocalizerListener() {
+      @Override
+      public void leftBearing() {
+        Log.e(TAG, "left");
+      }
+      
+      @Override
+      public void enteredBearing() {
+        Log.e(TAG, "enter");
+      }
+    });
     
     Log.e(TAG, "onResume");
   }
