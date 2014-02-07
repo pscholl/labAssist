@@ -6,6 +6,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.ScrollView;
 
@@ -81,9 +82,16 @@ public class HeadScrollView extends ScrollView implements SensorEventListener {
     
     if (mStartX  == 10)
       mStartX = x;
+    
+    float mEndX = mStartX - (getChildAt(0).getHeight()-getHeight()*0.5F) / VELOCITY;
    
-    int prior = getScrollY();
-    scrollTo(0, (int) ((mStartX-x) * VELOCITY));
+    int prior = getScrollY(),
+        pos   = (int) ((mStartX-x) * VELOCITY);
+    
+    if (x < mStartX) mStartX = x;
+    else if (x > mEndX)   mStartX += x- mEndX;
+
+    scrollTo(0, pos);
   }
 
 }

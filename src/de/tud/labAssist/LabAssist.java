@@ -58,6 +58,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   protected static final String COLOR = "colored";
   protected static final String[] STATIC_VOICECOMMANDS = new String[]
       { NEXT, PREVIOUS, GOFORWARD, GOBACK  };
+  protected static final String OKGLASS = "ok glass";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +120,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     } else
       setContentView(R.layout.main);
 
-    mVoiceMenu = new VoiceMenu(this, "ok glass");
+    mVoiceMenu = new VoiceMenu(this, OKGLASS);
     
     LabMarkdown lm = new LabMarkdown(this, mdown);
     mCardScrollView = (CardScrollView) findViewById(R.id.cardscroll);
@@ -262,6 +263,8 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
         toggleBarText(true,false);
       else if (BAR.equals(literal))
         toggleBarText(false,true);
+      else if (OKGLASS.equals(literal))
+        toggleBarText(true, true);
       else
         mAudio.playSoundEffect(Sounds.ERROR);
     } catch (Exception e) {

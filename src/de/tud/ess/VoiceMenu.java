@@ -111,8 +111,11 @@ public class VoiceMenu extends StubVoiceListener {
       return mVoiceConfig;
     }
     
-    if (literal.equals(mActivationWord))
+    if (literal.equals(mActivationWord)) {
       show();
+      Log.e("labAssist", String.format("command %s", literal));
+      mListener.onItemSelected(mActivationWord);
+    }
     
     for (String item : mItems) {
       if ( item.equals(literal) ) {
