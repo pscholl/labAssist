@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -32,6 +33,7 @@ import com.google.glass.widget.RobotoTypefaces;
 
 import de.tud.ess.BearingLocalizer;
 import de.tud.ess.BearingLocalizer.BearingLocalizerListener;
+import de.tud.ess.CameraService;
 import de.tud.ess.HeadImageView;
 import de.tud.ess.VerticalBars;
 import de.tud.ess.VoiceMenu;
@@ -46,7 +48,9 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   protected boolean mAttentionChallenge = false;
   protected TextView mBarText;
   protected Process mLogcat;
-  protected BearingLocalizer    mBearinglocalizer;
+  protected BearingLocalizer mBearinglocalizer;
+  protected Intent mBackgroundCamIntent;
+  protected boolean mBackgroundCamRunning = false;
   
   protected static final String NEXT = "next";
   protected static final String PREVIOUS = "previous";
@@ -59,9 +63,11 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   protected static final String ZOOM_OUT = "shrink";
   protected static final String BAR = "bar";
   protected static final String COLOR = "colored";
+  protected static final String TOGGLEREC = "toggle video recording";
   protected static final String[] STATIC_VOICECOMMANDS = new String[]
-      { NEXT, PREVIOUS, GOFORWARD, GOBACK  };
+      { NEXT, PREVIOUS, GOFORWARD, GOBACK, TOGGLEREC  };
   protected static final String OKGLASS = "ok glass";
+  protected static final String CAM_SERVICE = "de.tud.ess.CameraService";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +138,15 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     mCardScrollView.setOnItemSelectedListener(new VoiceConfigChanger());
 
     mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+    
+    mBackgroundCamIntent = new Intent();
+    mBackgroundCamIntent.setClassName("de.tud.ess", CAM_SERVICE);
+    mBackgroundCamIntent.putExtra(CameraService.Parameters.HEIGHT, 50);
+    mBackgroundCamIntent.putExtra(CameraService.Parameters.WIDTH, 70);
+    mBackgroundCamIntent.putExtra(CameraService.Parameters.Y, 640-50);
+    mBackgroundCamIntent.putExtra(CameraService.Parameters.RATE, 10.f);
+    
+    mBackgroundCamRunning = false;
   }
 
   @Override
@@ -191,6 +206,9 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     mCardScrollView.deactivate();
     mBearinglocalizer.deactivate();
     mBearinglocalizer = null;
+    
+    //stopService(mBackgroundCamIntent);
+    
     super.onPause();
     
     Log.e(TAG, "onPause");
@@ -282,11 +300,22 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
         toggleBarText(false,true);
       else if (OKGLASS.equals(literal))
         toggleBarText(true, true);
+      else if (TOGGLEREC.equals(literal))
+        toggleBackgroundCam();
       else
         mAudio.playSoundEffect(Sounds.ERROR);
     } catch (Exception e) {
       Log.e(TAG, e.toString());
     }
+  }
+
+  protected void toggleBackgroundCam() {
+    if (mBackgroundCamRunning)
+      stopService(mBackgroundCamIntent);
+    else
+      startService(mBackgroundCamIntent);
+    
+    mBackgroundCamRunning = !mBackgroundCamRunning;
   }
 
   protected void toggleBarText(boolean color, boolean bar) {
