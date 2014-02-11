@@ -144,9 +144,10 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     mBackgroundCamIntent.putExtra(CameraService.Parameters.HEIGHT, 50);
     mBackgroundCamIntent.putExtra(CameraService.Parameters.WIDTH, 70);
     mBackgroundCamIntent.putExtra(CameraService.Parameters.Y, 640-50);
-    mBackgroundCamIntent.putExtra(CameraService.Parameters.RATE, 10.f);
+    mBackgroundCamIntent.putExtra(CameraService.Parameters.RATE, 5.f);
     
     mBackgroundCamRunning = false;
+    toggleBackgroundCam();
   }
 
   @Override
@@ -182,7 +183,9 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       public void onNothingSelected(AdapterView<?> parent) { }
     });
     mVoiceMenu.setListener(this);
+    
     getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
+    
     mBearinglocalizer = new BearingLocalizer(getApplicationContext(), 
         new BearingLocalizerListener() {
       @Override
@@ -207,7 +210,8 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     mBearinglocalizer.deactivate();
     mBearinglocalizer = null;
     
-    //stopService(mBackgroundCamIntent);
+    if (mBackgroundCamRunning)
+      toggleBackgroundCam();
     
     super.onPause();
     
