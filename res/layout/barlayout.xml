@@ -15,7 +15,8 @@
 
 	<LinearLayout
 		android:id="@+id/sidebar"
-		android:layout_width="134px"
+		android:layout_width="124px"
+		android:layout_marginLeft="5px"
 		android:layout_height="fill_parent"
 		android:orientation="vertical" >
 
@@ -24,9 +25,9 @@
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
-			android:text="TextView"
+			android:text="blue - middle"
 			android:textColor="@android:color/white"
-			android:textSize="20sp" />
+			android:textSize="14sp" />
 
 		<view
 			android:id="@+id/bars"
