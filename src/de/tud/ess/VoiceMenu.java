@@ -20,6 +20,8 @@ import com.google.glass.input.VoiceInputHelper;
 import com.google.glass.util.PowerHelper;
 import com.google.glass.voice.VoiceCommand;
 import com.google.glass.voice.VoiceConfig;
+import com.google.glass.voice.VoiceConfig.Sensitivity;
+import com.google.glass.voice.network.IVoiceInputCallback;
 import com.google.glass.widget.RobotoTypefaces;
 
 public class VoiceMenu extends StubVoiceListener {
@@ -79,6 +81,7 @@ public class VoiceMenu extends StubVoiceListener {
     mActivationWord = hotword;
     mVoiceConfig = new VoiceConfig(
         c.getApplicationInfo().name, new String[] {});
+    mVoiceConfig.setShouldSaveAudio(false);
     setCommands(items);
 
     mPower = new PowerHelper(mContext);
@@ -143,9 +146,7 @@ public class VoiceMenu extends StubVoiceListener {
   public void show() {
     if (mShowing)
       return;
-   
-    Log.e("labAssist", "voice menu started");
-    
+  
     mRoot = (ViewGroup) ((ViewGroup) mContext.getWindow().getDecorView()).getRootView();   
     
     mLayout = new RelativeLayout(mContext);
