@@ -43,6 +43,12 @@
 			android:name=".LabAssist"
 			android:label="@string/app_name">
 		</activity>
+		 
+		<activity 
+			android:name=".PersuasiveFeedback"
+			android:label="@string/app_name">
+		</activity>
+		
 	</application>
 
 </manifest>

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -28,11 +29,13 @@ import android.widget.Toast;
 
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.widget.CardScrollView;
+import com.google.glass.logging.FeedbackActivity;
 import com.google.glass.widget.RobotoTypefaces;
 
 import de.tud.ess.BearingLocalizer;
 import de.tud.ess.BearingLocalizer.BearingLocalizerListener;
 import de.tud.ess.HeadImageView;
+import de.tud.ess.LogCatWriter;
 import de.tud.ess.VerticalBars;
 import de.tud.ess.VoiceMenu;
 import de.tud.ess.VoiceMenu.VoiceMenuListener;
@@ -45,8 +48,9 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   protected VoiceMenu mVoiceMenu;
   protected boolean mAttentionChallenge = false;
   protected TextView mBarText;
-  protected Process mLogcat;
   protected BearingLocalizer    mBearinglocalizer;
+  protected LogCatWriter mLogCatWriter;
+  protected FeedbackController mFeedback;
   
   protected static final String NEXT = "next";
   protected static final String PREVIOUS = "previous";
@@ -70,16 +74,8 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     /* start a logcat instance that logs the current run on the sdcard */
     String now  = new SimpleDateFormat("yyyy-MMM-dd-HH-mm-ss").format(new Date());
     String path = new File(getExternalFilesDir(null), "logcat_" + now + ".log").toString();
-    try {
-      mLogcat = Runtime.getRuntime().exec( new String[] {
-          "logcat", "-c" });
-      mLogcat.waitFor();
-      mLogcat = Runtime.getRuntime().exec( new String[] {
-          "logcat", "-v", "time", "-f", path, "-r", "1024", "-s", TAG});
-    } catch (Exception e) {
-      Log.e(TAG, "logcat execution failed: "+e.toString());
-      e.printStackTrace();
-    } 
+    mLogCatWriter = new LogCatWriter(path, TAG);
+
     Log.e(TAG, path);
     
     if (!getIntent().hasExtra(Launcher.FILENAME))
@@ -132,15 +128,17 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     mCardScrollView.setOnItemSelectedListener(new VoiceConfigChanger());
 
     mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+    
+    mFeedback = new FeedbackController();
   }
 
   @Override
   protected void onDestroy() {
     super.onDestroy();
     
-    if (mLogcat != null) {
-      mLogcat.destroy();
-      mLogcat = null;
+    if (mLogCatWriter != null) {
+      mLogCatWriter.stop();
+      mLogCatWriter = null;
     }
   }
   
@@ -151,35 +149,29 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     return str;
   }
 
+  protected int mCurPosition = 0;
   @Override
   protected void onResume() {
     super.onResume();
     mCardScrollView.activate();
     mCardScrollView.setOnItemSelectedListener(new OnItemSelectedListener(   ) {
+
       @Override
-      public void onItemSelected(AdapterView<?> parent, View view,
-          int position, long id) {
+      public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         Log.e(TAG, String.format("switch to item %d", position));
-        
+        mFeedback.onItemSelected(parent, view, position, id);
       }
 
       @Override
-      public void onNothingSelected(AdapterView<?> parent) { }
-    });
-    mVoiceMenu.setListener(this);
-    getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
-    mBearinglocalizer = new BearingLocalizer(getApplicationContext(), 
-        new BearingLocalizerListener() {
-      @Override
-      public void leftBearing() {
-        Log.e(TAG, "left");
+      public void onNothingSelected(AdapterView<?> parent) {
       }
       
-      @Override
-      public void enteredBearing() {
-        Log.e(TAG, "enter");
-      }
     });
+    
+    mBearinglocalizer = new BearingLocalizer(this, mFeedback);
+
+    mVoiceMenu.setListener(this);
+    getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
     
     Log.e(TAG, "onResume");
   }
@@ -237,8 +229,10 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   protected void markAsDone(ProtocolStep step, int pos) {
     boolean done = step.markAsDone();
     mCardScrollView.getAdapter().getView(pos, mCardScrollView.getSelectedView(), null);
-    if (done)
+    if (done) {
+      mFeedback.switchedByMarkingTo(pos + 1);
       callAnimateTo(pos + 1, ANIMATE_GOTO);
+    }
     
     Log.e(TAG, String.format("marked item %d as done (%b)", pos, done));
   }
@@ -344,6 +338,50 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     }
     
     mVoiceMenu.setCommands((String[]) c.toArray(new String[c.size()]));
+  }
+  
+  /** positive feedback when the current step needs feedback and bearing
+   * has been entered. negative feedback when step needed feedback but has 
+   * never gotten any.  */
+  public class FeedbackController implements BearingLocalizerListener {
+   
+    protected boolean mWantFeedback = false;
+    protected boolean mGotFeedback  = false;
+
+    @Override
+    public void enteredBearing() {
+      Log.e(TAG, "entered bearing");
+      
+      if (!mWantFeedback || mGotFeedback)
+        return;
+      
+      mGotFeedback = true;
+      giveFeedback(true);
+    }
+
+    public void switchedByMarkingTo(int i) {
+      if (mWantFeedback && !mGotFeedback)
+        giveFeedback(false);
+    }
+
+    @Override
+    public void leftBearing() {
+      Log.e(TAG, "left bearing");
+    }
+
+    public void onItemSelected(AdapterView<?> parent, View view, int position,
+        long id) {
+      ProtocolStep s = (ProtocolStep) parent.getItemAtPosition(position);
+      mWantFeedback  = (s!=null && s.hasFeedback());  
+    }
+  }
+  
+
+  protected void giveFeedback(boolean b) {
+    Log.e(TAG, String.format("giving feedback %b",b));
+    Intent i = new Intent(this, PersuasiveFeedback.class);
+    i.putExtra(PersuasiveFeedback.STATE_ARGUMENT, b);
+    startActivity(i);
   }
 
 }

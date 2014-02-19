@@ -40,7 +40,7 @@ DNA Extraction from Onions
 
  put 200ml beaker into waterbath for 10mins [incubate]
 
-# prepare cold water bath
+# prepare cold water bath [feedback]
 
  fill 500ml with iced water [dispense]
 
@@ -58,7 +58,7 @@ DNA Extraction from Onions
  - put funnel into 100ml beaker
  - push mixture through filter [separate]
 
-# incubate DNA
+# incubate DNA [feedback]
 
  - dispense 1.5ml of mixture into test tube [dispense]
  - combine 5ml freezing alcohol [combine]

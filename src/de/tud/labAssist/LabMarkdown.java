@@ -68,6 +68,10 @@ public class LabMarkdown extends CardScrollAdapter {
     public boolean hasZoomAbleImage() {
       return getZoomableCheckableVisitor().isZoomable;
     }
+    
+    public boolean hasFeedback() {
+      return getZoomableCheckableVisitor().isFeedback;
+    }
 
     protected CheckableZoomableVisitor getZoomableCheckableVisitor() {
       if (mChecker == null)
@@ -78,7 +82,8 @@ public class LabMarkdown extends CardScrollAdapter {
 
   public class CheckableZoomableVisitor extends Visitor {
     public boolean isCheckable = false;
-    public boolean isZoomable  = false; 
+    public boolean isZoomable  = false;
+    public boolean isFeedback  = false; 
     
     public CheckableZoomableVisitor(ProtocolStep protocolStep) {
       this.visit(protocolStep);
@@ -87,11 +92,15 @@ public class LabMarkdown extends CardScrollAdapter {
     @Override
     protected boolean visitHeader(Element e) {
       /* skip all header texts!! */
-      return false; 
+      return true; 
     }
 
     @Override
     protected boolean visitText(Element e) {
+      String s = e.getText().trim();
+      if (s.startsWith("[") && s.endsWith("]") && !isFeedback)
+        isFeedback = s.substring(1, s.length() - 1).equals("feedback");
+
       return isCheckable = true;
     }
     
@@ -133,8 +142,8 @@ public class LabMarkdown extends CardScrollAdapter {
     protected boolean visitText(Element e) {
       String s = e.getText().trim();
 
-      if (s.length() == 0 || (s.startsWith("[") && s.endsWith("]")))
-        return true;
+      if (s.length() == 0 || s.startsWith("[") && s.endsWith("]"))
+        return true;    
 
       if (!mMarkedOneAsDone) {
         e.setType(Type.STRIKETHROUGH);
@@ -404,8 +413,14 @@ public class LabMarkdown extends CardScrollAdapter {
       String txt = e.getText().trim();
 
       // a special case for classification of steps
-      if (txt.startsWith("[") && txt.endsWith("]"))
+      if (txt.startsWith("[") && txt.endsWith("]")) {
         addImage(txt.substring(1, txt.length() - 1));
+        /*String attr = txt.substring(1, txt.length() - 1);
+        if (attr.equals("feedback"))
+          ;
+        else
+          addImage(attr);*/
+      }
       else if (txt.length() == 0)
         ;
       else
