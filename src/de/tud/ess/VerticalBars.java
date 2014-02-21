@@ -2,6 +2,7 @@ package de.tud.ess;
 
 import java.util.Random;
 
+import de.tud.labAssist.LabAssist;
 import de.tud.labAssist.R;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
@@ -13,7 +14,7 @@ import android.widget.LinearLayout;
 
 public class VerticalBars extends LinearLayout {
 
-  protected static final String TAG = "VerticalBars";
+  protected static final String TAG = LabAssist.TAG;
   protected static final long BAR_FREQ_MS = 400;
   protected static final int MAX_DELAY_inS = 240;
   protected static final int MIN_DELAY_inS = 40;

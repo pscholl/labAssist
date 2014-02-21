@@ -29,7 +29,6 @@ import android.widget.Toast;
 
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.widget.CardScrollView;
-import com.google.glass.logging.FeedbackActivity;
 import com.google.glass.widget.RobotoTypefaces;
 
 import de.tud.ess.BearingLocalizer;
@@ -42,7 +41,7 @@ import de.tud.ess.VoiceMenu.VoiceMenuListener;
 import de.tud.labAssist.LabMarkdown.ProtocolStep;
 
 public class LabAssist extends FragmentActivity implements VoiceMenuListener {
-  private static final String TAG = "labAssist";
+  public static final String TAG = "labAssist";
   private AudioManager mAudio;
   protected CardScrollView mCardScrollView;
   protected VoiceMenu mVoiceMenu;
@@ -52,19 +51,19 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   protected LogCatWriter mLogCatWriter;
   protected FeedbackController mFeedback;
   
-  protected static final String NEXT = "next";
+  protected static final String NEXT = "next slide";
   protected static final String PREVIOUS = "previous";
-  protected static final String GOFORWARD = "go forward";
-  protected static final String GOBACK = "go back";
+  //protected static final String GOFORWARD = "go forward";
+  //protected static final String GOBACK = "go back";
   protected static final String DONE = "mark as done";
-  protected static final String CHECK = "check";
-  protected static final String MARK = "mark";
-  protected static final String ZOOM_IN = "enlarge";
-  protected static final String ZOOM_OUT = "shrink";
+  protected static final String CHECK = "check this step";
+  //protected static final String MARK = "mark ";
+  protected static final String ZOOM_IN = "zoom image";
+  protected static final String ZOOM_OUT = "scale down";
   protected static final String LENGTH = "bar changed";
   protected static final String COLOR = "highlight color";
   protected static final String[] STATIC_VOICECOMMANDS = new String[]
-      { NEXT, PREVIOUS, GOFORWARD, GOBACK  };
+      { NEXT, PREVIOUS  };
   protected static final String OKGLASS = "ok glass";
 
   @Override
@@ -190,7 +189,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
 
   protected Method mAnimateFunc;
   protected static final int ANIMATE_GOTO = 2;
-  protected static final float SCALE_STEP = 0.5F;
+  protected static final float SCALE_STEP = 1.F;
   
   public class LabOnClickListener implements OnItemClickListener {
     @Override
@@ -260,11 +259,11 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       HeadImageView im = (HeadImageView) mCardScrollView
           .getSelectedView().findViewById(R.id.imview);
       
-      if (GOBACK.equals(literal) || PREVIOUS.equals(literal))
+      if (PREVIOUS.equals(literal))
         callAnimateTo(cur - 1, ANIMATE_GOTO);
-      else if (GOFORWARD.equals(literal) || NEXT.equals(literal))
+      else if (NEXT.equals(literal))
         callAnimateTo(cur + 1, ANIMATE_GOTO);
-      else if (CHECK.equals(literal) || DONE.equals(literal) || MARK.equals(literal))
+      else if (CHECK.equals(literal) || DONE.equals(literal) ) //|| MARK.equals(literal))
         markAsDone(step, cur);
       else if (ZOOM_IN.equals(literal))
         im.setScaleFactor( im.getScaleFactor() + SCALE_STEP );
@@ -328,7 +327,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       c.add(ZOOM_OUT);
     }
     if (s.hasCheckableItems()) {
-      c.add(MARK);
+      //c.add(MARK);
       c.add(CHECK);
       c.add(DONE);
     }
@@ -362,6 +361,8 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     public void switchedByMarkingTo(int i) {
       if (mWantFeedback && !mGotFeedback)
         giveFeedback(false);
+      
+      mGotFeedback = false;
     }
 
     @Override
@@ -372,7 +373,8 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     public void onItemSelected(AdapterView<?> parent, View view, int position,
         long id) {
       ProtocolStep s = (ProtocolStep) parent.getItemAtPosition(position);
-      mWantFeedback  = (s!=null && s.hasFeedback());  
+      mWantFeedback  = (s!=null && s.hasFeedback());
+      mGotFeedback   = false;
     }
   }
   
