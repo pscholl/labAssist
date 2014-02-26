@@ -36,7 +36,9 @@ public class HeadImageView extends ImageView implements SensorEventListener {
       getAnimation().cancel();
     
     if (factor < 1)
-      factor=1;
+      factor = 1;
+    else if (factor > 2)
+      factor = 2;
     
     deactivate();
     

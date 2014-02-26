@@ -52,20 +52,16 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   protected Intent mBackgroundCamIntent;
   protected boolean mBackgroundCamRunning = false;
   
-  protected static final String NEXT = "next";
+  protected static final String NEXT = "next slide";
   protected static final String PREVIOUS = "previous";
-  protected static final String GOFORWARD = "go forward";
-  protected static final String GOBACK = "go back";
   protected static final String DONE = "mark as done";
-  protected static final String CHECK = "check";
-  protected static final String MARK = "mark";
-  protected static final String ZOOM_IN = "enlarge";
-  protected static final String ZOOM_OUT = "shrink";
-  protected static final String BAR = "bar";
-  protected static final String COLOR = "colored";
+  protected static final String CHECK = "check this step";
+  protected static final String ZOOM_IN = "enlarge image";
+  protected static final String ZOOM_OUT = "scale down";
+  protected static final String BAR = "bar changed";
   protected static final String TOGGLEREC = "toggle video recording";
   protected static final String[] STATIC_VOICECOMMANDS = new String[]
-      { NEXT, PREVIOUS, GOFORWARD, GOBACK, TOGGLEREC  };
+      { NEXT, PREVIOUS, TOGGLEREC  };
   protected static final String OKGLASS = "ok glass";
   protected static final String CAM_SERVICE = "de.tud.ess.CameraService";
 
@@ -288,20 +284,18 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       HeadImageView im = (HeadImageView) mCardScrollView
           .getSelectedView().findViewById(R.id.imview);
       
-      if (GOBACK.equals(literal) || PREVIOUS.equals(literal))
+      if (PREVIOUS.equals(literal))
         callAnimateTo(cur - 1, ANIMATE_GOTO);
-      else if (GOFORWARD.equals(literal) || NEXT.equals(literal))
+      else if (NEXT.equals(literal))
         callAnimateTo(cur + 1, ANIMATE_GOTO);
-      else if (CHECK.equals(literal) || DONE.equals(literal) || MARK.equals(literal))
+      else if (CHECK.equals(literal) || DONE.equals(literal))
         markAsDone(step, cur);
       else if (ZOOM_IN.equals(literal))
         im.setScaleFactor( im.getScaleFactor() + SCALE_STEP );
       else if (ZOOM_OUT.equals(literal))
         im.setScaleFactor( im.getScaleFactor() - SCALE_STEP );
-      else if (COLOR.equals(literal))
-        toggleBarText(true,false);
       else if (BAR.equals(literal))
-        toggleBarText(false,true);
+        toggleBarText(true,true);
       else if (OKGLASS.equals(literal))
         toggleBarText(true, true);
       else if (TOGGLEREC.equals(literal))
@@ -367,12 +361,10 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       c.add(ZOOM_OUT);
     }
     if (s.hasCheckableItems()) {
-      c.add(MARK);
       c.add(CHECK);
       c.add(DONE);
     }
     if (mAttentionChallenge ) {
-      c.add(COLOR);
       c.add(BAR);
     }
     
