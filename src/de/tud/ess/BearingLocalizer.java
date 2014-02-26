@@ -7,8 +7,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.view.View;
-import android.widget.AdapterView;
 
 public class BearingLocalizer implements SensorEventListener {
   

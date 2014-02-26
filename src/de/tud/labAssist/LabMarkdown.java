@@ -32,16 +32,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.google.android.glass.widget.CardScrollAdapter;
-import com.google.glass.widget.RobotoTypefaces;
-
 import de.tud.ess.HeadImageView;
 
-public class LabMarkdown extends CardScrollAdapter {
+public class LabMarkdown extends BaseAdapter {
   protected File mFile;
   protected Document mDoc;
   protected List<ProtocolStep> mElements;
@@ -53,8 +50,8 @@ public class LabMarkdown extends CardScrollAdapter {
   public class ProtocolStep extends LinkedList<Element> {
     protected CheckableZoomableVisitor mChecker;
 
-    public View toView(View v) {
-      return new ToViewVisitor(this, v).getView();
+    public View toView(View v, ViewGroup parent) {
+      return new ToViewVisitor(this, v, parent).getView();
     }
 
     public boolean markAsDone() {
@@ -269,9 +266,9 @@ public class LabMarkdown extends CardScrollAdapter {
     protected TextView mText;
     protected ViewGroup mFooter;
 
-    public ToViewVisitor(ProtocolStep p, View v) {
+    public ToViewVisitor(ProtocolStep p, View v, ViewGroup parent) {
       if (v != null) mView = (ViewGroup) v;
-      else  mView = (ViewGroup) mInflater.inflate(R.layout.card, null);
+      else  mView = (ViewGroup) mInflater.inflate(R.layout.card, parent, false);
       
       mList = (ViewGroup) mView.findViewById(R.id.list);
       mList.removeAllViews();
@@ -505,7 +502,7 @@ public class LabMarkdown extends CardScrollAdapter {
     mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     mAssets = c.getAssets();
     mFileDir = c.getExternalFilesDir(null);
-    mRoboto = Typeface.createFromAsset(c.getAssets(), "Roboto-Thin.ttf");
+    mRoboto = Typeface.createFromAsset(mAssets, "Roboto-Thin.ttf");
   }
 
   protected static String readFileAsString(String string) throws IOException {
@@ -521,12 +518,10 @@ public class LabMarkdown extends CardScrollAdapter {
     return fileData.toString();
   }
 
-  @Override
   public int findIdPosition(Object key) {
     return findItemPosition(key);
   }
 
-  @Override
   public int findItemPosition(Object item) {
     return -1;
   }
@@ -544,6 +539,12 @@ public class LabMarkdown extends CardScrollAdapter {
   @Override
   public View getView(int idx, View v, ViewGroup vg) {
     ProtocolStep ps = mElements.get(idx);
-    return ps.toView(v);
+    return ps.toView(v, vg);
+  }
+
+  @Override
+  public long getItemId(int position) {
+    Log.e("abc", "called getItemid");
+    return 0;
   }
 }

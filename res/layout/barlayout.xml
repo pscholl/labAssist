@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="640px"
-	android:layout_height="360px"
+	android:id="@+id/mainView"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
 	android:clipChildren="true"
 	android:orientation="horizontal" >
 
-	<view
-		xmlns:android="http://schemas.android.com/apk/res/android"
+	<AdapterViewFlipper
 		android:id="@+id/cardscroll"
-		android:layout_width="506px"
+		android:layout_width="0dp"
 		android:layout_height="fill_parent"
-		android:layout_gravity="center"
-		class="com.google.android.glass.widget.CardScrollView" />
+		android:layout_weight=".79"
+		android:layout_gravity="center" />
 
 	<LinearLayout
 		android:id="@+id/sidebar"
-		android:layout_width="124px"
-		android:layout_marginLeft="5px"
+		android:layout_width="0dp"
 		android:layout_height="fill_parent"
+		android:layout_weight=".31"
+		android:layout_marginLeft="5px"
 		android:orientation="vertical" >
 
 		<TextView

@@ -20,21 +20,23 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.AdapterViewFlipper;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.glass.media.Sounds;
-import com.google.android.glass.widget.CardScrollView;
 
 import de.tud.ess.BearingLocalizer;
 import de.tud.ess.BearingLocalizer.BearingLocalizerListener;
 import de.tud.ess.HeadImageView;
 import de.tud.ess.LogCatWriter;
+import de.tud.ess.OnSwipeTouchListener;
 import de.tud.ess.VerticalBars;
 import de.tud.ess.VoiceMenu;
 import de.tud.ess.VoiceMenu.VoiceMenuListener;
@@ -43,13 +45,15 @@ import de.tud.labAssist.LabMarkdown.ProtocolStep;
 public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   public static final String TAG = "labAssist";
   private AudioManager mAudio;
-  protected CardScrollView mCardScrollView;
+  protected AdapterViewFlipper mCardScrollView;
   protected VoiceMenu mVoiceMenu;
   protected boolean mAttentionChallenge = false;
   protected TextView mBarText;
   protected BearingLocalizer    mBearinglocalizer;
   protected LogCatWriter mLogCatWriter;
   protected FeedbackController mFeedback;
+  protected View mMainView;
+  protected OnSwipeTouchListener mSwipeTouchListener;
   
   protected static final String NEXT = "next slide";
   protected static final String PREVIOUS = "previous";
@@ -112,25 +116,49 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     
     if (file.contains("Lego")) {
       setContentView(R.layout.barlayout);
+      mMainView = findViewById(R.id.mainView);
       mAttentionChallenge = true;
       mBarText = (TextView) findViewById(R.id.bartext);
       mBarText.setTypeface(Typeface.createFromAsset(getAssets(), "Roboto-Thin.ttf"));
-    } else
+    } else {
       setContentView(R.layout.main);
+      mMainView = findViewById(R.id.mainView);
+    }
 
     mVoiceMenu = new VoiceMenu(this, OKGLASS);
     
     LabMarkdown lm = new LabMarkdown(this, mdown);
-    mCardScrollView = (CardScrollView) findViewById(R.id.cardscroll);
+    mCardScrollView = (AdapterViewFlipper) findViewById(R.id.cardscroll);
     mCardScrollView.setAdapter(lm);
     mCardScrollView.setOnItemClickListener(new LabOnClickListener());
     mCardScrollView.setOnItemSelectedListener(new VoiceConfigChanger());
+    
+    mSwipeTouchListener = new OnSwipeTouchListener(this) {
+      @Override
+      public void onSwipeLeft() {
+        mCardScrollView.showPrevious();
+      }
+      @Override
+      public void onSwipeRight() {
+        mCardScrollView.showNext();
+      }
+    };
 
     mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
     
     mFeedback = new FeedbackController();
   }
-
+  
+  @Override
+  public boolean onTouchEvent(MotionEvent event) {
+    return mSwipeTouchListener.onTouch(mCardScrollView, event);
+  }
+  
+  @Override
+  public boolean onGenericMotionEvent(MotionEvent event) {
+    return mSwipeTouchListener.onTouch(mCardScrollView, event);
+  }
+  
   @Override
   protected void onDestroy() {
     super.onDestroy();
@@ -148,11 +176,9 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     return str;
   }
 
-  protected int mCurPosition = 0;
   @Override
   protected void onResume() {
     super.onResume();
-    mCardScrollView.activate();
     mCardScrollView.setOnItemSelectedListener(new OnItemSelectedListener(   ) {
 
       @Override
@@ -167,7 +193,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       
     });
     
-    mBearinglocalizer = new BearingLocalizer(this, mFeedback);
+    //mBearinglocalizer = new BearingLocalizer(this, mFeedback);
 
     mVoiceMenu.setListener(this);
     getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -179,8 +205,8 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   protected void onPause() {
     mVoiceMenu.setListener(null);
     mCardScrollView.setOnItemClickListener(null);
-    mCardScrollView.deactivate();
-    mBearinglocalizer.deactivate();
+    if (mBearinglocalizer != null)
+      mBearinglocalizer.deactivate();
     mBearinglocalizer = null;
     super.onPause();
     
@@ -208,29 +234,12 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
 
   }
 
-  protected void callAnimateTo(int position, int animate) {
-    if (mAnimateFunc == null)
-      for (Method m : mCardScrollView.getClass().getDeclaredMethods())
-        if (m.getName().equals("animateToSelection")) {
-          mAnimateFunc = m;
-          break;
-        }
-    
-    try {
-      mAnimateFunc.invoke(mCardScrollView, position, animate);
-    } catch (Exception e) {
-      Log.e(TAG, e.toString());
-    }
-    
-    //Log.e(TAG, String.format("switch to item (%d)", position));
-  }
-
   protected void markAsDone(ProtocolStep step, int pos) {
     boolean done = step.markAsDone();
     mCardScrollView.getAdapter().getView(pos, mCardScrollView.getSelectedView(), null);
     if (done) {
       mFeedback.switchedByMarkingTo(pos + 1);
-      callAnimateTo(pos + 1, ANIMATE_GOTO);
+      mCardScrollView.showNext();
     }
     
     Log.e(TAG, String.format("marked item %d as done (%b)", pos, done));
@@ -254,15 +263,16 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   public void onItemSelected(String literal) {
     try {
       int cur = mCardScrollView.getSelectedItemPosition();
+      Log.e("cv", String.format("cure position: %d", cur));
       ProtocolStep step = (ProtocolStep) mCardScrollView
           .getItemAtPosition(cur);
       HeadImageView im = (HeadImageView) mCardScrollView
           .getSelectedView().findViewById(R.id.imview);
       
       if (PREVIOUS.equals(literal))
-        callAnimateTo(cur - 1, ANIMATE_GOTO);
+        mCardScrollView.showNext();
       else if (NEXT.equals(literal))
-        callAnimateTo(cur + 1, ANIMATE_GOTO);
+        mCardScrollView.showPrevious();
       else if (CHECK.equals(literal) || DONE.equals(literal) ) //|| MARK.equals(literal))
         markAsDone(step, cur);
       else if (ZOOM_IN.equals(literal))
@@ -378,12 +388,11 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     }
   }
   
-
   protected void giveFeedback(boolean b) {
     Log.e(TAG, String.format("giving feedback %b",b));
     Intent i = new Intent(this, PersuasiveFeedback.class);
     i.putExtra(PersuasiveFeedback.STATE_ARGUMENT, b);
     startActivity(i);
   }
-
+  
 }
