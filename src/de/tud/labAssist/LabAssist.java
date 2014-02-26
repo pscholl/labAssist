@@ -143,7 +143,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     mBackgroundCamIntent.putExtra(CameraService.Parameters.RATE, 5.f);
     
     mBackgroundCamRunning = false;
-    toggleBackgroundCam();
+    //toggleBackgroundCam();
   }
 
   @Override

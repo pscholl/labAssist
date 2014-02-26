@@ -120,6 +120,22 @@ public class LabMarkdown extends CardScrollAdapter {
     }
     
     @Override
+    protected boolean visitParagraph(Element e) {
+      if (e.getChild(0).getType() == Type.STRIKETHROUGH)
+        return false; // already marked this one
+      
+      if (!mMarkedOneAsDone)
+        return (mMarkedOneAsDone = true);
+      else // if we get here, there is another paragraph to be marked!
+        return (mProtocolStepDone = false);
+    }
+    
+    @Override
+    protected boolean visitListItem(Element e) {
+      return visitParagraph(e);
+    }
+    
+    @Override
     protected boolean visitEmphasised(Element e) {
       return visitText(e);
     }
@@ -135,17 +151,8 @@ public class LabMarkdown extends CardScrollAdapter {
 
       if (s.length() == 0 || (s.startsWith("[") && s.endsWith("]")))
         return true;
-
-      if (!mMarkedOneAsDone) {
-        e.setType(Type.STRIKETHROUGH);
-        mMarkedOneAsDone = true;
-      } else {
-        /*
-         * if we visit another TEXT in this run, then there is another step that
-         * needs to be marked as done.
-         */
-        mProtocolStepDone = false;
-      }
+      
+      e.setType(Type.STRIKETHROUGH);
       return true;
     }
 
