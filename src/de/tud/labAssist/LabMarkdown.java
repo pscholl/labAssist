@@ -409,7 +409,7 @@ public class LabMarkdown extends CardScrollAdapter {
       else if (txt.length() == 0)
         ;
       else
-        appendText(txt, new StyleSpan(Typeface.NORMAL));
+        appendText(e.getText(), new StyleSpan(Typeface.NORMAL));
 
       return true;
     }
