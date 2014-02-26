@@ -505,7 +505,7 @@ public class LabMarkdown extends CardScrollAdapter {
     mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     mAssets = c.getAssets();
     mFileDir = c.getExternalFilesDir(null);
-    mRoboto = RobotoTypefaces.getTypeface(c, RobotoTypefaces.WEIGHT_THIN);
+    mRoboto = Typeface.createFromAsset(c.getAssets(), "Roboto-Thin.ttf");
   }
 
   protected static String readFileAsString(String string) throws IOException {
