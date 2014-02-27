@@ -82,6 +82,7 @@ public class VoiceMenu extends StubVoiceListener {
     mActivationWord = hotword;
     mVoiceConfig = new VoiceConfig(c.getApplicationInfo().name, new String[] {});
     setCommands(items);
+    mVoiceConfig.setShouldSaveAudio(false);
 
     mPower = new PowerHelper(mContext);
     mAudio = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
