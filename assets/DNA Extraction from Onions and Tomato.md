@@ -1,8 +1,8 @@
 DNA Extraktion aus Zwiebeln und Tomaten
 
-# Lösung präparieren
+# Lösung (Zwiebel) präparieren
 
- - kombiniere 50ml lauwarmes Wasser, 1/2 Teelöffel Salz und 3ml Geschirrspülmittel in 200ml Becherglas [combine]
+ - kombiniere 50ml lauwarmes Wasser, 1/2 Teelöffel Salz und 3ml Geschirrspülmittel in einem 200ml Becherglas (Zwiebel) [combine]
  - gut verrühren [incubate]
 
 # Zwiebel vorbereiten
@@ -12,34 +12,37 @@ DNA Extraktion aus Zwiebeln und Tomaten
 
 # Zwiebel-Mixtur herstellen
 
- - in 200ml Becherglas mit Lösung vermischen [combine]
+ - in 200ml Becherglas (Zwiebel) mit Lösung vermischen [combine]
  - 1ml Feinwaschmittel hinzugeben [combine]
- - 30sec lang rühren [incubate]
+ - gut verrühren [incubate]
 
 # Zwiebel-Mixtur aufheizen
 
- 200ml Becherglas für 10min in heißes Wasserbad tauchen [incubate]
+ 200ml Becherglas (ZWiebel) für ca. 10min in das heiße Wasserbad tauchen [incubate]
 
 # Lösung (Tomate) präparieren
 
  - lösungsmittel erneut für Tomate vorbereiten
- - kombiniere 50ml lauwarmes Wasser, 1/2 Teelöffel Salz und 3ml Geschirrspülmittel in 200ml Becherglas [combine]
+ - kombiniere 50ml lauwarmes Wasser, 1/2 Teelöffel Salz und 3ml Geschirrspülmittel in einem 200ml Becherglas [combine]
  - gut verrühren [incubate]
 
 # Tomate vorbereiten
 
  - Tomate in 1cm-große Stücke schneiden [incubate]
- - in 200ml Becherglas geben [combine]
+
+# Tomaten-Mixture herstellen
+
+ - in 200ml Becherglas (Tomate) mit Lösung vermischen [combine]
  - 1ml Feinwaschmittel hinzugeben [combine]
- - 30sec lang rühren [incubate]
+ - gut verrühren [incubate]
 
 # Zwiebel-Mixtur abkühlen
 
- 200ml Becherglas (Zwiebel) für 5min in kaltes Wasserbad tauchen [incubate]
+ 200ml Becherglas (Zwiebel) für ca. 5min in Eiswasser tauchen [incubate]
 
 # Tomaten-Mixtur aufheizen
 
- 200ml Becherglas (Tomate) für 10min in heißes Wasserbad tauchen [incubate]
+ 200ml Becherglas (Tomate) für ca. 10min in das heiße Wasserbad tauchen [incubate]
 
 # Zwiebel-Mixtur homogenisieren
 
@@ -49,22 +52,22 @@ DNA Extraktion aus Zwiebeln und Tomaten
 
  - Filter in Trichter stellen
  - Trichter in 100ml Becherglas stellen
- - Mixtur vorsichtig durch Filter pressen [separate]
+ - Zwiebel-Mixtur vorsichtig durch Filter pressen [separate]
 
 # DNA inkubieren
 
  - 1.5ml der Zwiebel-Mixtur in Reagenzglas füllen [dispense]
  - mit 5ml kaltem Ethanol kombinieren [combine]
- - Reagenzglas schließen
+ - Reagenzglas mit einem Korken schließen
 
 # Detektion
  
- - Reagenzglas mehrfach vorsichtig auf den Kopf stellen [incubate]
+ - Reagenzglas (Zwiebel) mehrfach vorsichtig auf den Kopf stellen [incubate]
  - DNA sollte als weiße Streifchen sichtbar werden [detect]
 
 # Tomaten-Mixtur abkühlen
 
- 200ml Becherglas (Tomate) für 5min in kaltes Wasserbad tauchen [incubate]
+ 200ml Becherglas (Tomate) für 5min in Eiswasser tauchen [incubate]
 
 # Tomaten-Mixtur homogenisieren
 
@@ -73,14 +76,14 @@ DNA Extraktion aus Zwiebeln und Tomaten
 # Tomaten-Mixtur trennen
 
  - Filter in Trichter stellen
- - Trichter in 100ml Becherglas stellen
- - Mixtur vorsichtig durch Filter pressen [separate]
+ - Trichter in 100ml Becherglas (Tomate) stellen
+ - Tomaten-Mixtur vorsichtig durch Filter pressen [separate]
 
 # Tomaten DNA inkubieren
 
- - 1.5ml der Zwiebel-Mixtur in Reagenzglas füllen [dispense]
+ - 1.5ml der Tomanten-Mixtur in Reagenzglas füllen [dispense]
  - mit 5ml kaltem Ethanol kombinieren [combine]
- - Reagenzglas schließen
+ - Reagenzglas mit Korken schließen
 
 # Detektion
  

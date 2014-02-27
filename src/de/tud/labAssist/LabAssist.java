@@ -61,7 +61,8 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   protected static final String BAR = "bar changed";
   protected static final String TOGGLEREC = "toggle video recording";
   protected static final String[] STATIC_VOICECOMMANDS = new String[]
-      { NEXT, PREVIOUS, TOGGLEREC  };
+      //{ NEXT, PREVIOUS, TOGGLEREC  };
+      {NEXT, PREVIOUS };
   protected static final String OKGLASS = "ok glass";
   protected static final String CAM_SERVICE = "de.tud.ess.CameraService";
 
