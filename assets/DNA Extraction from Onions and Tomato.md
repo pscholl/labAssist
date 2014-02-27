@@ -1,5 +1,12 @@
 DNA Extraktion aus Zwiebeln und Tomaten
 
+# EVA
+
+![](pos1.jpg)
+
+Hallo, ich bin Eva, Ihre elektronisch-virtuelle Assistentin. Ich möchte Ihnen noch eine Besonderheit zum Versuch erklären. Bei der oft gebrauchten Katalysator-Flüssigkeit besteht das geringe Risiko, dass sie durch verdampfen bei Raumtemperatur die Atemwege reizt. Selbstverständlich ist Ihre Gesundheit nicht gefährdet, packen Sie bitte die Katalysator-Flüssigkeit dennoch nach jedem Gebrauch wieder zurück in den Kühlschrank. Bei allen anderen Materialien ist dies nicht erforderlich. 
+
+
 # Lösung (Zwiebel) präparieren
 
  - kombiniere 50ml lauwarmes Wasser, 1/2 Teelöffel Salz und 3ml Geschirrspülmittel in einem 200ml Becherglas (Zwiebel) [combine]

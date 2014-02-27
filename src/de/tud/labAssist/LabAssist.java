@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.security.spec.MGF1ParameterSpec;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -148,16 +149,18 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     return str;
   }
 
-  protected int mCurPosition = 0;
   @Override
   protected void onResume() {
     super.onResume();
     mCardScrollView.activate();
     mCardScrollView.setOnItemSelectedListener(new OnItemSelectedListener(   ) {
-
       @Override
       public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         Log.e(TAG, String.format("switch to item %d", position));
+
+        HeadImageView v = (HeadImageView) view.findViewById(R.id.imview);
+        if (v!= null) v.setScaleFactor(1);
+        
         mFeedback.onItemSelected(parent, view, position, id);
       }
 
@@ -344,25 +347,17 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
    * never gotten any.  */
   public class FeedbackController implements BearingLocalizerListener {
    
-    protected boolean mWantFeedback = false;
-    protected boolean mGotFeedback  = false;
+    protected boolean mWantFeedback   = false, 
+                      mEnteredBearing = false,
+                      mHadFeedback    = false;
 
     @Override
     public void enteredBearing() {
       Log.e(TAG, "entered bearing");
-      
-      if (!mWantFeedback || mGotFeedback)
-        return;
-      
-      mGotFeedback = true;
-      giveFeedback(true);
+      mEnteredBearing = true;
     }
 
     public void switchedByMarkingTo(int i) {
-      if (mWantFeedback && !mGotFeedback)
-        giveFeedback(false);
-      
-      mGotFeedback = false;
     }
 
     @Override
@@ -372,9 +367,14 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
 
     public void onItemSelected(AdapterView<?> parent, View view, int position,
         long id) {
+      if (mWantFeedback && !mHadFeedback) {
+        mHadFeedback = true;
+        giveFeedback(mEnteredBearing);
+      }
+      
       ProtocolStep s = (ProtocolStep) parent.getItemAtPosition(position);
       mWantFeedback  = (s!=null && s.hasFeedback());
-      mGotFeedback   = false;
+      mHadFeedback   = false;
     }
   }
   

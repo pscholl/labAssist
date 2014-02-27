@@ -31,7 +31,7 @@ public class HeadScrollView extends ScrollView implements SensorEventListener {
   private SensorManager mSensorManager;
   private float mStartX = 10;
   private static final int SENSOR_RATE_uS = 200000;
-  private static final float VELOCITY = -1000; // from rad to pixels
+  private static final float VELOCITY = -4000; // from rad to pixels
   
   public void activate() {
     if (mSensorManager == null) {
