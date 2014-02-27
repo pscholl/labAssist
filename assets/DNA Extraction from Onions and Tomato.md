@@ -1,5 +1,9 @@
 DNA Extraktion aus Zwiebeln und Tomaten
 
+# EVA
+
+![](pos1.jpg)
+
 # Lösung (Zwiebel) präparieren
 
  - kombiniere 50ml lauwarmes Wasser, 1/2 Teelöffel Salz und 3ml Geschirrspülmittel in einem 200ml Becherglas (Zwiebel) [combine]

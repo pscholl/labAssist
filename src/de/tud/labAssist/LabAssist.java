@@ -136,11 +136,22 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     mSwipeTouchListener = new OnSwipeTouchListener(this) {
       @Override
       public void onSwipeLeft() {
-        mCardScrollView.showPrevious();
+        mCardScrollView.showNext();
       }
       @Override
       public void onSwipeRight() {
-        mCardScrollView.showNext();
+        mCardScrollView.showPrevious();
+      }
+      
+      @Override
+      public void onSwipeBottom() {
+        finish();
+      }
+      
+      @Override
+      public boolean onDoubleTapp() {
+        toggleBarText(true, true);
+        return true;
       }
     };
 
@@ -150,13 +161,9 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   }
   
   @Override
-  public boolean onTouchEvent(MotionEvent event) {
-    return mSwipeTouchListener.onTouch(mCardScrollView, event);
-  }
-  
-  @Override
-  public boolean onGenericMotionEvent(MotionEvent event) {
-    return mSwipeTouchListener.onTouch(mCardScrollView, event);
+  public boolean dispatchTouchEvent(MotionEvent ev) {
+    mSwipeTouchListener.onTouch(getCurrentFocus(), ev);
+    return super.dispatchTouchEvent(ev);
   }
   
   @Override
