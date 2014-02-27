@@ -47,6 +47,12 @@
 
  **previous** und **next slide** bitte nur im Notfall einsetzen.
 
+# Eva
+
+ ![](pos1.jpg)
+
+ Eva - die virtuelle Hilfe - wird ihnen während des Versuchs weitere Hinweise geben.
+
 # und dankeschön
 
  Viel Spaß bei der DNA-Isolation!

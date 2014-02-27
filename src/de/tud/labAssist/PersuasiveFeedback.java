@@ -1,6 +1,9 @@
 package de.tud.labAssist;
 
+import java.util.Locale;
+
 import com.google.android.glass.media.Sounds;
+import com.google.glass.widget.RobotoTypefaces;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -9,7 +12,11 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.TextToSpeech.OnInitListener;
+import android.view.TextureView;
 import android.view.View;
+import android.widget.TextView;
 
 public class PersuasiveFeedback extends Activity {
 
@@ -17,15 +24,22 @@ public class PersuasiveFeedback extends Activity {
   protected View mImOut;
   private AudioManager mAudio;
   protected int mSoundEffect;
+  private TextToSpeech mTts;
+  protected TextView mTextView;
   final static protected int mAnimationDuration = 2000;
   final static protected int mStartupDelay = 500;
   public static final String STATE_ARGUMENT = "state";
+  public static final String NUM_ARGUMENT = "num";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     
     boolean is_optimistic = getIntent().getBooleanExtra(STATE_ARGUMENT, false);
+    int num_feedback = getIntent().getIntExtra(NUM_ARGUMENT, 0);
+    
+    if (num_feedback == 0)
+      is_optimistic = true;
       
     if (is_optimistic) {
       setContentView(R.layout.persuade_positive);
@@ -35,9 +49,23 @@ public class PersuasiveFeedback extends Activity {
       mSoundEffect = Sounds.ERROR;
     }
     
+    mTextView = (TextView) findViewById(R.id.textView);
+    mTextView.setTypeface(RobotoTypefaces.getTypeface(this, RobotoTypefaces.WEIGHT_THIN));
+    
+    if (num_feedback == 0)
+      mTextView.setText("Katalysator zurückgestellt?");
+    
     mImIn  = findViewById(R.id.image_in);
     mImOut = findViewById(R.id.image_out);
     mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+    
+    mTts = new TextToSpeech(this, new OnInitListener() {
+      @Override
+      public void onInit(int status) {
+        mTts.setLanguage(Locale.GERMAN);
+        mTts.speak((String) mTextView.getText(), TextToSpeech.QUEUE_FLUSH, null);
+      }
+    });
   }
   
   protected void onResume() {
@@ -47,6 +75,7 @@ public class PersuasiveFeedback extends Activity {
       @Override
       public void run() { crossfade(); }
     }, mStartupDelay);
+    
   }
   
   protected void crossfade() {
@@ -75,6 +104,6 @@ public class PersuasiveFeedback extends Activity {
       }
     }, mStartupDelay * 2 + mAnimationDuration);
     
-    mAudio.playSoundEffect(mSoundEffect);
+    //mAudio.playSoundEffect(mSoundEffect);
   }
 }

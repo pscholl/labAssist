@@ -19,4 +19,14 @@
 		android:src="@drawable/neg2"
 		android:visibility="gone" />
 
+	<TextView
+		android:id="@+id/textView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="top|center_horizontal"
+		android:layout_marginBottom="10dp"
+		android:text="@string/kat_neg"
+		android:textColor="@color/white"
+		android:textSize="20sp" />
+
 </FrameLayout>

@@ -345,16 +345,18 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   /** positive feedback when the current step needs feedback and bearing
    * has been entered. negative feedback when step needed feedback but has 
    * never gotten any.  */
+  protected int mNumFeedback = 0;
   public class FeedbackController implements BearingLocalizerListener {
    
     protected boolean mWantFeedback   = false, 
-                      mEnteredBearing = false,
                       mHadFeedback    = false;
+    protected int mEnteredBearing     = 0,
+                  mLeftBearing        = 0;        
 
     @Override
     public void enteredBearing() {
       Log.e(TAG, "entered bearing");
-      mEnteredBearing = true;
+      mEnteredBearing += 1;
     }
 
     public void switchedByMarkingTo(int i) {
@@ -363,18 +365,20 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     @Override
     public void leftBearing() {
       Log.e(TAG, "left bearing");
+      mLeftBearing += 1;
     }
 
     public void onItemSelected(AdapterView<?> parent, View view, int position,
         long id) {
       if (mWantFeedback && !mHadFeedback) {
         mHadFeedback = true;
-        giveFeedback(mEnteredBearing);
+        giveFeedback((mEnteredBearing>=2) && (mLeftBearing>=1));
       }
       
       ProtocolStep s = (ProtocolStep) parent.getItemAtPosition(position);
       mWantFeedback  = (s!=null && s.hasFeedback());
       mHadFeedback   = false;
+      mEnteredBearing = mLeftBearing = 0;
     }
   }
   
@@ -383,6 +387,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     Log.e(TAG, String.format("giving feedback %b",b));
     Intent i = new Intent(this, PersuasiveFeedback.class);
     i.putExtra(PersuasiveFeedback.STATE_ARGUMENT, b);
+    i.putExtra(PersuasiveFeedback.NUM_ARGUMENT, mNumFeedback++);
     startActivity(i);
   }
 

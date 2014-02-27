@@ -19,4 +19,8 @@
 		<item>item 2</item>
 		<item>item 3</item>
 	</string-array>
+
+	<string name="kat_neg">Katalysator bitte in den Kühlschrank stellen.</string>
+	<string name="kat_pos">Katalysator richtig zurückgestellt.</string>
+
 </resources>
