@@ -16,10 +16,6 @@ DNA Extraktion aus Zwiebeln und Tomaten
  - 1ml Feinwaschmittel hinzugeben [combine]
  - 30sec lang rühren [incubate]
 
-# Katalysator 
-
- einen Tropfen Katalysator Flüssigkeit hinzufügen [combine]
-
 # Zwiebel-Mixtur aufheizen
 
  200ml Becherglas für 10min in heißes Wasserbad tauchen [incubate]
@@ -30,20 +26,12 @@ DNA Extraktion aus Zwiebeln und Tomaten
  - kombiniere 50ml lauwarmes Wasser, 1/2 Teelöffel Salz und 3ml Geschirrspülmittel in 200ml Becherglas [combine]
  - gut verrühren [incubate]
 
-# Katalysator 
-
- einen Tropfen Katalysator Flüssigkeit hinzufügen [combine]
-
 # Tomate vorbereiten
 
  - Tomate in 1cm-große Stücke schneiden [incubate]
  - in 200ml Becherglas geben [combine]
  - 1ml Feinwaschmittel hinzugeben [combine]
  - 30sec lang rühren [incubate]
-
-# Katalysator 
-
- einen Tropfen Katalysator Flüssigkeit hinzufügen [combine]
 
 # Zwiebel-Mixtur abkühlen
 
@@ -53,14 +41,9 @@ DNA Extraktion aus Zwiebeln und Tomaten
 
  200ml Becherglas (Tomate) für 10min in heißes Wasserbad tauchen [incubate]
 
-# Katalysator 
-
- einen Tropfen Katalysator in Zwiebel-Mixtur hinzufügen
-[combine]
-
 # Zwiebel-Mixtur homogenisieren
 
- Mixtur 1min lang mit Mörser zerkleinern [incubate]
+ Zwiebel-Mixtur 1min lang mit Mörser zerkleinern [incubate]
 
 # Zwiebel-Mixtur trennen
 
@@ -82,11 +65,6 @@ DNA Extraktion aus Zwiebeln und Tomaten
 # Tomaten-Mixtur abkühlen
 
  200ml Becherglas (Tomate) für 5min in kaltes Wasserbad tauchen [incubate]
-
-# Katalysator 
-
- einen Tropfen Katalysator in Zwiebel-Mixtur Flüssigkeit hinzufügen
-[combine]
 
 # Tomaten-Mixtur homogenisieren
 
