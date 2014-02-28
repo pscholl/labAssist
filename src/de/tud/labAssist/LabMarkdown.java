@@ -48,7 +48,7 @@ public class LabMarkdown extends CardScrollAdapter {
   protected Typeface mRoboto;
   protected LayoutInflater mInflater;
   protected AssetManager mAssets;
-  protected File mFileDir; 
+  protected File mFileDir;
 
   public class ProtocolStep extends LinkedList<Element> {
     protected CheckableZoomableVisitor mChecker;
@@ -64,11 +64,11 @@ public class LabMarkdown extends CardScrollAdapter {
     public boolean hasCheckableItems() {
       return getZoomableCheckableVisitor().isCheckable;
     }
-    
+
     public boolean hasZoomAbleImage() {
       return getZoomableCheckableVisitor().isZoomable;
     }
-    
+
     public boolean hasFeedback() {
       return getZoomableCheckableVisitor().isFeedback;
     }
@@ -82,17 +82,17 @@ public class LabMarkdown extends CardScrollAdapter {
 
   public class CheckableZoomableVisitor extends Visitor {
     public boolean isCheckable = false;
-    public boolean isZoomable  = false;
-    public boolean isFeedback  = false; 
-    
+    public boolean isZoomable = false;
+    public boolean isFeedback = false;
+
     public CheckableZoomableVisitor(ProtocolStep protocolStep) {
       this.visit(protocolStep);
     }
-    
+
     @Override
     protected boolean visitHeader(Element e) {
       /* skip all header texts!! */
-      return true; 
+      return true;
     }
 
     @Override
@@ -103,18 +103,18 @@ public class LabMarkdown extends CardScrollAdapter {
 
       return isCheckable = true;
     }
-    
+
     @Override
     protected boolean visitListItem(Element e) {
       return isCheckable = true;
     }
-    
+
     @Override
     protected boolean visitImage(Element e) {
       return isZoomable = true;
     }
   }
-  
+
   public class MarkAsDoneVisitor extends Visitor {
     protected boolean mProtocolStepDone = true;
     protected boolean mMarkedOneAsDone = false;
@@ -127,12 +127,28 @@ public class LabMarkdown extends CardScrollAdapter {
     protected boolean visitHeader(Element e) {
       return false; // ignore everything below header
     }
-    
+
+    protected boolean visitParagraph(Element e) {
+      if (e.getChild(0).getType() == Type.STRIKETHROUGH)
+        return false; // already marked this one
+
+      if (!mMarkedOneAsDone)
+        return (mMarkedOneAsDone = true);
+      else
+        // if we get here, there is another paragraph to be marked!
+        return (mProtocolStepDone = false);
+    }
+
+    @Override
+    protected boolean visitListItem(Element e) {
+      return visitParagraph(e);
+    }
+
     @Override
     protected boolean visitEmphasised(Element e) {
       return visitText(e);
     }
-    
+
     @Override
     protected boolean visitDoubleEmphasised(Element e) {
       return visitText(e);
@@ -143,18 +159,9 @@ public class LabMarkdown extends CardScrollAdapter {
       String s = e.getText().trim();
 
       if (s.length() == 0 || s.startsWith("[") && s.endsWith("]"))
-        return true;    
+        return true;
 
-      if (!mMarkedOneAsDone) {
-        e.setType(Type.STRIKETHROUGH);
-        mMarkedOneAsDone = true;
-      } else {
-        /*
-         * if we visit another TEXT in this run, then there is another step that
-         * needs to be marked as done.
-         */
-        mProtocolStepDone = false;
-      }
+      e.setType(Type.STRIKETHROUGH);
       return true;
     }
 
@@ -163,7 +170,6 @@ public class LabMarkdown extends CardScrollAdapter {
     }
   }
 
-  
   public class Visitor {
     protected int indent = 1;
 
@@ -173,10 +179,10 @@ public class LabMarkdown extends CardScrollAdapter {
         o = visit(e);
       return o;
     }
-    
+
     public Object visit(Document d) {
       Object o = null;
-      for (int i=0; i<d.getElementCount(); i++) {
+      for (int i = 0; i < d.getElementCount(); i++) {
         Element e = d.getElement(i);
         o = visit(e);
       }
@@ -270,12 +276,14 @@ public class LabMarkdown extends CardScrollAdapter {
     protected ViewGroup mFooter;
 
     public ToViewVisitor(ProtocolStep p, View v) {
-      if (v != null) mView = (ViewGroup) v;
-      else  mView = (ViewGroup) mInflater.inflate(R.layout.card, null);
-      
+      if (v != null)
+        mView = (ViewGroup) v;
+      else
+        mView = (ViewGroup) mInflater.inflate(R.layout.card, null);
+
       mList = (ViewGroup) mView.findViewById(R.id.list);
       mList.removeAllViews();
-      
+
       mView.removeView(mView.findViewById(R.id.footer));
       this.visit(p);
     }
@@ -287,28 +295,30 @@ public class LabMarkdown extends CardScrollAdapter {
     protected boolean visitParagraph(Element e) {
       mText = (TextView) mInflater.inflate(R.layout.textview, mList, false);
       mText.setTypeface(mRoboto);
-      
-      /* do not add to list here, since this might be a paragraph not
-       * containing text! Instead add it in appendText. */
+
+      /*
+       * do not add to list here, since this might be a paragraph not containing
+       * text! Instead add it in appendText.
+       */
 
       return true;
     }
-    
+
     protected void appendText(String text, CharacterStyle styleSpan) {
       if (text.trim().length() == 0)
         return;
-      
+
       SpannableStringBuilder builder = new SpannableStringBuilder();
       builder.append(mText.getText());
       builder.append(text);
-      builder.setSpan(styleSpan, mText.getText().length(),
-          builder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+      builder.setSpan(styleSpan, mText.getText().length(), builder.length(),
+          Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
       mText.setText(builder);
-      
+
       if (mText.getParent() == null)
         mList.addView(mText);
     }
-    
+
     protected boolean visitDoubleEmphasised(Element e) {
       appendText(e.getText(), new StyleSpan(Typeface.BOLD));
       return true;
@@ -318,7 +328,7 @@ public class LabMarkdown extends CardScrollAdapter {
       appendText(e.getText(), new StyleSpan(Typeface.ITALIC));
       return true;
     }
-    
+
     @Override
     protected boolean visitStrikeThrough(Element e) {
       appendText(e.getText(), new StrikethroughSpan());
@@ -329,8 +339,9 @@ public class LabMarkdown extends CardScrollAdapter {
       String header = e.getChild(0).getText();
       if (header.trim().equals("-donotshow"))
         return false;
-      
-      TextView hint = (TextView) mInflater.inflate(R.layout.hint, getFooter(), false);
+
+      TextView hint = (TextView) mInflater.inflate(R.layout.hint, getFooter(),
+          false);
       hint.setTypeface(mRoboto);
       hint.setText(header);
 
@@ -353,27 +364,28 @@ public class LabMarkdown extends CardScrollAdapter {
 
       return false;
     }
-    
+
     protected ViewGroup getFooter() {
       if (mFooter == null) {
         mFooter = (ViewGroup) mInflater.inflate(R.layout.footer, mView, false);
         mView.addView(mFooter);
       }
-      
+
       return mFooter;
     }
 
     @Override
     protected boolean visitImage(Element e) {
       Bitmap bm = loadImage(e.getText());
-      
+
       if (bm == null)
         return true;
 
-      HeadImageView im = (HeadImageView) mInflater.inflate(R.layout.imview, mList, false);
+      HeadImageView im = (HeadImageView) mInflater.inflate(R.layout.imview,
+          mList, false);
       im.setImageBitmap(bm);
       mList.addView(im);
-      
+
       return false;
     }
 
@@ -382,18 +394,19 @@ public class LabMarkdown extends CardScrollAdapter {
       try {
         is = mAssets.open(text);
       } catch (IOException e) {
-        if (mFileDir == null) return null;
-          try {
-            is = new FileInputStream(new File(mFileDir,text));
-          } catch (FileNotFoundException e1) {
-            e1.printStackTrace();
-          }
+        if (mFileDir == null)
+          return null;
+        try {
+          is = new FileInputStream(new File(mFileDir, text));
+        } catch (FileNotFoundException e1) {
+          e1.printStackTrace();
+        }
 
       }
-      
+
       Options o = new Options();
       o.inSampleSize = 3; // downsample
-      Bitmap b  = BitmapFactory.decodeStream(is, null, o);
+      Bitmap b = BitmapFactory.decodeStream(is, null, o);
       return b;
     }
 
@@ -415,8 +428,7 @@ public class LabMarkdown extends CardScrollAdapter {
       // a special case for classification of steps
       if (txt.startsWith("[") && txt.endsWith("]")) {
         addImage(txt.substring(1, txt.length() - 1));
-      }
-      else if (txt.length() == 0)
+      } else if (txt.length() == 0)
         ;
       else
         appendText(e.getText(), new StyleSpan(Typeface.NORMAL));
@@ -426,7 +438,8 @@ public class LabMarkdown extends CardScrollAdapter {
 
     /** adds an image to the view on the lower left side */
     protected void addImage(String name) {
-      ImageView im = (ImageView) mInflater.inflate(R.layout.image, getFooter(), false);
+      ImageView im = (ImageView) mInflater.inflate(R.layout.image, getFooter(),
+          false);
       try {
         im.setImageResource(R.drawable.class.getField(name).getInt(null));
       } catch (Exception e) {
@@ -450,7 +463,7 @@ public class LabMarkdown extends CardScrollAdapter {
     }
 
   }
-  
+
   public class SegmentationVisitor extends Visitor {
 
     protected LinkedList<ProtocolStep> mList;
@@ -458,20 +471,20 @@ public class LabMarkdown extends CardScrollAdapter {
 
     public List<ProtocolStep> visit(Document d) {
       mList = new LinkedList<ProtocolStep>();
-      mCur  = new ProtocolStep();
+      mCur = new ProtocolStep();
       mList.add(mCur);
       return (List<ProtocolStep>) super.visit(d);
     }
-    
+
     public List<ProtocolStep> visit(Element e) {
       super.visit(e);
-      
+
       if (e.getParent() == null)
         mCur.add(e); /* only add top-level elements */
-      
+
       return (List<ProtocolStep>) mList;
     }
-    
+
     @Override
     protected boolean visitHeader(Element e) {
       if (mCur.size() != 0) {
@@ -494,10 +507,11 @@ public class LabMarkdown extends CardScrollAdapter {
 
   private void init(Context c, String md) {
     Bypass bp = new Bypass();
-    mDoc      = bp.processMarkdown(md);
+    mDoc = bp.processMarkdown(md);
     mElements = (new SegmentationVisitor()).visit(mDoc);
 
-    mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    mInflater = (LayoutInflater) c
+        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     mAssets = c.getAssets();
     mFileDir = c.getExternalFilesDir(null);
     mRoboto = RobotoTypefaces.getTypeface(c, RobotoTypefaces.WEIGHT_THIN);
