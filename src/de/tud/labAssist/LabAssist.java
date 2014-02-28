@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
@@ -372,6 +373,11 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
 
     public void onItemSelected(AdapterView<?> parent, View view, int position,
         long id) {
+      if (position <= mCurPosition) {
+        mCurPosition = position;
+        return;
+      }
+        
       if (mWantFeedback && !mHadFeedback) {
         mHadFeedback = true;
         giveFeedback((mEnteredBearing>=2) && (mLeftBearing>=1));
@@ -379,7 +385,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       
       ProtocolStep s = (ProtocolStep) parent.getItemAtPosition(position);
       mWantFeedback  = (s!=null && s.hasFeedback());
-      mHadFeedback   = mCurPosition==position;
+      mHadFeedback   = true;
       mEnteredBearing = mLeftBearing = 0;
       mCurPosition   = position;
     }

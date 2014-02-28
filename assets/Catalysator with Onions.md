@@ -1,18 +1,11 @@
 DNA Extraktion aus Zwiebeln und Tomaten
 
-# EVA
-
-![](pos1.jpg)
-
-Hallo, ich bin Eva, Ihre elektronisch-virtuelle Assistentin. Ich möchte Ihnen noch eine Besonderheit zum Versuch erklären. Bei der oft gebrauchten Katalysator-Flüssigkeit besteht das geringe Risiko, dass sie durch verdampfen bei Raumtemperatur die Atemwege reizt. Selbstverständlich ist Ihre Gesundheit nicht gefährdet, packen Sie bitte die Katalysator-Flüssigkeit dennoch nach jedem Gebrauch wieder zurück in den Kühlschrank. Bei allen anderen Materialien ist dies nicht erforderlich. 
-
-
 # Lösung (Zwiebel) präparieren
 
  - kombiniere 50ml lauwarmes Wasser, 1/2 Teelöffel Salz und 3ml Geschirrspülmittel in einem 200ml Becherglas (Zwiebel) [combine]
  - gut verrühren [incubate]
 
-# Katalysator [feedback]
+# Katalysator
 
  einen Tropfen Katalysator- Flüssigkeit zur Lösung (Zwiebel) hinzufügen
 
@@ -27,13 +20,13 @@ Hallo, ich bin Eva, Ihre elektronisch-virtuelle Assistentin. Ich möchte Ihnen n
  - 1ml Feinwaschmittel hinzugeben [combine]
  - gut verrühren [incubate]
 
-# Katalysator [feedback]
+# Katalysator
 
  einen Tropfen Katalysator- Flüssigkeit zur Lösung (Zwiebel) hinzufügen
 
 # Zwiebel-Mixtur aufheizen
 
- 200ml Becherglas (Zwiebel) für ca. 10min in das heiße Wasserbad tauchen [incubate]
+ 200ml Becherglas (ZWiebel) für ca. 10min in das heiße Wasserbad tauchen [incubate]
 
 # Lösung (Tomate) präparieren
 
@@ -41,7 +34,7 @@ Hallo, ich bin Eva, Ihre elektronisch-virtuelle Assistentin. Ich möchte Ihnen n
  - kombiniere 50ml lauwarmes Wasser, 1/2 Teelöffel Salz und 3ml Geschirrspülmittel in einem 200ml Becherglas [combine]
  - gut verrühren [incubate]
 
-# Katalysator [feedback]
+# Katalysator
 
  einen Tropfen Katalysator- Flüssigkeit zur Lösung (Tomate) hinzufügen
 
@@ -55,7 +48,7 @@ Hallo, ich bin Eva, Ihre elektronisch-virtuelle Assistentin. Ich möchte Ihnen n
  - 1ml Feinwaschmittel hinzugeben [combine]
  - gut verrühren [incubate]
 
-# Katalysator [feedback]
+# Katalysator
 
  einen Tropfen Katalysator- Flüssigkeit zur Lösung (Tomate) hinzufügen
 
@@ -67,7 +60,7 @@ Hallo, ich bin Eva, Ihre elektronisch-virtuelle Assistentin. Ich möchte Ihnen n
 
  200ml Becherglas (Tomate) für ca. 10min in das heiße Wasserbad tauchen [incubate]
 
-# Katalysator [feedback]
+# Katalysator
 
  einen Tropfen Katalysator- Flüssigkeit zur Lösung (Zwiebel) hinzufügen
 
@@ -81,7 +74,7 @@ Hallo, ich bin Eva, Ihre elektronisch-virtuelle Assistentin. Ich möchte Ihnen n
  - Trichter in 100ml Becherglas stellen
  - Zwiebel-Mixtur vorsichtig durch Filter pressen [separate]
 
-# Katalysator [feedback]
+# Katalysator
 
  einen Tropfen Katalysator- Flüssigkeit zur Lösung (Zwiebel) hinzufügen
 
@@ -100,7 +93,7 @@ Hallo, ich bin Eva, Ihre elektronisch-virtuelle Assistentin. Ich möchte Ihnen n
 
  200ml Becherglas (Tomate) für 5min in Eiswasser tauchen [incubate]
 
-# Katalysator [feedback]
+# Katalysator
 
  einen Tropfen Katalysator- Flüssigkeit zur Lösung (Tomate) hinzufügen
 
@@ -114,7 +107,7 @@ Hallo, ich bin Eva, Ihre elektronisch-virtuelle Assistentin. Ich möchte Ihnen n
  - Trichter in 100ml Becherglas (Tomate) stellen
  - Tomaten-Mixtur vorsichtig durch Filter pressen [separate]
 
-# Katalysator [feedback]
+# Katalysator
 
  einen Tropfen Katalysator- Flüssigkeit zur Lösung (Tomate) hinzufügen
 

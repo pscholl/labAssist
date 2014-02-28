@@ -103,7 +103,7 @@ public class PersuasiveFeedback extends Activity {
       public void run() {
         finish();
       }
-    }, mStartupDelay * 2 + mAnimationDuration);
+    }, mStartupDelay * 3 + mAnimationDuration);
     
     mAudio.playSoundEffect(mSoundEffect);
   }
