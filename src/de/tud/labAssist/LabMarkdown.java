@@ -389,7 +389,7 @@ public class LabMarkdown extends BaseAdapter {
       }
       
       Options o = new Options();
-      o.inSampleSize = 1; // downsample
+      o.inSampleSize = 3; // downsample
       Bitmap b  = BitmapFactory.decodeStream(is, null, o);
       return b;
     }

@@ -26,9 +26,9 @@
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
-			android:text="blue - middle"
+			android:text="xx -xx"
 			android:textColor="@android:color/white"
-			android:textSize="14sp" />
+			android:textSize="34sp" />
 
 		<view
 			android:id="@+id/bars"

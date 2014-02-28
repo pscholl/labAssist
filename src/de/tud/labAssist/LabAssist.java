@@ -145,7 +145,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       
       @Override
       public void onSwipeBottom() {
-        finish();
+        //finish();
       }
       
       @Override
