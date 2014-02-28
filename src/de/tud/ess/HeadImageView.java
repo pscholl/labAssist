@@ -8,7 +8,9 @@ import android.hardware.SensorManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
 public class HeadImageView extends ImageView implements SensorEventListener {
@@ -41,19 +43,22 @@ public class HeadImageView extends ImageView implements SensorEventListener {
       factor=2;
     
     deactivate();
-    
+  
     ScaleAnimation a = new ScaleAnimation(mScaleFactor, factor, mScaleFactor, factor,
         Animation.RELATIVE_TO_SELF, .5F, Animation.RELATIVE_TO_SELF, .5F);
-  
     a.setDuration(500);
     a.setFillAfter(true);
     a.setFillEnabled(true);
     setAnimation(a);
-
     mScaleFactor = factor;
     MAX_SCROLL_X = MAX_SCROLL_Y = null;
     
-    activate();
+    if (factor > 1.01)
+      activate();
+    else {
+      deactivate();
+      scrollTo(0, 0);
+    }
   }
   
   public float getScaleFactor() {
@@ -77,6 +82,11 @@ public class HeadImageView extends ImageView implements SensorEventListener {
     mSensorManager.unregisterListener(this);
     mSensorManager = null;
     mSensor = null;
+    
+    if (getAnimation() != null) { // && !getAnimation().hasEnded())
+      getAnimation().reset();
+      startAnimation(getAnimation());
+    }
   }
   
   public void activate() {

@@ -405,7 +405,7 @@ public class LabMarkdown extends CardScrollAdapter {
       }
 
       Options o = new Options();
-      o.inSampleSize = 3; // downsample
+      o.inSampleSize = 7; // downsample
       Bitmap b = BitmapFactory.decodeStream(is, null, o);
       return b;
     }

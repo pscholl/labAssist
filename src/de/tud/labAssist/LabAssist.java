@@ -62,8 +62,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   //protected static final String MARK = "mark ";
   protected static final String ZOOM_IN = "zoom image";
   protected static final String ZOOM_OUT = "scale down";
-  protected static final String LENGTH = "bar changed";
-  protected static final String COLOR = "highlight color";
+  protected static final String BAR_CHANGED = "bar changed";
   protected static final String[] STATIC_VOICECOMMANDS = new String[]
       { NEXT, PREVIOUS  };
   protected static final String OKGLASS = "ok glass";
@@ -226,7 +225,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       Log.e(TAG, e.toString());
     }
     
-    //Log.e(TAG, String.format("switch to item (%d)", position));
+    Log.e(TAG, String.format("switch to item (%d)", position));
   }
 
   protected void markAsDone(ProtocolStep step, int pos) {
@@ -273,10 +272,8 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
         im.setScaleFactor( im.getScaleFactor() + SCALE_STEP );
       else if (ZOOM_OUT.equals(literal))
         im.setScaleFactor( im.getScaleFactor() - SCALE_STEP );
-      else if (COLOR.equals(literal))
-        toggleBarText(true,false);
-      else if (LENGTH.equals(literal))
-        toggleBarText(false,true);
+      else if (BAR_CHANGED.equals(literal))
+        toggleBarText(true,true);
       else if (OKGLASS.equals(literal))
         ; //toggleBarText(true, true);
       else
@@ -336,8 +333,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       c.add(DONE);
     }
     if (mAttentionChallenge ) {
-      c.add(COLOR);
-      c.add(LENGTH);
+      c.add(BAR_CHANGED);
     }
     
     mVoiceMenu.setCommands((String[]) c.toArray(new String[c.size()]));
