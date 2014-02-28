@@ -27,6 +27,6 @@
 		android:layout_marginBottom="10dp"
 		android:text="@string/kat_pos"
 		android:textColor="@color/white"
-		android:textSize="20sp" />
+		android:textSize="30sp" />
 	
 </FrameLayout>

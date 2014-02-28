@@ -351,7 +351,9 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     protected boolean mWantFeedback   = false, 
                       mHadFeedback    = false;
     protected int mEnteredBearing     = 0,
-                  mLeftBearing        = 0;        
+                  mLeftBearing        = 0,
+                  mCurPosition        = -1; 
+    
 
     @Override
     public void enteredBearing() {
@@ -377,11 +379,11 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       
       ProtocolStep s = (ProtocolStep) parent.getItemAtPosition(position);
       mWantFeedback  = (s!=null && s.hasFeedback());
-      mHadFeedback   = false;
+      mHadFeedback   = mCurPosition==position;
       mEnteredBearing = mLeftBearing = 0;
+      mCurPosition   = position;
     }
   }
-  
 
   protected void giveFeedback(boolean b) {
     Log.e(TAG, String.format("giving feedback %b",b));

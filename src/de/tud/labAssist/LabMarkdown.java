@@ -392,7 +392,7 @@ public class LabMarkdown extends CardScrollAdapter {
       }
       
       Options o = new Options();
-      o.inSampleSize = 4; // downsample
+      o.inSampleSize = 3; // downsample
       Bitmap b  = BitmapFactory.decodeStream(is, null, o);
       return b;
     }
@@ -415,16 +415,11 @@ public class LabMarkdown extends CardScrollAdapter {
       // a special case for classification of steps
       if (txt.startsWith("[") && txt.endsWith("]")) {
         addImage(txt.substring(1, txt.length() - 1));
-        /*String attr = txt.substring(1, txt.length() - 1);
-        if (attr.equals("feedback"))
-          ;
-        else
-          addImage(attr);*/
       }
       else if (txt.length() == 0)
         ;
       else
-        appendText(txt, new StyleSpan(Typeface.NORMAL));
+        appendText(e.getText(), new StyleSpan(Typeface.NORMAL));
 
       return true;
     }

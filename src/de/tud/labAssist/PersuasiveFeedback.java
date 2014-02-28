@@ -14,7 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
-import android.view.TextureView;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -59,13 +59,14 @@ public class PersuasiveFeedback extends Activity {
     mImOut = findViewById(R.id.image_out);
     mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
     
-    mTts = new TextToSpeech(this, new OnInitListener() {
-      @Override
-      public void onInit(int status) {
-        mTts.setLanguage(Locale.GERMAN);
-        mTts.speak((String) mTextView.getText(), TextToSpeech.QUEUE_FLUSH, null);
-      }
-    });
+//    mTts = new TextToSpeech(this, new OnInitListener() {
+//      @Override
+//      public void onInit(int status) {
+//        Log.e("vc", "onInit in TTS");
+//        //mTts.setLanguage(Locale.GERMANY);
+//        mTts.speak((String) mTextView.getText(), TextToSpeech.QUEUE_FLUSH, null);
+//      }
+//    });
   }
   
   protected void onResume() {
@@ -104,6 +105,6 @@ public class PersuasiveFeedback extends Activity {
       }
     }, mStartupDelay * 2 + mAnimationDuration);
     
-    //mAudio.playSoundEffect(mSoundEffect);
+    mAudio.playSoundEffect(mSoundEffect);
   }
 }
