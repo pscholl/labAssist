@@ -134,13 +134,20 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     mCardScrollView.setOnItemSelectedListener(new VoiceConfigChanger());
     
     mSwipeTouchListener = new OnSwipeTouchListener(this) {
+      protected int mCurPosition = 0;
+
       @Override
       public void onSwipeLeft() {
         mCardScrollView.showNext();
+        mCurPosition++;
+        Log.e(TAG, String.format("switch to item %d", mCurPosition));
+        
       }
       @Override
       public void onSwipeRight() {
         mCardScrollView.showPrevious();
+        mCurPosition --;
+        Log.e(TAG, String.format("switch to item %d", mCurPosition));
       }
       
       @Override
