@@ -6,11 +6,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.ScrollView;
-
-import com.google.glass.util.PowerHelper;
 
 public class HeadScrollView extends ScrollView implements SensorEventListener {
 
@@ -30,8 +27,8 @@ public class HeadScrollView extends ScrollView implements SensorEventListener {
   private int mLastAccuracy;
   private SensorManager mSensorManager;
   private float mStartX = 10;
-  private static final int SENSOR_RATE_uS = 200000;
-  private static final float VELOCITY = -4000; // from rad to pixels
+  private static final int SENSOR_RATE_uS = SensorManager.SENSOR_DELAY_UI;
+  private static final float VELOCITY = -2000; // from rad to pixels
   
   public void activate() {
     if (mSensorManager == null) {

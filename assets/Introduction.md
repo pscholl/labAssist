@@ -1,3 +1,5 @@
+Introduction
+
 # Willkommen zur Glass Studie
 
  Mit **ok, glass** öffnen Sie das Sprachmenü.
@@ -40,12 +42,6 @@
  Bitte hauptsächlich mit **check this step** oder **mark as done** navigieren.
 
  **previous** und **next slide** bitte nur im Notfall einsetzen.
-
-# Eva
-
- ![](pos1.jpg)
-
- Eva - die virtuelle Hilfe - wird ihnen während des Versuchs weitere Hinweise geben.
 
 # und dankeschön
 

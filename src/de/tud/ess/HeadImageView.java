@@ -8,14 +8,12 @@ import android.hardware.SensorManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.ScaleAnimation;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
 public class HeadImageView extends ImageView implements SensorEventListener {
 
-  protected static final int SENSOR_RATE = 50 * 1000 * 1000;
+  protected static final int SENSOR_RATE = SensorManager.SENSOR_DELAY_UI;
   protected float mScaleFactor = 1;
   protected SensorManager mSensorManager;
   protected Sensor mSensor;
@@ -70,7 +68,7 @@ public class HeadImageView extends ImageView implements SensorEventListener {
     super.onVisibilityChanged(changedView, visibility);
     
     if (visibility == VISIBLE) { 
-      if (mScaleFactor != 1) activate();
+      if (mScaleFactor > 1.01) activate();
     }
     else deactivate();
   }

@@ -16,8 +16,8 @@ public class VerticalBars extends LinearLayout {
 
   protected static final String TAG = LabAssist.TAG;
   protected static final long BAR_FREQ_MS = 400;
-  protected static final int MAX_DELAY_inS = 240;
-  protected static final int MIN_DELAY_inS = 40;
+  protected static final int MAX_DELAY_inS = 180;//240;
+  protected static final int MIN_DELAY_inS = 40;//40;
   protected static final int MIN_HEIGHT = 10;
   
   public class ColorChanger implements Runnable {
@@ -127,12 +127,14 @@ public class VerticalBars extends LinearLayout {
     super.onVisibilityChanged(changedView, visibility);
     
     if (visibility==VISIBLE) {
-      if (mBarAnimator==null) 
-        mBarAnimator = new BarAnimator();
-      if (mColorChanger==null)
-        mColorChanger = new ColorChanger();
+      if (mBarAnimator==null)  removeCallbacks(mBarAnimator);
+      if (mColorChanger==null) removeCallbacks(mColorChanger);
+
+      mBarAnimator = new BarAnimator();
+      mColorChanger = new ColorChanger();
       
-      postDelayed(mColorChanger, (MIN_DELAY_inS + (new Random()).nextInt(MAX_DELAY_inS-MIN_DELAY_inS))*1000);
+      post(mColorChanger);
+      //postDelayed(mColorChanger, (MIN_DELAY_inS + (new Random()).nextInt(MAX_DELAY_inS-MIN_DELAY_inS))*1000);
       postDelayed(mBarAnimator, BAR_FREQ_MS);
     } else {
       removeCallbacks(mBarAnimator);

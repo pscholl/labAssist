@@ -26,7 +26,7 @@ DNA Extraktion aus Zwiebeln und Tomaten
 
 # Zwiebel-Mixtur aufheizen
 
- 200ml Becherglas (ZWiebel) für ca. 10min in das heiße Wasserbad tauchen [incubate]
+ 200ml Becherglas (Zwiebel) für ca. 10min in das heiße Wasserbad tauchen [incubate]
 
 # Lösung (Tomate) präparieren
 
