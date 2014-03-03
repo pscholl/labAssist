@@ -1,3 +1,5 @@
+Introduction
+
 # Willkommen zur Glass Studie
 
  Mit **ok, glass** öffnen Sie das Sprachmenü.
@@ -21,12 +23,6 @@
  - können Schritte
  - abgehakt werden (mich bitte auch abhaken)
 
-# die Anweisungen
-
- - wie ein Kochrezept
- - bspw. schäle Zwiebel
- - oder kombiniere 20ml Wasser mit 5ml Spüli
-
 # automatische Weiterschaltung
 
  Ist eine Ansicht komplett abgearbeitet wird automatisch zur nächsten gewechselt.
@@ -39,7 +35,7 @@
 
  - Lange Texte lassen sich per Kopfbewegung scrollen
  - Zeit- und Mengenangaben sind ungefähre Angaben
- - Arbeitsschritte die mehrere Minuten dauern, können zu Begin der Wartezeit abehakt werden
+ - Arbeitsschritte die mehrere Minuten dauern, können zu Beginn der Wartezeit abgehakt werden
 
 # die Sprachkommandos
 
