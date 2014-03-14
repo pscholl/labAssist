@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
@@ -50,6 +51,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   protected BearingLocalizer    mBearinglocalizer;
   protected LogCatWriter mLogCatWriter;
   protected FeedbackController mFeedback;
+  private Handler mHandler;
   
   protected static final String NEXT = "next slide";
   protected static final String PREVIOUS = "previous";
@@ -128,6 +130,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
     
     mFeedback = new FeedbackController();
+    mHandler = new Handler();
   }
 
   @Override
@@ -341,47 +344,30 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
    * has been entered. negative feedback when step needed feedback but has 
    * never gotten any.  */
   protected int mNumFeedback = 0;
-  public class FeedbackController implements BearingLocalizerListener {
+  public class FeedbackController implements BearingLocalizerListener, Runnable {
    
-    protected boolean mWantFeedback   = false, 
-                      mHadFeedback    = false;
-    protected int mEnteredBearing     = 0,
-                  mLeftBearing        = 0,
-                  mCurPosition        = -1; 
-    
+    private int mHadFeedback = -10;
 
     @Override
-    public void enteredBearing() {
-      Log.e(TAG, "entered bearing");
-      mEnteredBearing += 1;
-    }
+    public void enteredBearing() { }
 
-    public void switchedByMarkingTo(int i) {
-    }
+    public void switchedByMarkingTo(int i) {  }
 
     @Override
-    public void leftBearing() {
-      Log.e(TAG, "left bearing");
-      mLeftBearing += 1;
-    }
+    public void leftBearing() { }
 
-    public void onItemSelected(AdapterView<?> parent, View view, int position,
-        long id) {
-      if (position <= mCurPosition) {
-        mCurPosition = position;
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+      if (mHadFeedback == position)
         return;
-      }
-        
-      if (mWantFeedback && !mHadFeedback) {
-        mHadFeedback = true;
-        giveFeedback((mEnteredBearing>=2) && (mLeftBearing>=1));
-      }
-      
-      ProtocolStep s = (ProtocolStep) parent.getItemAtPosition(position);
-      mWantFeedback  = (s!=null && s.hasFeedback());
-      mHadFeedback   = true;
-      mEnteredBearing = mLeftBearing = 0;
-      mCurPosition   = position;
+            
+      mHadFeedback = position;
+      mHandler.removeCallbacks(this);
+      mHandler.postDelayed(this, 10*1000);
+    }
+
+    @Override
+    public void run() {
+      giveFeedback(true);
     }
   }
 

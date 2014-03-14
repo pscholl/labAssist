@@ -1,10 +1,5 @@
 package de.tud.labAssist;
 
-import java.util.Locale;
-
-import com.google.android.glass.media.Sounds;
-import com.google.glass.widget.RobotoTypefaces;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
@@ -13,10 +8,11 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
-import android.speech.tts.TextToSpeech.OnInitListener;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import com.google.android.glass.media.Sounds;
+import com.google.glass.widget.RobotoTypefaces;
 
 public class PersuasiveFeedback extends Activity {
 
@@ -26,7 +22,7 @@ public class PersuasiveFeedback extends Activity {
   protected int mSoundEffect;
   private TextToSpeech mTts;
   protected TextView mTextView;
-  final static protected int mAnimationDuration = 2000;
+  final static protected int mAnimationDuration = 10000;
   final static protected int mStartupDelay = 500;
   public static final String STATE_ARGUMENT = "state";
   public static final String NUM_ARGUMENT = "num";
@@ -52,8 +48,8 @@ public class PersuasiveFeedback extends Activity {
     mTextView = (TextView) findViewById(R.id.textView);
     mTextView.setTypeface(RobotoTypefaces.getTypeface(this, RobotoTypefaces.WEIGHT_THIN));
     
-    if (num_feedback == 0)
-      mTextView.setText("Katalysator zurückgestellt?");
+    //if (num_feedback == 0)
+    mTextView.setText("Katalysator bitte sachgerecht verstauen");
     
     mImIn  = findViewById(R.id.image_in);
     mImOut = findViewById(R.id.image_out);
@@ -103,7 +99,7 @@ public class PersuasiveFeedback extends Activity {
       public void run() {
         finish();
       }
-    }, mStartupDelay * 3 + mAnimationDuration);
+    }, mStartupDelay + mAnimationDuration);
     
     mAudio.playSoundEffect(mSoundEffect);
   }
