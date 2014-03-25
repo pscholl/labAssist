@@ -219,10 +219,12 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   protected void onPause() {
     mVoiceMenu.setListener(null);
     mCardScrollView.setOnItemClickListener(null);
-    if (mBearinglocalizer != null)
-      mBearinglocalizer.deactivate();
-    mBearinglocalizer = null;
+    mCardScrollView.deactivate();
+    //mBearinglocalizer.deactivate();
+    //mBearinglocalizer = null;
     super.onPause();
+    finish();
+    System.exit(0);
     
     Log.e(TAG, "onPause");
   }
@@ -390,8 +392,20 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     }
 
     @Override
-    public void leftBearing() {
-      Log.e(TAG, "left bearing");
+    public void leftBearing() { }
+
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+      if (mHadFeedback == position)
+        return;
+      
+      mHadFeedback = position;
+      mHandler.removeCallbacks(this);
+      
+      ProtocolStep step = (ProtocolStep) mCardScrollView
+          .getItemAtPosition(position);
+      
+      if (step.hasFeedback())
+        mHandler.postDelayed(this, 10*1000);
     }
 
     public void onItemSelected(AdapterView<?> parent, View view, int position,
