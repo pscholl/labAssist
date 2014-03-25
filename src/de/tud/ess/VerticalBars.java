@@ -29,6 +29,8 @@ public class VerticalBars extends LinearLayout {
       View v = getChildAt(0);
       int bc = ((ColorDrawable) v.getBackground()).getColor();
       
+      Log.e(TAG, String.format("bc %d  bar %d instance %s", bc, getResources().getColor(R.color.blue), this.toString()));
+      
       if (bc == getResources().getColor(R.color.blue)) {
         bc = getResources().getColor(R.color.red);
         mCurrentColor = "red";
