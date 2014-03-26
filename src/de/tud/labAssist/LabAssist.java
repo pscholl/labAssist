@@ -183,12 +183,17 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   protected void onPause() {
     mVoiceMenu.setListener(null);
     mCardScrollView.setOnItemClickListener(null);
-    mCardScrollView.deactivate();
+    //mCardScrollView.deactivate();
     //mBearinglocalizer.deactivate();
     //mBearinglocalizer = null;
     super.onPause();
-    finish();
-    System.exit(0);
+    
+    if (!givingFeedback) {
+      finish();
+      System.exit(0);
+    }
+    givingFeedback = false;
+      
     
     Log.e(TAG, "onPause");
   }
@@ -294,6 +299,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
 
   protected String mBarColor = "";
   protected String mBarPosition = "";
+  private boolean givingFeedback = false;
   protected void updateBarText(String color, String position) {    
     if (mBarText==null) {
       Log.e(TAG, "setting barText without a view");
@@ -361,13 +367,13 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
       if (mHadFeedback == position)
         return;
-      
+
       mHadFeedback = position;
       mHandler.removeCallbacks(this);
-      
+
       ProtocolStep step = (ProtocolStep) mCardScrollView
           .getItemAtPosition(position);
-      
+
       if (step.hasFeedback())
         mHandler.postDelayed(this, 10*1000);
     }
@@ -382,7 +388,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     Log.e(TAG, String.format("giving feedback %b",b));
     Intent i = new Intent(this, PersuasiveFeedback.class);
     i.putExtra(PersuasiveFeedback.STATE_ARGUMENT, b);
-    i.putExtra(PersuasiveFeedback.NUM_ARGUMENT, mNumFeedback++);
+    givingFeedback  = true;
     startActivity(i);
   }
 
