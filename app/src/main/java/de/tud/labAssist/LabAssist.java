@@ -1,18 +1,5 @@
 package de.tud.labAssist;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
-
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -31,9 +18,21 @@ import com.google.android.glass.media.Sounds;
 import com.google.android.glass.widget.CardScrollView;
 import com.google.glass.widget.RobotoTypefaces;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
+
 import de.tud.ess.BearingLocalizer;
 import de.tud.ess.BearingLocalizer.BearingLocalizerListener;
-import de.tud.ess.CameraService;
 import de.tud.ess.HeadImageView;
 import de.tud.ess.VerticalBars;
 import de.tud.ess.VoiceMenu;
@@ -138,10 +137,10 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
     
     mBackgroundCamIntent = new Intent();
     mBackgroundCamIntent.setClassName("de.tud.ess", CAM_SERVICE);
-    mBackgroundCamIntent.putExtra(CameraService.Parameters.HEIGHT, 50);
-    mBackgroundCamIntent.putExtra(CameraService.Parameters.WIDTH, 70);
-    mBackgroundCamIntent.putExtra(CameraService.Parameters.Y, 640-50);
-    mBackgroundCamIntent.putExtra(CameraService.Parameters.RATE, 5.f);
+    mBackgroundCamIntent.putExtra("height", 50);
+    mBackgroundCamIntent.putExtra("width", 70);
+    mBackgroundCamIntent.putExtra("y", 640-50);
+    mBackgroundCamIntent.putExtra("rate", 5.f);
     
     mBackgroundCamRunning = false;
     //toggleBackgroundCam();

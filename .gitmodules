@@ -1,0 +1,3 @@
+[submodule "bypass"]
+	path = bypass
+	url = git@github.com:pscholl/bypass.git
