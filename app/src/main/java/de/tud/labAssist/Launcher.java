@@ -1,15 +1,16 @@
 package de.tud.labAssist;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.FrameLayout;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
 import de.tud.ess.VoiceMenu;
 import de.tud.ess.VoiceMenu.VoiceMenuListener;
 
@@ -43,7 +44,7 @@ public class Launcher extends Activity implements VoiceMenuListener {
   }
 
   protected String[] getMarkdownDocuments() {
-    List<String> paths = new LinkedList<String>();
+    List<String> paths = new LinkedList<>();
     
     try {
       for (String path : getAssets().list(""))
@@ -52,7 +53,7 @@ public class Launcher extends Activity implements VoiceMenuListener {
       
       File dir = getExternalFilesDir(null);
       if (dir == null)
-        return (String[]) paths.toArray(new String[paths.size()]);
+        return paths.toArray(new String[paths.size()]);
       
       Log.e("labLauncher", String.format("External directory is %s", dir.toString()));
       
@@ -60,7 +61,7 @@ public class Launcher extends Activity implements VoiceMenuListener {
         if (path.trim().endsWith(".md"))
           paths.add(path.trim().substring(0,path.trim().length()-3));
 
-      return (String[]) paths.toArray(new String[paths.size()]);
+      return paths.toArray(new String[paths.size()]);
     } catch (IOException e) {
       Log.e("LabLauncher", e.toString());
       return new String[0];

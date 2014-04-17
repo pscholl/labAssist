@@ -1,21 +1,5 @@
 package de.tud.labAssist;
 
-import in.uncod.android.bypass.Bypass;
-import in.uncod.android.bypass.Document;
-import in.uncod.android.bypass.Element;
-import in.uncod.android.bypass.Element.Type;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -37,15 +21,29 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.glass.widget.CardScrollAdapter;
-import com.google.glass.widget.RobotoTypefaces;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 
 import de.tud.ess.HeadImageView;
+import in.uncod.android.bypass.Bypass;
+import in.uncod.android.bypass.Document;
+import in.uncod.android.bypass.Element;
+import in.uncod.android.bypass.Element.Type;
 
 public class LabMarkdown extends CardScrollAdapter {
   protected File mFile;
   protected Document mDoc;
   protected List<ProtocolStep> mElements;
-  protected Typeface mRoboto;
+//  protected Typeface mRoboto;
   protected LayoutInflater mInflater;
   protected AssetManager mAssets;
   protected File mFileDir; 
@@ -284,7 +282,7 @@ public class LabMarkdown extends CardScrollAdapter {
 
     protected boolean visitParagraph(Element e) {
       mText = (TextView) mInflater.inflate(R.layout.textview, mList, false);
-      mText.setTypeface(mRoboto);
+//      mText.setTypeface(mRoboto);
       
       /* do not add to list here, since this might be a paragraph not
        * containing text! Instead add it in appendText. */
@@ -329,7 +327,7 @@ public class LabMarkdown extends CardScrollAdapter {
         return false;
       
       TextView hint = (TextView) mInflater.inflate(R.layout.hint, getFooter(), false);
-      hint.setTypeface(mRoboto);
+//      hint.setTypeface(mRoboto);
       hint.setText(header);
 
       /* special case for the pictograms */
@@ -497,7 +495,7 @@ public class LabMarkdown extends CardScrollAdapter {
     mInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     mAssets = c.getAssets();
     mFileDir = c.getExternalFilesDir(null);
-    mRoboto = RobotoTypefaces.getTypeface(c, RobotoTypefaces.WEIGHT_THIN);
+//    mRoboto = RobotoTypefaces.getTypeface(c, RobotoTypefaces.WEIGHT_THIN);
   }
 
   protected static String readFileAsString(String string) throws IOException {
@@ -511,16 +509,6 @@ public class LabMarkdown extends CardScrollAdapter {
     }
     reader.close();
     return fileData.toString();
-  }
-
-  @Override
-  public int findIdPosition(Object key) {
-    return findItemPosition(key);
-  }
-
-  @Override
-  public int findItemPosition(Object item) {
-    return -1;
   }
 
   @Override
@@ -538,4 +526,9 @@ public class LabMarkdown extends CardScrollAdapter {
     ProtocolStep ps = mElements.get(idx);
     return ps.toView(v);
   }
+
+	@Override
+	public int getPosition(Object o) {
+		return mElements.indexOf(o);
+	}
 }

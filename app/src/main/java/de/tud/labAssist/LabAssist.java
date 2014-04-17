@@ -1,10 +1,10 @@
 package de.tud.labAssist;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager.LayoutParams;
@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.widget.CardScrollView;
-import com.google.glass.widget.RobotoTypefaces;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,7 +38,7 @@ import de.tud.ess.VoiceMenu;
 import de.tud.ess.VoiceMenu.VoiceMenuListener;
 import de.tud.labAssist.LabMarkdown.ProtocolStep;
 
-public class LabAssist extends FragmentActivity implements VoiceMenuListener {
+public class LabAssist extends Activity implements VoiceMenuListener {
   private static final String TAG = "labAssist";
   private AudioManager mAudio;
   protected CardScrollView mCardScrollView;
@@ -121,7 +120,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       setContentView(R.layout.barlayout);
       mAttentionChallenge = true;
       mBarText = (TextView) findViewById(R.id.bartext);
-      mBarText.setTypeface(RobotoTypefaces.getTypeface(this, RobotoTypefaces.WEIGHT_THIN));
+//      mBarText.setTypeface(RobotoTypefaces.getTypeface(this, RobotoTypefaces.WEIGHT_THIN));
     } else
       setContentView(R.layout.main);
 
@@ -354,7 +353,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
   }
 
   protected void recreateVoiceMenu(ProtocolStep s) {
-    List<String> c = new LinkedList<String>(Arrays.asList(STATIC_VOICECOMMANDS));
+    List<String> c = new LinkedList<>(Arrays.asList(STATIC_VOICECOMMANDS));
     
     if (s.hasZoomAbleImage()) {
       c.add(ZOOM_IN);
@@ -368,7 +367,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       c.add(BAR);
     }
     
-    mVoiceMenu.setCommands((String[]) c.toArray(new String[c.size()]));
+    mVoiceMenu.setCommands(c.toArray(new String[c.size()]));
   }
 
 }
