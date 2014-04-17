@@ -20,6 +20,8 @@ import com.google.glass.util.PowerHelper;
 import com.google.glass.voice.VoiceCommand;
 import com.google.glass.voice.VoiceConfig;
 
+import de.tud.labAssist.R;
+
 public class VoiceMenu extends StubVoiceListener {
 
 	public class ThisFuckingAdapter extends ArrayAdapter<String> {
@@ -28,7 +30,7 @@ public class VoiceMenu extends StubVoiceListener {
 		protected String[] mItems;
 
 		public ThisFuckingAdapter(Context c, String[] items) {
-			super(c, 0, items);
+			super(c, android.R.layout.simple_list_item_1, items);
 			mContext = c;
 			mItems = items;
 		}
@@ -152,7 +154,7 @@ public class VoiceMenu extends StubVoiceListener {
 		TextView tv = new TextView(mContext);
 		tv.setText(mActivationWord + ", ");
 		tv.setGravity(Gravity.LEFT);
-		tv.setId(1);
+		tv.setId(R.id.hotword_text);
 		tv.setTextSize(30);
 		tv.setTextColor(0xFFFFFFFF);
 
