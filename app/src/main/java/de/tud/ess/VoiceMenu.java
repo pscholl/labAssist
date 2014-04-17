@@ -24,36 +24,7 @@ import de.tud.labAssist.R;
 
 public class VoiceMenu extends StubVoiceListener {
 
-	public class ThisFuckingAdapter extends ArrayAdapter<String> {
-
-		protected Context mContext;
-		protected String[] mItems;
-
-		public ThisFuckingAdapter(Context c, String[] items) {
-			super(c, android.R.layout.simple_list_item_1, items);
-			mContext = c;
-			mItems = items;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			TextView tv = new TextView(mContext);
-
-			tv.setText(mItems[position]);
-			tv.setGravity(Gravity.LEFT);
-			tv.setTextSize(30);
-			tv.setTextColor(0xFFFFFFFF);
-
-			return tv;
-		}
-	}
-
-	public interface VoiceMenuListener {
-		void onItemSelected(String item);
-	}
-
 	protected static final int MARGIN = 20;
-
 	protected VoiceInputHelper mVoiceInputHelper;
 	protected Activity mContext;
 	protected VoiceConfig mVoiceConfig;
@@ -207,5 +178,33 @@ public class VoiceMenu extends StubVoiceListener {
 
 		mVoiceConfig.setCustomPhrases(hotwords);
 		mVoiceInputHelper.setVoiceConfig(mVoiceConfig, false);
+	}
+
+	public interface VoiceMenuListener {
+		void onItemSelected(String item);
+	}
+
+	public class ThisFuckingAdapter extends ArrayAdapter<String> {
+
+		protected Context mContext;
+		protected String[] mItems;
+
+		public ThisFuckingAdapter(Context c, String[] items) {
+			super(c, android.R.layout.simple_list_item_1, items);
+			mContext = c;
+			mItems = items;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			TextView tv = new TextView(mContext);
+
+			tv.setText(mItems[position]);
+			tv.setGravity(Gravity.LEFT);
+			tv.setTextSize(30);
+			tv.setTextColor(0xFFFFFFFF);
+
+			return tv;
+		}
 	}
 }
