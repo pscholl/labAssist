@@ -79,6 +79,7 @@ public class Launcher extends Activity implements VoiceMenuListener {
         i.setClassName(this, LabAssist.class.getName());
         i.putExtra(FILENAME, item+".md");
         startActivity(i);
+		return;
       }
   }
 
