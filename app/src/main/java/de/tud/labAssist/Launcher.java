@@ -1,75 +1,59 @@
 package de.tud.labAssist;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.FrameLayout;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import de.tud.ess.Constants;
+import de.tud.ess.VoiceDetection;
+import de.tud.ess.VoiceMenuFragment;
 
-import de.tud.ess.VoiceMenu;
-import de.tud.ess.VoiceMenu.VoiceMenuListener;
+public class Launcher extends Activity implements VoiceDetection.VoiceDetectionListener, VoiceMenuFragment.VoiceMenuListener {
 
-public class Launcher extends Activity implements VoiceMenuListener {
+	public static final String FILENAME = Constants.FILENAME;
 
-	public static final String FILENAME = "filename";
-	protected VoiceMenu mVoiceMenu;
+	private static final String HOTWORD = "protocol";
+
 	protected String[] mPaths;
+	private VoiceDetection mVoiceDetection;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		mPaths = getMarkdownDocuments();
-		mVoiceMenu = new VoiceMenu(this, "protocol", mPaths);
-		setContentView(new FrameLayout(this));
+		mPaths = MarkdownManager.getMarkdownDocuments(this);
+//		mVoiceMenu = new VoiceMenu(this, "protocol", mPaths);
+		FragmentManager fm = getFragmentManager();
+		Fragment f = fm.findFragmentByTag(Constants.VOICE_MENU_FRAGMENT);
+		if (f == null)
+			f = new VoiceMenuFragment();
+		Bundle args = new Bundle();
+		args.putString(VoiceMenuFragment.HOTWORD, HOTWORD);
+		args.putStringArray(VoiceMenuFragment.PHRASES, mPaths);
+
+		f.setArguments(args);
+
+		fm.beginTransaction().replace(android.R.id.content, f, Constants.VOICE_MENU_FRAGMENT).commit();
 	}
 
 	@Override
-	protected void onResume() {
-		super.onResume();
-		mVoiceMenu.setListener(this);
-		mVoiceMenu.show();
+	protected void onStart() {
+		super.onStart();
+
+		mVoiceDetection = new VoiceDetection(this, HOTWORD, this, mPaths);
 	}
 
 	@Override
-	protected void onPause() {
-		mVoiceMenu.setListener(null);
-		mVoiceMenu.shutdown();
-		super.onPause();
+	protected void onStop() {
+		super.onStop();
+
+		mVoiceDetection.stop();
+		mVoiceDetection = null;
 	}
 
-	protected String[] getMarkdownDocuments() {
-		List<String> paths = new LinkedList<>();
-
-		try {
-			for (String path : getAssets().list(""))
-				if (path.trim().endsWith(".md"))
-					paths.add(path.trim().substring(0, path.trim().length() - 3));
-
-			File dir = getExternalFilesDir(null);
-			if (dir == null)
-				return paths.toArray(new String[paths.size()]);
-
-			Log.e("labLauncher", String.format("External directory is %s", dir.toString()));
-
-			for (String path : dir.list())
-				if (path.trim().endsWith(".md"))
-					paths.add(path.trim().substring(0, path.trim().length() - 3));
-
-			return paths.toArray(new String[paths.size()]);
-		} catch (IOException e) {
-			Log.e("LabLauncher", e.toString());
-			return new String[0];
-		}
-	}
-
-	@Override
-	public void onItemSelected(String item) {
+	private void onItemSelected(String item) {
 		if (item == null)
 			return;
 
@@ -81,5 +65,20 @@ public class Launcher extends Activity implements VoiceMenuListener {
 				startActivity(i);
 				return;
 			}
+	}
+
+	@Override
+	public void onHotwordDetected() {
+
+	}
+
+	@Override
+	public void onPhraseDetected(int index, String phrase) {
+		onItemSelected(phrase);
+	}
+
+	@Override
+	public void onPhraseSelected(String phrase) {
+		onItemSelected(phrase);
 	}
 }

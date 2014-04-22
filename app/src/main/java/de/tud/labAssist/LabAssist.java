@@ -114,7 +114,7 @@ public class LabAssist extends Activity implements VoiceMenuListener {
 			e.printStackTrace();
 		}
 
-		if (file.contains("Lego")) {
+		if (file.contains("Lego")) {//TODO: remove!!
 			setContentView(R.layout.barlayout);
 			mAttentionChallenge = true;
 			mBarText = (TextView) findViewById(R.id.bartext);
@@ -123,6 +123,7 @@ public class LabAssist extends Activity implements VoiceMenuListener {
 			setContentView(R.layout.main);
 
 		mVoiceMenu = new VoiceMenu(this, OKGLASS);
+//		mVoiceDetection = new VoiceDetection(this, OKGLASS, this);
 
 		LabMarkdown lm = new LabMarkdown(this, mdown);
 		mCardScrollView = (CardScrollView) findViewById(R.id.cardscroll);
@@ -194,7 +195,7 @@ public class LabAssist extends Activity implements VoiceMenuListener {
 				}
 		);
 
-		Log.e(TAG, "onResume");
+		Log.v(TAG, "onResume");
 	}
 
 	@Override
@@ -210,7 +211,7 @@ public class LabAssist extends Activity implements VoiceMenuListener {
 
 		super.onPause();
 
-		Log.e(TAG, "onPause");
+		Log.v(TAG, "onPause");
 	}
 
 	protected Method mAnimateFunc;

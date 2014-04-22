@@ -4,21 +4,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import com.google.android.glass.media.Sounds;
 import com.google.glass.input.VoiceInputHelper;
 import com.google.glass.util.PowerHelper;
 import com.google.glass.voice.VoiceCommand;
 import com.google.glass.voice.VoiceConfig;
-
-import de.tud.labAssist.R;
 
 public class VoiceMenu extends StubVoiceListener {
 
@@ -68,6 +63,11 @@ public class VoiceMenu extends StubVoiceListener {
 	}
 
 	@Override
+	public boolean isRunning() {
+		return true;
+	}
+
+	@Override
 	public VoiceConfig onVoiceCommand(VoiceCommand vc) {
 		String literal = vc.getLiteral();
 		mPower.stayAwake(6000);
@@ -110,14 +110,7 @@ public class VoiceMenu extends StubVoiceListener {
 		if (mShowing)
 			return;
 
-		mRoot = (ViewGroup) mContext.getWindow().getDecorView().getRootView();
 
-		mLayout = (ViewGroup) mContext.getLayoutInflater().inflate(R.layout.voice_menu, mRoot);
-		TextView tv = (TextView) mLayout.findViewById(R.id.hotword_text);
-		tv.setText(mActivationWord + ",");
-		mScroll = (HeadListView) mLayout.findViewById(R.id.hotword_chooser);
-
-		mScroll.setAdapter(new VoiceMenuAdapter(mContext, mItems));
 
 //		mLayout = new RelativeLayout(mContext);
 //		mRoot.bringChildToFront(mLayout);
@@ -187,29 +180,5 @@ public class VoiceMenu extends StubVoiceListener {
 
 	public interface VoiceMenuListener {
 		void onItemSelected(String item);
-	}
-
-	public class VoiceMenuAdapter extends ArrayAdapter<String> {
-
-		protected Context mContext;
-		protected String[] mItems;
-
-		public VoiceMenuAdapter(Context c, String[] items) {
-			super(c, android.R.layout.simple_list_item_1, items);
-			mContext = c;
-			mItems = items;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			TextView tv = new TextView(mContext);
-
-			tv.setText(mItems[position]);
-			tv.setGravity(Gravity.LEFT);
-			tv.setTextSize(30);
-			tv.setTextColor(0xFFFFFFFF);
-
-			return tv;
-		}
 	}
 }
