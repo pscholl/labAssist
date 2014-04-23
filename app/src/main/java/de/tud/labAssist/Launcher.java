@@ -1,23 +1,26 @@
 package de.tud.labAssist;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 
 import de.tud.ess.Constants;
 import de.tud.ess.VoiceDetection;
-import de.tud.ess.VoiceMenuFragment;
+import de.tud.ess.VoiceMenu;
+import de.tud.ess.VoiceMenuDialogFragment;
 
-public class Launcher extends Activity implements VoiceDetection.VoiceDetectionListener, VoiceMenuFragment.VoiceMenuListener {
+public class Launcher extends Activity implements VoiceDetection.VoiceDetectionListener, VoiceMenuDialogFragment.VoiceMenuListener {
 
 	public static final String FILENAME = Constants.FILENAME;
 
 	private static final String HOTWORD = "protocol";
+	private static final String FRAGMENT_LOADED = "fragment_loaded";
 
 	protected String[] mPaths;
 	private VoiceDetection mVoiceDetection;
+	private VoiceMenu mVoiceMenu;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -26,23 +29,24 @@ public class Launcher extends Activity implements VoiceDetection.VoiceDetectionL
 		mPaths = MarkdownManager.getMarkdownDocuments(this);
 //		mVoiceMenu = new VoiceMenu(this, "protocol", mPaths);
 		FragmentManager fm = getFragmentManager();
-		Fragment f = fm.findFragmentByTag(Constants.VOICE_MENU_FRAGMENT);
-		if (f == null)
-			f = new VoiceMenuFragment();
-		Bundle args = new Bundle();
-		args.putString(VoiceMenuFragment.HOTWORD, HOTWORD);
-		args.putStringArray(VoiceMenuFragment.PHRASES, mPaths);
 
-		f.setArguments(args);
+		setContentView(R.layout.fragment_host);
 
-		fm.beginTransaction().replace(android.R.id.content, f, Constants.VOICE_MENU_FRAGMENT).commit();
+		VoiceMenuDialogFragment f = VoiceMenuDialogFragment.getInstance(fm, HOTWORD, mPaths);
+		if (savedInstanceState == null || !savedInstanceState.getBoolean(FRAGMENT_LOADED))
+			fm.beginTransaction().replace(R.id.host, f, VoiceMenuDialogFragment.FRAGMENT_TAG).commit();
+//		f.show(fm, Constants.VOICE_MENU_FRAGMENT);
+//		mVoiceMenu = new VoiceMenu(this, "protocol", mPaths);
+		mVoiceDetection = new VoiceDetection(this, HOTWORD, this, mPaths);
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
 
-		mVoiceDetection = new VoiceDetection(this, HOTWORD, this, mPaths);
+//		mVoiceMenu.setListener(this);
+//		mVoiceMenu.show();
+		mVoiceDetection.start();
 	}
 
 	@Override
@@ -50,7 +54,12 @@ public class Launcher extends Activity implements VoiceDetection.VoiceDetectionL
 		super.onStop();
 
 		mVoiceDetection.stop();
-		mVoiceDetection = null;
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putBoolean(FRAGMENT_LOADED, true);
 	}
 
 	private void onItemSelected(String item) {

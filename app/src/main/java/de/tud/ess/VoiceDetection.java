@@ -7,8 +7,6 @@ import com.google.glass.input.VoiceInputHelper;
 import com.google.glass.voice.VoiceCommand;
 import com.google.glass.voice.VoiceConfig;
 
-import java.util.Arrays;
-
 /**
  * Created by Ramon on 22.04.2014.
  */
@@ -17,7 +15,7 @@ public class VoiceDetection extends StubVoiceListener {
 	private static final String THIS = VoiceDetection.class.getSimpleName();
 
 	private final VoiceConfig mVoiceConfig;
-	private final String[] mItems;
+	private String[] mPhrases;
 	private VoiceInputHelper mVoiceInputHelper;
 	private VoiceDetectionListener mListener;
 	private boolean mRunning = true;
@@ -25,20 +23,33 @@ public class VoiceDetection extends StubVoiceListener {
 	public VoiceDetection(Context context, String hotword, VoiceDetectionListener listener, String... phrases) {
 		mVoiceInputHelper = new VoiceInputHelper(context, this, VoiceInputHelper.newUserActivityObserver(context));
 
-		mVoiceConfig = new VoiceConfig(context.getPackageName(), new String[]{});
+		mPhrases = assemblePhrases(hotword, phrases);
+
+		mVoiceConfig = new VoiceConfig(THIS+":VoiceService", mPhrases);
 		mVoiceConfig.setShouldSaveAudio(false);
 
-		mItems = Arrays.copyOf(phrases, phrases.length+1);
-		mItems[0] = hotword;
-
-		mVoiceConfig.setCustomPhrases(mItems);
-		mVoiceInputHelper.setVoiceConfig(mVoiceConfig, false);
+//		mVoiceInputHelper.setVoiceConfig(mVoiceConfig, false);
 
 		mListener = listener;
 	}
 
+	private String[] assemblePhrases(String hotword, String[] phrases) {
+		String[] res = new String[phrases.length+1];
+		res[0] = hotword;
+		for (int i=0; i<phrases.length; ++i)
+			res[i+1] = phrases[i];
+
+		return res;
+	}
+
+	public void changePhrases(String... phrases) {
+		mPhrases = assemblePhrases(mPhrases[0], phrases);
+		mVoiceConfig.setCustomPhrases(mPhrases);
+		mVoiceInputHelper.setVoiceConfig(mVoiceConfig, false);
+	}
+
 	/**
-	 * If the VoiceService is ready, attach our listener to it
+	 * If the VoiceService is ready, refresh our Config
 	 */
 	@Override
 	public void onVoiceServiceConnected() {
@@ -50,21 +61,21 @@ public class VoiceDetection extends StubVoiceListener {
 	public VoiceConfig onVoiceCommand(VoiceCommand vc) {
 		String literal = vc.getLiteral();
 
-		if (mListener == null) {
-			mVoiceInputHelper.removeVoiceServiceListener();
-			return null;
-		}
+//		if (mListener == null) {
+//			mVoiceInputHelper.removeVoiceServiceListener();
+//			return null;
+//		}
 
-		if (literal.equals(mItems[0])) { // Hotword
+		if (literal.equals(mPhrases[0])) { // Hotword
 
 			Log.i(THIS, "Hotword detected");
 			mListener.onHotwordDetected();
 		}
 
-		for (int i=1; i< mItems.length; ++i) {
-			String item = mItems[i];
+		for (int i=1; i< mPhrases.length; ++i) {
+			String item = mPhrases[i];
 			if (item.equals(literal)) {
-				Log.i("labAssist", String.format("command %s", literal));
+				Log.i(THIS, String.format("command %s", literal));
 				mListener.onPhraseDetected(i-1, literal);
 				return null;
 			}
@@ -73,8 +84,14 @@ public class VoiceDetection extends StubVoiceListener {
 		return null;
 	}
 
+	public void start() {
+		mRunning = true;
+		mVoiceInputHelper.addVoiceServiceListener();
+	}
+
 	public void stop() {
 		mRunning = false;
+		mVoiceInputHelper.removeVoiceServiceListener();
 	}
 
 	@Override

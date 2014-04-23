@@ -1,6 +1,7 @@
 package de.tud.labAssist;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -34,21 +35,12 @@ import de.tud.ess.BearingLocalizer;
 import de.tud.ess.BearingLocalizer.BearingLocalizerListener;
 import de.tud.ess.HeadImageView;
 import de.tud.ess.VerticalBars;
-import de.tud.ess.VoiceMenu;
-import de.tud.ess.VoiceMenu.VoiceMenuListener;
+import de.tud.ess.VoiceDetection;
+import de.tud.ess.VoiceMenuDialogFragment;
 import de.tud.labAssist.LabMarkdown.ProtocolStep;
 
-public class LabAssist extends Activity implements VoiceMenuListener {
+public class LabAssist extends Activity implements VoiceDetection.VoiceDetectionListener {
 	private static final String TAG = "labAssist";
-	private AudioManager mAudio;
-	protected CardScrollView mCardScrollView;
-	protected VoiceMenu mVoiceMenu;
-	protected boolean mAttentionChallenge = false;
-	protected TextView mBarText;
-	protected Process mLogcat;
-	protected BearingLocalizer mBearinglocalizer;
-	protected Intent mBackgroundCamIntent;
-	protected boolean mBackgroundCamRunning = false;
 
 	protected static final String NEXT = "next slide";
 	protected static final String PREVIOUS = "previous";
@@ -63,6 +55,21 @@ public class LabAssist extends Activity implements VoiceMenuListener {
 			{NEXT, PREVIOUS};
 	protected static final String OKGLASS = "ok glass";
 	protected static final String CAM_SERVICE = "de.tud.ess.CameraService";
+
+	private AudioManager mAudio;
+	protected CardScrollView mCardScrollView;
+//	protected VoiceMenu mVoiceMenu;
+	protected boolean mAttentionChallenge = false;
+	protected TextView mBarText;
+	protected Process mLogcat;
+	protected BearingLocalizer mBearinglocalizer;
+	protected Intent mBackgroundCamIntent;
+	protected boolean mBackgroundCamRunning = false;
+
+	private VoiceDetection mVoiceDetection;
+	private String[] mPhrases;
+	private boolean mVoiceMenuVisible = false;
+	private VoiceMenuDialogFragment mVoiceMenu;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -122,8 +129,8 @@ public class LabAssist extends Activity implements VoiceMenuListener {
 		} else
 			setContentView(R.layout.main);
 
-		mVoiceMenu = new VoiceMenu(this, OKGLASS);
-//		mVoiceDetection = new VoiceDetection(this, OKGLASS, this);
+//		mVoiceMenu = new VoiceMenu(this, OKGLASS);
+		mVoiceDetection = new VoiceDetection(this, OKGLASS, this);
 
 		LabMarkdown lm = new LabMarkdown(this, mdown);
 		mCardScrollView = (CardScrollView) findViewById(R.id.cardscroll);
@@ -177,7 +184,8 @@ public class LabAssist extends Activity implements VoiceMenuListener {
 			public void onNothingSelected(AdapterView<?> parent) {
 			}
 		});
-		mVoiceMenu.setListener(this);
+//		mVoiceMenu.setListener(this);
+		mVoiceDetection.start();
 
 		getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -200,7 +208,8 @@ public class LabAssist extends Activity implements VoiceMenuListener {
 
 	@Override
 	protected void onPause() {
-		mVoiceMenu.setListener(null);
+//		mVoiceMenu.setListener(null);
+		mVoiceDetection.stop();
 		mCardScrollView.setOnItemClickListener(null);
 		mCardScrollView.deactivate();
 		mBearinglocalizer.deactivate();
@@ -217,6 +226,22 @@ public class LabAssist extends Activity implements VoiceMenuListener {
 	protected Method mAnimateFunc;
 	protected static final int ANIMATE_GOTO = 2;
 	protected static final float SCALE_STEP = 0.5F;
+
+	@Override
+	public void onHotwordDetected() {
+		FragmentManager fm = getFragmentManager();
+		mVoiceMenu = VoiceMenuDialogFragment.getInstance(fm, OKGLASS, mPhrases);
+		mVoiceMenu.show(fm, VoiceMenuDialogFragment.FRAGMENT_TAG);
+		mVoiceMenuVisible = true;
+	}
+
+	@Override
+	public void onPhraseDetected(int index, String phrase) {
+		if (mVoiceMenuVisible)
+			mVoiceMenu.dismiss();
+
+		onItemSelected(phrase);
+	}
 
 	public class LabOnClickListener implements OnItemClickListener {
 		@Override
@@ -274,8 +299,7 @@ public class LabAssist extends Activity implements VoiceMenuListener {
 	}
 
 
-	@Override
-	public void onItemSelected(String literal) {
+	private void onItemSelected(String literal) {
 		try {
 			int cur = mCardScrollView.getSelectedItemPosition();
 			ProtocolStep step = (ProtocolStep) mCardScrollView
@@ -353,7 +377,7 @@ public class LabAssist extends Activity implements VoiceMenuListener {
 		mBarText.setText(String.format("%s - %s", mBarColor.trim(), mBarPosition.trim()));
 	}
 
-	protected void recreateVoiceMenu(ProtocolStep s) {
+	protected void recreateVoiceMenu(ProtocolStep s) { //TODO: always use accept all Commands, just ingore and hide thos not applicable right now (-> prevent recreating VoiceConfig)
 		List<String> c = new LinkedList<>(Arrays.asList(STATIC_VOICECOMMANDS));
 
 		if (s.hasZoomAbleImage()) {
@@ -368,7 +392,9 @@ public class LabAssist extends Activity implements VoiceMenuListener {
 			c.add(BAR);
 		}
 
-		mVoiceMenu.setCommands(c.toArray(new String[c.size()]));
+//		mVoiceMenu.setCommands(c.toArray(new String[c.size()]));
+		mPhrases = c.toArray(new String[c.size()]);
+		mVoiceDetection.changePhrases(mPhrases);
 	}
 
 }

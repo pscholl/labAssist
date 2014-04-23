@@ -1,7 +1,9 @@
 package de.tud.ess;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
@@ -20,10 +23,11 @@ import de.tud.labAssist.R;
 /**
  * Created by Ramon on 22.04.2014.
  */
-public class VoiceMenuFragment extends Fragment {
+public class VoiceMenuDialogFragment extends DialogFragment {
 
 	public static final String HOTWORD = Constants.HOTWORD;
 	public static final String PHRASES = Constants.PHRASES;
+	public static final String FRAGMENT_TAG = VoiceMenuDialogFragment.class.getSimpleName();
 
 	private String mActivationWord;
 	private VoiceConfig mVoiceConfig;
@@ -31,6 +35,19 @@ public class VoiceMenuFragment extends Fragment {
 	private HeadListView mScroll;
 	private AudioManager mAudio;
 	private String[] mItems;
+
+	public static VoiceMenuDialogFragment getInstance(FragmentManager fm, String hotword, String... phrases) {
+		VoiceMenuDialogFragment f = (VoiceMenuDialogFragment) fm.findFragmentByTag(VoiceMenuDialogFragment.FRAGMENT_TAG);
+		if (f == null)
+			f = new VoiceMenuDialogFragment();
+		Bundle args = new Bundle();
+		args.putString(VoiceMenuDialogFragment.HOTWORD, hotword);
+		args.putStringArray(VoiceMenuDialogFragment.PHRASES, phrases);
+
+		f.setArguments(args);
+
+		return f;
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -46,7 +63,7 @@ public class VoiceMenuFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.voice_menu, container);
+		ViewGroup layout = (ViewGroup) inflater.inflate(R.layout.voice_menu, container, false);
 		mName = (TextView) layout.findViewById(R.id.hotword_text);
 		mName.setText(mActivationWord + ",");
 		mScroll = (HeadListView) layout.findViewById(R.id.hotword_chooser);
@@ -56,7 +73,8 @@ public class VoiceMenuFragment extends Fragment {
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				Activity activity = getActivity();
 				if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && activity != null && mScroll != null) {
-					((VoiceMenuListener)activity).onPhraseSelected(((TextView) mScroll.getSelectedItem()).getText().toString());
+					String str = ((String) mScroll.getSelectedItem());
+					((VoiceMenuListener)activity).onPhraseSelected(str);
 					if (mAudio != null)
 						mAudio.playSoundEffect(Sounds.TAP);
 					return true;
@@ -76,7 +94,14 @@ public class VoiceMenuFragment extends Fragment {
 
 
 		mAudio = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
-		mScroll.setAdapter(new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, mItems));
+		mScroll.setAdapter(new ArrayAdapter<String>(activity, R.layout.voice_menu_item, mItems));
+	}
+
+	@Override
+	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		Dialog dialog = super.onCreateDialog(savedInstanceState);
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		return dialog;
 	}
 
 	@Override
