@@ -7,6 +7,14 @@
 	<string name="show_labassist_voice_trigger">show protocol</string>
 	<string name="textview_default">Hello World!</string>
 	<string name="textview_middle_default">&quot;ok, glass&quot;</string>
+	<string name="timer_finished">Timer finished</string>
+	<string name="set_timer">Set Timer</string>
+	<string name="start">Start</string>
+	<string name="resume">Resume</string>
+	<string name="pause">Pause</string>
+	<string name="reset">Reset</string>
+	<string name="change_time">Change Time</string>
+	<string name="stop">Stop</string>
 
 	<string-array name="list_default">
 		<item>item 1</item>

@@ -9,8 +9,9 @@ import de.tud.ess.Constants;
 import de.tud.ess.VoiceDetection;
 import de.tud.ess.VoiceMenu;
 import de.tud.ess.VoiceMenuDialogFragment;
+import de.tud.labAssist.model.io.MarkdownManager;
 
-public class Launcher extends Activity implements VoiceDetection.VoiceDetectionListener, VoiceMenuDialogFragment.VoiceMenuListener {
+public class LauncherActivity extends Activity implements VoiceDetection.VoiceDetectionListener, VoiceMenuDialogFragment.VoiceMenuListener {
 
 	public static final String FILENAME = Constants.FILENAME;
 
@@ -69,7 +70,7 @@ public class Launcher extends Activity implements VoiceDetection.VoiceDetectionL
 		for (String path : mPaths)
 			if (item.equals(path)) {
 				Intent i = new Intent();
-				i.setClassName(this, LabAssist.class.getName());
+				i.setClassName(this, LabAssistActivity.class.getName());
 				i.putExtra(FILENAME, item + ".md");
 				startActivity(i);
 				return;

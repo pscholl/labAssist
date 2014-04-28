@@ -37,9 +37,10 @@ import de.tud.ess.HeadImageView;
 import de.tud.ess.VerticalBars;
 import de.tud.ess.VoiceDetection;
 import de.tud.ess.VoiceMenuDialogFragment;
-import de.tud.labAssist.LabMarkdown.ProtocolStep;
+import de.tud.labAssist.model.LabMarkdown;
+import de.tud.labAssist.model.LabMarkdown.ProtocolStep;
 
-public class LabAssist extends Activity implements VoiceDetection.VoiceDetectionListener {
+public class LabAssistActivity extends Activity implements VoiceDetection.VoiceDetectionListener {
 	private static final String TAG = "labAssist";
 
 	protected static final String NEXT = "next slide";
@@ -90,13 +91,13 @@ public class LabAssist extends Activity implements VoiceDetection.VoiceDetection
 		}
 		Log.e(TAG, path);
 
-		if (!getIntent().hasExtra(Launcher.FILENAME)) {
-			Log.e(TAG, String.format("missing argument for '%s'", Launcher.FILENAME));
+		if (!getIntent().hasExtra(LauncherActivity.FILENAME)) {
+			Log.e(TAG, String.format("missing argument for '%s'", LauncherActivity.FILENAME));
 			Toast.makeText(this, "no document supplied", Toast.LENGTH_LONG).show();
 			return;
 		}
 
-		String file = getIntent().getExtras().getString(Launcher.FILENAME);
+		String file = getIntent().getExtras().getString(LauncherActivity.FILENAME);
 
 		if (file == null) {
 			Toast.makeText(this, "file not found", Toast.LENGTH_LONG).show();

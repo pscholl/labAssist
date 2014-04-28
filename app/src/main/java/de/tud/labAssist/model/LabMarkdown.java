@@ -1,4 +1,4 @@
-package de.tud.labAssist;
+package de.tud.labAssist.model;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 
 import de.tud.ess.HeadImageView;
+import de.tud.labAssist.R;
 import in.uncod.android.bypass.Bypass;
 import in.uncod.android.bypass.Document;
 import in.uncod.android.bypass.Element;
