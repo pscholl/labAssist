@@ -1,3 +1,4 @@
+
 package de.tud.labAssist.model;
 
 import android.content.Context;
@@ -44,7 +45,6 @@ public class LabMarkdown extends CardScrollAdapter {
 	protected File mFile;
 	protected Document mDoc;
 	protected List<ProtocolStep> mElements;
-	//  protected Typeface mRoboto;
 	protected LayoutInflater mInflater;
 	protected AssetManager mAssets;
 	protected File mFileDir;
@@ -85,7 +85,7 @@ public class LabMarkdown extends CardScrollAdapter {
 
 		@Override
 		protected boolean visitHeader(Element e) {
-	  /* skip all header texts!! */
+//			skip all header texts!!
 			return false;
 		}
 
@@ -181,34 +181,34 @@ public class LabMarkdown extends CardScrollAdapter {
 		}
 
 		public Object visit(Element e) {
-			boolean decend = true;
-			String msg = "";
+			boolean descend = true;
+			String msg;
 			indent++;
 
 			switch (e.getType()) {
 				case TEXT:
-					decend = visitText(e);
+					descend = visitText(e);
 					break;
 				case HEADER:
-					decend = visitHeader(e);
+					descend = visitHeader(e);
 					break;
 				case PARAGRAPH:
-					decend = visitParagraph(e);
+					descend = visitParagraph(e);
 					break;
 				case LIST_ITEM:
-					decend = visitListItem(e);
+					descend = visitListItem(e);
 					break;
 				case EMPHASIS:
-					decend = visitEmphasised(e);
+					descend = visitEmphasised(e);
 					break;
 				case DOUBLE_EMPHASIS:
-					decend = visitDoubleEmphasised(e);
+					descend = visitDoubleEmphasised(e);
 					break;
 				case STRIKETHROUGH:
-					decend = visitStrikeThrough(e);
+					descend = visitStrikeThrough(e);
 					break;
 				case IMAGE:
-					decend = visitImage(e);
+					descend = visitImage(e);
 					break;
 				default:
 					msg = "ignored";
@@ -218,7 +218,7 @@ public class LabMarkdown extends CardScrollAdapter {
 					.name(), e.getText(), e.getAttributes().toString());
 			Log.d("markdown", msg);
 
-			if (decend)
+			if (descend)
 				for (int i = 0; i < e.size(); i++)
 					visit(e.getChild(i));
 
@@ -238,37 +238,25 @@ public class LabMarkdown extends CardScrollAdapter {
 			return true;
 		}
 
-		;
-
 		protected boolean visitHeader(Element e) {
 			return true;
 		}
-
-		;
 
 		protected boolean visitParagraph(Element e) {
 			return true;
 		}
 
-		;
-
 		protected boolean visitListItem(Element e) {
 			return true;
 		}
-
-		;
 
 		protected boolean visitEmphasised(Element e) {
 			return true;
 		}
 
-		;
-
 		protected boolean visitDoubleEmphasised(Element e) {
 			return true;
 		}
-
-		;
 	}
 
 	public class ToViewVisitor extends Visitor {
@@ -295,10 +283,12 @@ public class LabMarkdown extends CardScrollAdapter {
 
 		protected boolean visitParagraph(Element e) {
 			mText = (TextView) mInflater.inflate(R.layout.textview, mList, false);
-//      mText.setTypeface(mRoboto);
-      
-      /* do not add to list here, since this might be a paragraph not
-       * containing text! Instead add it in appendText. */
+//			mText.setTypeface(mRoboto);
+
+
+//			do not add to list here, since this might be a paragraph not
+//			containing text! Instead add it in appendText.
+
 
 			return true;
 		}
@@ -340,10 +330,12 @@ public class LabMarkdown extends CardScrollAdapter {
 				return false;
 
 			TextView hint = (TextView) mInflater.inflate(R.layout.hint, getFooter(), false);
-//      hint.setTypeface(mRoboto);
+//				hint.setTypeface(mRoboto);
 			hint.setText(header);
 
-      /* special case for the pictograms */
+
+/* special case for the pictograms */
+
 			header = header.toLowerCase(Locale.GERMAN);
 
 			if (header.contains("chemical"))
@@ -432,9 +424,11 @@ public class LabMarkdown extends CardScrollAdapter {
 			return true;
 		}
 
+
 		/**
 		 * adds an image to the view on the lower left side
 		 */
+
 		protected void addImage(String name) {
 			ImageView im = (ImageView) mInflater.inflate(R.layout.image, getFooter(), false);
 			try {
@@ -477,7 +471,9 @@ public class LabMarkdown extends CardScrollAdapter {
 			super.visit(e);
 
 			if (e.getParent() == null)
-				mCur.add(e); /* only add top-level elements */
+				mCur.add(e);
+/* only add top-level elements */
+
 
 			return (List<ProtocolStep>) mList;
 		}

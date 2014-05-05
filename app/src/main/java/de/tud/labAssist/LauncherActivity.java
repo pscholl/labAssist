@@ -7,7 +7,6 @@ import android.os.Bundle;
 
 import de.tud.ess.Constants;
 import de.tud.ess.VoiceDetection;
-import de.tud.ess.VoiceMenu;
 import de.tud.ess.VoiceMenuDialogFragment;
 import de.tud.labAssist.model.io.MarkdownManager;
 
@@ -20,7 +19,6 @@ public class LauncherActivity extends Activity implements VoiceDetection.VoiceDe
 
 	protected String[] mPaths;
 	private VoiceDetection mVoiceDetection;
-	private VoiceMenu mVoiceMenu;
 	
 
 	@Override

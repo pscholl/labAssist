@@ -37,8 +37,9 @@ import de.tud.ess.HeadImageView;
 import de.tud.ess.VerticalBars;
 import de.tud.ess.VoiceDetection;
 import de.tud.ess.VoiceMenuDialogFragment;
-import de.tud.labAssist.model.LabMarkdown;
-import de.tud.labAssist.model.LabMarkdown.ProtocolStep;
+import de.tud.labAssist.model.MajorStep;
+import de.tud.labAssist.model.ProtocolAdapter;
+import de.tud.labAssist.model.io.MarkdownManager;
 
 public class LabAssistActivity extends Activity implements VoiceDetection.VoiceDetectionListener {
 	private static final String TAG = "labAssist";
@@ -128,14 +129,15 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 			mBarText = (TextView) findViewById(R.id.bartext);
 //      mBarText.setTypeface(RobotoTypefaces.getTypeface(this, RobotoTypefaces.WEIGHT_THIN));
 		} else
-			setContentView(R.layout.main);
+			setContentView(R.layout.protocol_pager);
 
 //		mVoiceMenu = new VoiceMenu(this, OKGLASS);
 		mVoiceDetection = new VoiceDetection(this, OKGLASS, this);
 
-		LabMarkdown lm = new LabMarkdown(this, mdown);
-		mCardScrollView = (CardScrollView) findViewById(R.id.cardscroll);
-		mCardScrollView.setAdapter(lm);
+//		LabMarkdown lm = new LabMarkdown(this, mdown);
+
+		mCardScrollView = (CardScrollView) findViewById(R.id.protocol_pager);
+		mCardScrollView.setAdapter(new ProtocolAdapter(this, MarkdownManager.getProtocol(mdown)));
 		mCardScrollView.setOnItemClickListener(new LabOnClickListener());
 		mCardScrollView.setOnItemSelectedListener(new VoiceConfigChanger());
 
@@ -247,15 +249,15 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 	public class LabOnClickListener implements OnItemClickListener {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int cur, long id) {
-			ProtocolStep step = (ProtocolStep) mCardScrollView.getItemAtPosition(cur);
+			MajorStep step = (MajorStep) mCardScrollView.getItemAtPosition(cur);
 
 			mAudio.playSoundEffect(Sounds.TAP);
-			if (step.hasZoomAbleImage()) {
-				HeadImageView v = (HeadImageView) view.findViewById(R.id.imview);
-				v.setScaleFactor(v.getScaleFactor() + SCALE_STEP);
-				Log.e(TAG, "zoomed in (via tap)");
-			} else if (step.hasCheckableItems())
-				markAsDone(step, cur);
+//			if (step.hasZoomAbleImage()) {
+//				HeadImageView v = (HeadImageView) view.findViewById(R.id.imview);
+//				v.setScaleFactor(v.getScaleFactor() + SCALE_STEP);
+//				Log.e(TAG, "zoomed in (via tap)");
+//			} else if (step.hasCheckableItems())
+//				markAsDone(step, cur);
 		}
 
 	}
@@ -277,8 +279,8 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		//Log.e(TAG, String.format("switch to item (%d)", position));
 	}
 
-	protected void markAsDone(ProtocolStep step, int pos) {
-		boolean done = step.markAsDone();
+	protected void markAsDone(MajorStep step, int pos) {
+		boolean done = /*step.markAsDone();*/ false;
 		mCardScrollView.getAdapter().getView(pos, mCardScrollView.getSelectedView(), null);
 		if (done)
 			callAnimateTo(pos + 1, ANIMATE_GOTO);
@@ -290,8 +292,8 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		@Override
 		public void onItemSelected(AdapterView<?> parent, View view, int position,
 								   long id) {
-			ProtocolStep s = (ProtocolStep) parent.getItemAtPosition(position);
-			recreateVoiceMenu(s);
+			MajorStep step = (MajorStep) parent.getItemAtPosition(position);
+			recreateVoiceMenu(step);
 		}
 
 		@Override
@@ -303,7 +305,7 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 	private void onItemSelected(String literal) {
 		try {
 			int cur = mCardScrollView.getSelectedItemPosition();
-			ProtocolStep step = (ProtocolStep) mCardScrollView
+			MajorStep step = (MajorStep) mCardScrollView
 					.getItemAtPosition(cur);
 			HeadImageView im = (HeadImageView) mCardScrollView
 					.getSelectedView().findViewById(R.id.imview);
@@ -378,17 +380,17 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		mBarText.setText(String.format("%s - %s", mBarColor.trim(), mBarPosition.trim()));
 	}
 
-	protected void recreateVoiceMenu(ProtocolStep s) { //TODO: always use accept all Commands, just ingore and hide thos not applicable right now (-> prevent recreating VoiceConfig)
+	protected void recreateVoiceMenu(MajorStep step) { //TODO: always use accept all Commands, just ingore and hide thos not applicable right now (-> prevent recreating VoiceConfig)
 		List<String> c = new LinkedList<>(Arrays.asList(STATIC_VOICECOMMANDS));
 
-		if (s.hasZoomAbleImage()) {
-			c.add(ZOOM_IN);
-			c.add(ZOOM_OUT);
-		}
-		if (s.hasCheckableItems()) {
-			c.add(CHECK);
-			c.add(DONE);
-		}
+//		if (step.hasZoomAbleImage()) {
+//			c.add(ZOOM_IN);
+//			c.add(ZOOM_OUT);
+//		}
+//		if (step.hasCheckableItems()) {
+//			c.add(CHECK);
+//			c.add(DONE);
+//		}
 		if (mAttentionChallenge) {
 			c.add(BAR);
 		}
