@@ -24,36 +24,36 @@ public abstract class MarkdownVisitor {
 	}
 
 	public void visit(Element e) {
-		boolean descend = true;
 //		String msg = "";
 		level++;
 
 		switch (e.getType()) {
 			case TEXT:
-				descend = visitText(e);
+				visitText(e);
 				break;
 			case HEADER:
-				descend = visitHeader(e);
+				visitHeader(e);
 				break;
 			case PARAGRAPH:
-				descend = visitParagraph(e);
+				visitParagraph(e);
 				break;
 			case LIST_ITEM:
-				descend = visitListItem(e);
+				visitListItem(e);
 				break;
 			case EMPHASIS:
-				descend = visitEmphasised(e);
+				visitEmphasised(e);
 				break;
 			case DOUBLE_EMPHASIS:
-				descend = visitDoubleEmphasised(e);
+				visitDoubleEmphasised(e);
 				break;
 			case STRIKETHROUGH:
-				descend = visitStrikeThrough(e);
+				visitStrikeThrough(e);
 				break;
 			case IMAGE:
-				descend = visitImage(e);
+				visitImage(e);
 				break;
 			default:
+				visitChildren(e);
 //				msg = "ignored";
 				break;
 		}
@@ -61,47 +61,48 @@ public abstract class MarkdownVisitor {
 //				.name(), e.getText(), e.getAttributes().toString());
 //		Log.d("markdown", msg);
 
-		if (descend)
-			for (int i = 0; i < e.size(); i++)
-				visit(e.getChild(i));
-
 		level--;
 //		return null;
+	}
+
+	protected void visitChildren(Element element) {
+		for (int i = 0; i < element.size(); i++)
+			visit(element.getChild(i));
 	}
 
 	protected int getLevel() {
 		return level;
 	}
 
-	protected boolean visitImage(Element e) {
-		return true;
+	protected void visitImage(Element e) {
+		visitChildren(e);
 	}
 
-	protected boolean visitStrikeThrough(Element e) {
-		return true;
+	protected void visitStrikeThrough(Element e) {
+		visitChildren(e);
 	}
 
-	protected boolean visitText(Element e) {
-		return true;
+	protected void visitText(Element e) {
+		visitChildren(e);
 	}
 
-	protected boolean visitHeader(Element e) {
-		return true;
+	protected void visitHeader(Element e) {
+		visitChildren(e);
 	}
 
-	protected boolean visitParagraph(Element e) {
-		return true;
+	protected void visitParagraph(Element e) {
+		visitChildren(e);
 	}
 
-	protected boolean visitListItem(Element e) {
-		return true;
+	protected void visitListItem(Element e) {
+		visitChildren(e);
 	}
 
-	protected boolean visitEmphasised(Element e) {
-		return true;
+	protected void visitEmphasised(Element e) {
+		visitChildren(e);
 	}
 
-	protected boolean visitDoubleEmphasised(Element e) {
-		return true;
+	protected void visitDoubleEmphasised(Element e) {
+		visitChildren(e);
 	}
 }

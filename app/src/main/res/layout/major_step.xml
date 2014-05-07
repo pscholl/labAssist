@@ -1,26 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/mainView"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:layout_margin="20dp"
-	android:orientation="vertical" >
+			  android:layout_width="match_parent"
+			  android:layout_height="match_parent"
+			  android:padding="5dp"
+			  android:orientation="vertical">
 
-		<de.tud.ess.HeadScrollView
-			android:id="@+id/scrollView"
-			android:layout_width="match_parent"
+	<de.tud.ess.HeadListView
+		android:id="@+id/scrollView"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_gravity="center_vertical"/>
+
+	<RelativeLayout
+		android:id="@+id/footer"
+		android:layout_width="match_parent"
+		android:layout_height="30dp"
+		android:layout_marginLeft="20dp"
+		android:layout_marginRight="20dp">
+
+		<TextView
+			android:id="@+id/header"
+			android:layout_width="wrap_content"
 			android:layout_height="match_parent"
-			android:layout_gravity="center_vertical">
+			android:layout_alignParentRight="true"
+			android:layout_centerVertical="true"
+			android:textSize="20sp"/>
 
-		</de.tud.ess.HeadScrollView>
-
-		<RelativeLayout
-			android:id="@+id/footer"
-			android:layout_width="match_parent"
-			android:layout_height="30dp"
-			android:layout_marginLeft="20dp"
-			android:layout_marginRight="20dp" >
-
-		</RelativeLayout>
+	</RelativeLayout>
 
 </LinearLayout>
