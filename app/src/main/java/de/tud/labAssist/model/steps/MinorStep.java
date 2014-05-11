@@ -1,15 +1,22 @@
 package de.tud.labAssist.model.steps;
 
+import android.text.SpannableString;
+
 /**
  * Created by Ramon on 28.04.2014.
  */
 public class MinorStep {
 
-	private String text;
+	private SpannableString text;
 	private boolean done;
 
-	public MinorStep(String text) {
+	public MinorStep(SpannableString text, boolean done) {
 		this.text = text;
+		this.done = done;
+	}
+
+	public MinorStep(SpannableString text) {
+		this(text, false);
 	}
 
 	public boolean isDone() {
@@ -20,16 +27,16 @@ public class MinorStep {
 		this.done = done;
 	}
 
-	public String getText() {
+	public SpannableString getText() {
 		return text;
 	}
 
-	public void setText(String text) {
+	public void setText(SpannableString text) {
 		this.text = text;
 	}
 
 	@Override
 	public String toString() {
-		return getText();
+		return getText().toString();
 	}
 }

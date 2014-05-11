@@ -1,4 +1,3 @@
-
 package de.tud.labAssist.model;
 
 import android.content.Context;
