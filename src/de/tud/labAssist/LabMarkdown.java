@@ -530,12 +530,10 @@ public class LabMarkdown extends CardScrollAdapter {
     return fileData.toString();
   }
 
-  @Override
   public int findIdPosition(Object key) {
     return findItemPosition(key);
   }
 
-  @Override
   public int findItemPosition(Object item) {
     return -1;
   }
@@ -555,4 +553,9 @@ public class LabMarkdown extends CardScrollAdapter {
     ProtocolStep ps = mElements.get(idx);
     return ps.toView(v);
   }
+
+@Override
+public int getPosition(Object arg0) {
+	return -1;
+}
 }
