@@ -64,7 +64,12 @@ public class HeadListView extends ListView implements SensorEventListener {
 	}
 
 	private boolean needsScrolling() {
-		return getListPaddingTop() < getChildAt(0).getTop() || getChildAt(getChildCount()-1).getBottom() > getBottom() - getListPaddingBottom();
+    View a = getChildAt(0),
+         b = getChildAt(getChildCount()-1);
+
+		return (a!=null && b!=null) &&
+           (getListPaddingTop() < a.getTop() ||
+            b.getBottom() > getBottom() - getListPaddingBottom());
 	}
 
 	@Override
