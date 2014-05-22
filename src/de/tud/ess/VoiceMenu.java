@@ -20,7 +20,6 @@ import com.google.glass.input.VoiceInputHelper;
 import com.google.glass.util.PowerHelper;
 import com.google.glass.voice.VoiceCommand;
 import com.google.glass.voice.VoiceConfig;
-import com.google.glass.widget.RobotoTypefaces;
 
 public class VoiceMenu extends StubVoiceListener {
 
@@ -39,9 +38,9 @@ public class VoiceMenu extends StubVoiceListener {
     public View getView(int position, View convertView, ViewGroup parent) {
       TextView tv = new TextView(mContext);
       
-      Typeface roboto = RobotoTypefaces.getTypeface(mContext,
-          RobotoTypefaces.WEIGHT_THIN);
-      tv.setTypeface(roboto);
+      //Typeface roboto = RobotoTypefaces.getTypeface(mContext,
+      //    RobotoTypefaces.WEIGHT_THIN);
+      //tv.setTypeface(roboto);
       tv.setText(mItems[position]);
       tv.setGravity(Gravity.LEFT);
       tv.setTextSize(30);
@@ -78,7 +77,7 @@ public class VoiceMenu extends StubVoiceListener {
        
     mActivationWord = hotword;
     mVoiceConfig = new VoiceConfig(
-        c.getApplicationInfo().name, new String[] {});
+        "meh", new String[] {});
     setCommands(items);
 
     mPower = new PowerHelper(mContext);
@@ -108,7 +107,7 @@ public class VoiceMenu extends StubVoiceListener {
     if (mListener == null) {
       mVoiceInputHelper.removeVoiceServiceListener();
       shutdown();
-      return mVoiceConfig;
+      return null;
     }
     
     if (literal.equals(mActivationWord)) {
@@ -122,7 +121,7 @@ public class VoiceMenu extends StubVoiceListener {
         Log.e("labAssist", String.format("command %s", literal));
         mListener.onItemSelected(item);
         shutdown();
-        return mVoiceConfig;
+        return null;
       }
     }
     
@@ -157,9 +156,9 @@ public class VoiceMenu extends StubVoiceListener {
     mRoot.addView(mLayout, p);
     
     TextView tv = new TextView(mContext);
-    Typeface roboto = RobotoTypefaces.getTypeface(mContext,
-        RobotoTypefaces.WEIGHT_THIN);
-    tv.setTypeface(roboto);
+    //Typeface roboto = RobotoTypefaces.getTypeface(mContext,
+    //    RobotoTypefaces.WEIGHT_THIN);
+    //tv.setTypeface(roboto);
     tv.setText(mActivationWord + ", ");
     tv.setGravity(Gravity.LEFT);
     tv.setId(1);
@@ -213,7 +212,7 @@ public class VoiceMenu extends StubVoiceListener {
       hotwords[i+1] = items[i];
     hotwords[0] = mActivationWord;
     
-    mVoiceConfig.setPhrases(hotwords);
+    mVoiceConfig.setCustomPhrases(hotwords);
     mVoiceInputHelper.setVoiceConfig(mVoiceConfig, false);
   }
 }

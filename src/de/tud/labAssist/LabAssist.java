@@ -30,7 +30,6 @@ import android.widget.Toast;
 
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.widget.CardScrollView;
-import com.google.glass.widget.RobotoTypefaces;
 
 import de.tud.ess.BearingLocalizer;
 import de.tud.ess.BearingLocalizer.BearingLocalizerListener;
@@ -115,7 +114,7 @@ public class LabAssist extends FragmentActivity implements VoiceMenuListener {
       setContentView(R.layout.barlayout);
       mAttentionChallenge = true;
       mBarText = (TextView) findViewById(R.id.bartext);
-      mBarText.setTypeface(RobotoTypefaces.getTypeface(this, RobotoTypefaces.WEIGHT_THIN));
+      //mBarText.setTypeface(RobotoTypefaces.getTypeface(this, RobotoTypefaces.WEIGHT_THIN));
     } else
       setContentView(R.layout.main);
 

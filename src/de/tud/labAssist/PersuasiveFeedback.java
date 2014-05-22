@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.glass.media.Sounds;
-import com.google.glass.widget.RobotoTypefaces;
 
 public class PersuasiveFeedback extends Activity {
 
@@ -46,7 +45,7 @@ public class PersuasiveFeedback extends Activity {
     }
     
     mTextView = (TextView) findViewById(R.id.textView);
-    mTextView.setTypeface(RobotoTypefaces.getTypeface(this, RobotoTypefaces.WEIGHT_THIN));
+    //mTextView.setTypeface(RobotoTypefaces.getTypeface(this, RobotoTypefaces.WEIGHT_THIN));
     
     //if (num_feedback == 0)
     mTextView.setText("Katalysator bitte sachgerecht verstauen");

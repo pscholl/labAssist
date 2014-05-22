@@ -5,7 +5,7 @@ DNA Extraktion aus Zwiebeln und Tomaten
  - kombiniere 50ml lauwarmes Wasser, 1/2 Teelöffel Salz und 3ml Geschirrspülmittel in einem 200ml Becherglas (Zwiebel) [combine]
  - gut verrühren [incubate]
 
-# Katalysator
+# Katalysator [feedback]
 
  einen Tropfen Katalysator- Flüssigkeit zur Lösung (Zwiebel) hinzufügen
 
@@ -20,7 +20,7 @@ DNA Extraktion aus Zwiebeln und Tomaten
  - 1ml Feinwaschmittel hinzugeben [combine]
  - gut verrühren [incubate]
 
-# Katalysator
+# Katalysator [feedback]
 
  einen Tropfen Katalysator- Flüssigkeit zur Lösung (Zwiebel) hinzufügen
 
@@ -34,7 +34,7 @@ DNA Extraktion aus Zwiebeln und Tomaten
  - kombiniere 50ml lauwarmes Wasser, 1/2 Teelöffel Salz und 3ml Geschirrspülmittel in einem 200ml Becherglas [combine]
  - gut verrühren [incubate]
 
-# Katalysator
+# Katalysator [feedback]
 
  einen Tropfen Katalysator- Flüssigkeit zur Lösung (Tomate) hinzufügen
 
@@ -48,7 +48,7 @@ DNA Extraktion aus Zwiebeln und Tomaten
  - 1ml Feinwaschmittel hinzugeben [combine]
  - gut verrühren [incubate]
 
-# Katalysator
+# Katalysator [feedback]
 
  einen Tropfen Katalysator- Flüssigkeit zur Lösung (Tomate) hinzufügen
 
@@ -60,7 +60,7 @@ DNA Extraktion aus Zwiebeln und Tomaten
 
  200ml Becherglas (Tomate) für ca. 10min in das heiße Wasserbad tauchen [incubate]
 
-# Katalysator
+# Katalysator [feedback]
 
  einen Tropfen Katalysator- Flüssigkeit zur Lösung (Zwiebel) hinzufügen
 
@@ -74,7 +74,7 @@ DNA Extraktion aus Zwiebeln und Tomaten
  - Trichter in 100ml Becherglas stellen
  - Zwiebel-Mixtur vorsichtig durch Filter pressen [separate]
 
-# Katalysator
+# Katalysator [feedback]
 
  einen Tropfen Katalysator- Flüssigkeit zur Lösung (Zwiebel) hinzufügen
 
@@ -93,7 +93,7 @@ DNA Extraktion aus Zwiebeln und Tomaten
 
  200ml Becherglas (Tomate) für 5min in Eiswasser tauchen [incubate]
 
-# Katalysator
+# Katalysator [feedback]
 
  einen Tropfen Katalysator- Flüssigkeit zur Lösung (Tomate) hinzufügen
 
@@ -107,7 +107,7 @@ DNA Extraktion aus Zwiebeln und Tomaten
  - Trichter in 100ml Becherglas (Tomate) stellen
  - Tomaten-Mixtur vorsichtig durch Filter pressen [separate]
 
-# Katalysator
+# Katalysator [feedback]
 
  einen Tropfen Katalysator- Flüssigkeit zur Lösung (Tomate) hinzufügen
 

@@ -37,7 +37,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.glass.widget.CardScrollAdapter;
-import com.google.glass.widget.RobotoTypefaces;
 
 import de.tud.ess.HeadImageView;
 
@@ -294,7 +293,7 @@ public class LabMarkdown extends CardScrollAdapter {
 
     protected boolean visitParagraph(Element e) {
       mText = (TextView) mInflater.inflate(R.layout.textview, mList, false);
-      mText.setTypeface(mRoboto);
+      //mText.setTypeface(mRoboto);
 
       /*
        * do not add to list here, since this might be a paragraph not containing
@@ -342,7 +341,7 @@ public class LabMarkdown extends CardScrollAdapter {
 
       TextView hint = (TextView) mInflater.inflate(R.layout.hint, getFooter(),
           false);
-      hint.setTypeface(mRoboto);
+      //hint.setTypeface(mRoboto);
       hint.setText(header);
 
       /* special case for the pictograms */
@@ -514,7 +513,7 @@ public class LabMarkdown extends CardScrollAdapter {
         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     mAssets = c.getAssets();
     mFileDir = c.getExternalFilesDir(null);
-    mRoboto = RobotoTypefaces.getTypeface(c, RobotoTypefaces.WEIGHT_THIN);
+    //mRoboto = RobotoTypefaces.getTypeface(c, RobotoTypefaces.WEIGHT_THIN);
   }
 
   protected static String readFileAsString(String string) throws IOException {
