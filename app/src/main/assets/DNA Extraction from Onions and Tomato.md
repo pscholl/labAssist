@@ -30,7 +30,7 @@ DNA Extraktion aus Zwiebeln und Tomaten
 
  - Tomate in 1cm-große Stücke schneiden [incubate]
 
-# Tomaten-Mixture herstellen
+# Tomaten-Mixtur herstellen
 
  - in 200ml Becherglas (Tomate) mit Lösung vermischen [combine]
  - 1ml Feinwaschmittel hinzugeben [combine]

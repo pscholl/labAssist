@@ -114,36 +114,42 @@ public class ReadInVisitor extends MarkdownVisitor {
 		if (m.find()) {
 			stepBuilder.addAnnotation(m.group(1));
 		} else {
-			stringBuilder.append(e.getText());
+			appendText(e.getText());
 		}
+	}
+
+	private void appendText(String text) {
+		appendText(text, null);
+	}
+
+	private void appendText(String text, CharacterStyle style) {
+		if (text.trim().length() == 0)
+			return;
+
+		stringBuilder.append(text);
+		int newLength = stringBuilder.length();
+		if (style != null)
+			stringBuilder.setSpan(style, currentCharCount, newLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+		currentCharCount = newLength;
 	}
 
 	@Override
 	protected void visitDoubleEmphasised(Element e) {
-		stringBuilder.append(e.getText());
-		int newLength = stringBuilder.length();
-		stringBuilder.setSpan(styleBold, currentCharCount, newLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-		currentCharCount = newLength;
+		appendText(e.getText(), styleBold);
 
 		super.visitDoubleEmphasised(e);
 	}
 
 	@Override
 	protected void visitEmphasised(Element e) {
-		stringBuilder.append(e.getText());
-		int newLength = stringBuilder.length();
-		stringBuilder.setSpan(styleItalic, currentCharCount, newLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-		currentCharCount = newLength;
+		appendText(e.getText(), styleItalic);
 
 		super.visitEmphasised(e);
 	}
 
 	@Override
 	protected void visitStrikeThrough(Element e) {
-		stringBuilder.append(e.getText());
-		int newLength = stringBuilder.length();
-		stringBuilder.setSpan(styleStrike, currentCharCount, newLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-		currentCharCount = newLength;
+		appendText(e.getText(), styleStrike);
 
 		super.visitStrikeThrough(e);
 	}

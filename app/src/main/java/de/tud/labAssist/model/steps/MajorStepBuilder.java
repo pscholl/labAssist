@@ -1,6 +1,9 @@
 package de.tud.labAssist.model.steps;
 
+import android.graphics.Typeface;
 import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -14,7 +17,7 @@ import de.tud.labAssist.model.Time;
  * Created by Ramon on 05.05.2014.
  */
 public class MajorStepBuilder {
-	private static final Pattern TIME_PATTERN = Pattern.compile(".*(\\d+)(\\.(\\d)+)?[ ]?(minutes|min|seconds|sec|s|hours|h).*");
+	private static final Pattern TIME_PATTERN = Pattern.compile("(\\d+)(\\.(\\d)+)?[ ]?(minutes|min|seconds|sec|s|hours|h)");
 	private static final String THIS = MajorStepBuilder.class.getSimpleName();
 
 
@@ -41,7 +44,15 @@ public class MajorStepBuilder {
 	}
 
 	public MajorStep build() {
+
+		List<MinorStep> minors = generateMinorSteps(true);
+
+		return new MajorStep(header, minors, annotations);
+	}
+
+	private List<MinorStep> generateMinorSteps(boolean highlightTimes) {
 		List<MinorStep> minors = new ArrayList<>(paragraphs.size());
+
 		for (SpannableString ss: paragraphs) {
 			Matcher m = TIME_PATTERN.matcher(ss.toString());
 
@@ -63,16 +74,24 @@ public class MajorStepBuilder {
 						break;
 					case 'h': h += floor;
 				}
+
+				if (highlightTimes) {
+					ss.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), m.start(), m.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+				}
 			}
 
-			Time t = new Time(sec, min, h);
+			if (sec > 0 || min > 0 || h > 0) {
+				Time t = new Time(sec, min, h);
 
-			Log.i(THIS, "Detected Time: "+ t.toString());
+				Log.i(THIS, "Detected Time: " + t.toString());
 
-			minors.add(new TimedMinorStep(ss, t));
+				minors.add(new TimedMinorStep(ss, t));
+			} else {
+				minors.add(new MinorStep(ss));
+			}
 		}
 
-		return new MajorStep(header, paragraphs);
+		return minors;
 	}
 
 	public void reset() {

@@ -1,11 +1,9 @@
 package de.tud.labAssist.model;
 
 import android.content.Context;
-import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -13,6 +11,7 @@ import com.google.android.glass.widget.CardScrollAdapter;
 
 import java.util.List;
 
+import de.tud.ess.AdapterGridLayout;
 import de.tud.labAssist.R;
 import de.tud.labAssist.model.steps.MajorStep;
 
@@ -26,7 +25,7 @@ public class ProtocolAdapter extends CardScrollAdapter {
 
 	private static class ViewMem {
 		public ListView listView;
-		public ViewGroup footer;
+		public AdapterGridLayout footer;
 		public TextView header;
 	}
 
@@ -61,7 +60,7 @@ public class ProtocolAdapter extends CardScrollAdapter {
 
 			mem.header = (TextView) v.findViewById(R.id.header);
 			mem.listView = (ListView) v.findViewById(R.id.scrollView);
-			mem.footer = (ViewGroup) v.findViewById(R.id.footer);
+			mem.footer = (AdapterGridLayout) v.findViewById(R.id.footer);
 
 			v.setTag(mem);
 
@@ -71,25 +70,9 @@ public class ProtocolAdapter extends CardScrollAdapter {
 
 		mem.header.setText(step.getHeader());
 
-		mem.listView.setAdapter(new ArrayAdapter<SpannableString>(context, android.R.layout.simple_list_item_1, step.getMinorSteps()) {
-			@Override
-			public View getView(int position, View convertView, ViewGroup parent) {
-				TextView v;
+		mem.footer.setAdapter(new AnnotationAdapter(context, step.getAnnotations()));
 
-				if (convertView != null) {
-					v = (TextView) convertView;
-				} else {
-					v = (TextView) inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
-					v.setTextSize(30);
-				}
-
-				v.setText(getItem(position));
-
-
-				return v;
-			}
-		});
-		//TODO: many things, mainly footer
+		mem.listView.setAdapter(new MinorStepAdapter(context, step.getMinorSteps()));
 		return v;
 	}
 
@@ -97,4 +80,5 @@ public class ProtocolAdapter extends CardScrollAdapter {
 	public int getPosition(Object o) {
 		return steps.indexOf(o);
 	}
+
 }

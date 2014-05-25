@@ -7,7 +7,7 @@ import android.text.SpannableString;
  */
 public class MinorStep {
 
-	private SpannableString text;
+	private final SpannableString text;
 	private boolean done;
 
 	public MinorStep(SpannableString text, boolean done) {
@@ -29,10 +29,6 @@ public class MinorStep {
 
 	public SpannableString getText() {
 		return text;
-	}
-
-	public void setText(SpannableString text) {
-		this.text = text;
 	}
 
 	@Override

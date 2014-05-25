@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
@@ -67,6 +68,10 @@ public class VoiceMenuDialogFragment extends DialogFragment {
 		mName = (TextView) layout.findViewById(R.id.hotword_text);
 		mName.setText(mActivationWord + ",");
 		mScroll = (HeadListView) layout.findViewById(R.id.hotword_chooser);
+		View v = new View(getActivity());
+		v.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.headscroll_footer)));
+//		mScroll.addFooterView(v, null, false);//TODO: test??
+//		mScroll.addHeaderView(v, null, false);
 
 		mScroll.setOnKeyListener(new View.OnKeyListener() {
 			@Override // catch the TAP event
@@ -108,14 +113,14 @@ public class VoiceMenuDialogFragment extends DialogFragment {
 	public void onStart() {
 		super.onStart();
 
-		mScroll.activate();
-		mScroll.requestFocus();
+//		mScroll.activate();
+//		mScroll.requestFocus();
 	}
 
 	@Override
 	public void onStop() {
 
-		mScroll.deactivate();
+//		mScroll.deactivate();
 
 		super.onStop();
 	}

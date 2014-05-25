@@ -39,7 +39,7 @@ import de.tud.labAssist.model.steps.MajorStep;
 import de.tud.labAssist.model.ProtocolAdapter;
 import de.tud.labAssist.model.io.MarkdownManager;
 
-public class LabAssistActivity extends Activity implements VoiceDetection.VoiceDetectionListener {
+public class LabAssistActivity extends Activity implements VoiceDetection.VoiceDetectionListener, VoiceMenuDialogFragment.VoiceMenuListener {
 	protected static final String NEXT = "next slide";
 	protected static final String PREVIOUS = "previous";
 	protected static final String[] STATIC_VOICECOMMANDS = new String[]
@@ -57,7 +57,6 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 	protected static final float SCALE_STEP = 0.5F;
 	private static final String TAG = "labAssist";
 	protected CardScrollView mCardScrollView;
-//	protected VoiceMenu mVoiceMenu;
 	protected boolean mAttentionChallenge = false;
 	protected TextView mBarText;
 	protected Process mLogcat;
@@ -72,6 +71,7 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 	private String[] mPhrases;
 	private boolean mVoiceMenuVisible = false;
 	private VoiceMenuDialogFragment mVoiceMenu;
+	private ProtocolAdapter protocolAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +121,6 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 			setContentView(R.layout.barlayout);
 			mAttentionChallenge = true;
 			mBarText = (TextView) findViewById(R.id.bartext);
-//      mBarText.setTypeface(RobotoTypefaces.getTypeface(this, RobotoTypefaces.WEIGHT_THIN));
 		} else
 			setContentView(R.layout.protocol_pager);
 
@@ -130,7 +129,9 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 //		LabMarkdown lm = new LabMarkdown(this, mdown);
 
 		mCardScrollView = (CardScrollView) findViewById(R.id.protocol_pager);
-		mCardScrollView.setAdapter(new ProtocolAdapter(this, MarkdownManager.getProtocol(mdown)));
+		protocolAdapter = new ProtocolAdapter(this, MarkdownManager.getProtocol(mdown));
+
+		mCardScrollView.setAdapter(protocolAdapter);
 		mCardScrollView.setOnItemClickListener(new LabOnClickListener());
 		mCardScrollView.setOnItemSelectedListener(new VoiceConfigChanger());
 
@@ -192,7 +193,6 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 	@Override
 	protected void onPause() {
 		super.onPause();
-//		mVoiceMenu.setListener(null);
 		mVoiceDetection.stop();
 		mCardScrollView.deactivate();
 		mBearinglocalizer.deactivate();
@@ -221,7 +221,14 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		onItemSelected(phrase);
 	}
 
-	protected void callAnimateTo(int position, int animate) {
+	@Override
+	public void onPhraseSelected(String phrase) {
+		mVoiceMenu.dismiss();
+
+		onItemSelected(phrase);
+	}
+
+	protected void callAnimateTo(int position, int animate) {//TODO: ?? wtf ??
 		if (mAnimateFunc == null)
 			for (Method m : mCardScrollView.getClass().getDeclaredMethods())
 				if (m.getName().equals("animateToSelection")) {
@@ -238,20 +245,10 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		//Log.e(TAG, String.format("switch to item (%d)", position));
 	}
 
-	protected void markAsDone(MajorStep step, int pos) {
-		boolean done = /*step.markAsDone();*/ false;
-		mCardScrollView.getAdapter().getView(pos, mCardScrollView.getSelectedView(), null);
-		if (done)
-			callAnimateTo(pos + 1, ANIMATE_GOTO);
-
-		Log.e(TAG, String.format("marked item %d as done (%b)", pos, done));
-	}
-
 	private void onItemSelected(String literal) {
 		try {
 			int cur = mCardScrollView.getSelectedItemPosition();
-			MajorStep step = (MajorStep) mCardScrollView
-					.getItemAtPosition(cur);
+			MajorStep step = protocolAdapter.getItem(cur);
 			HeadImageView im = (HeadImageView) mCardScrollView
 					.getSelectedView().findViewById(R.id.imview);
 
@@ -260,7 +257,7 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 			else if (NEXT.equals(literal))
 				callAnimateTo(cur + 1, ANIMATE_GOTO);
 			else if (CHECK.equals(literal) || DONE.equals(literal))
-				markAsDone(step, cur);
+				markAsDone(step);
 			else if (ZOOM_IN.equals(literal))
 				im.setScaleFactor(im.getScaleFactor() + SCALE_STEP);
 			else if (ZOOM_OUT.equals(literal))
@@ -322,40 +319,48 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		mBarText.setText(String.format("%s - %s", mBarColor.trim(), mBarPosition.trim()));
 	}
 
-	protected void recreateVoiceMenu(MajorStep step) { //TODO: always use accept all Commands, just ingore and hide thos not applicable right now (-> prevent recreating VoiceConfig)
+	protected void recreateVoiceMenu(MajorStep step) { //TODO: always use all Commands, just ignore and hide those not applicable right now (-> prevent recreating VoiceConfig)
 		List<String> c = new LinkedList<>(Arrays.asList(STATIC_VOICECOMMANDS));
 
-//		if (step.hasZoomAbleImage()) {
-//			c.add(ZOOM_IN);
-//			c.add(ZOOM_OUT);
-//		}
-//		if (step.hasCheckableItems()) {
-//			c.add(CHECK);
-//			c.add(DONE);
-//		}
+		if (step.hasZoomAbleImage()) {
+			c.add(ZOOM_IN);
+			c.add(ZOOM_OUT);
+		}
+		if (step.hasCheckableItems()) {
+			c.add(CHECK);
+			c.add(DONE);
+		}
 		if (mAttentionChallenge) {
 			c.add(BAR);
 		}
 
-//		mVoiceMenu.setCommands(c.toArray(new String[c.size()]));
 		mPhrases = c.toArray(new String[c.size()]);
 		mVoiceDetection.changePhrases(mPhrases);
 	}
 
-	public class LabOnClickListener implements OnItemClickListener {
+	private class LabOnClickListener implements OnItemClickListener {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int cur, long id) {
-			MajorStep step = (MajorStep) mCardScrollView.getItemAtPosition(cur);
+			MajorStep step = protocolAdapter.getItem(cur);
 
 			mAudio.playSoundEffect(Sounds.TAP);
-//			if (step.hasZoomAbleImage()) {
-//				HeadImageView v = (HeadImageView) view.findViewById(R.id.imview);
+			if (step.hasZoomAbleImage()) {
+//				HeadImageView v = (HeadImageView) view.findViewById(R.id.imview);//TODO: reimplement
 //				v.setScaleFactor(v.getScaleFactor() + SCALE_STEP);
-//				Log.e(TAG, "zoomed in (via tap)");
-//			} else if (step.hasCheckableItems())
-//				markAsDone(step, cur);
+				Log.d(TAG, "zoomed in (via tap)");
+//			} else if (step.hasAction()) {
+//				step.action();
+			} else if (step.hasCheckableItems()) {
+				markAsDone(step);
+			}
+
 		}
 
+	}
+
+	private void markAsDone(MajorStep step) {
+		step.markAsDone();
+		protocolAdapter.notifyDataSetChanged();
 	}
 
 	public class VoiceConfigChanger implements OnItemSelectedListener {

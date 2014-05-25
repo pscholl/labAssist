@@ -9,7 +9,7 @@ import de.tud.labAssist.model.Time;
  */
 public class TimedMinorStep extends MinorStep {
 
-	private Time time;
+	private final Time time;
 
 	public TimedMinorStep(SpannableString text, boolean done, Time time) {
 		super(text, done);
@@ -19,5 +19,9 @@ public class TimedMinorStep extends MinorStep {
 	public TimedMinorStep(SpannableString text, Time time) {
 		super(text);
 		this.time = time;
+	}
+
+	public Time getTime() {
+		return time;
 	}
 }

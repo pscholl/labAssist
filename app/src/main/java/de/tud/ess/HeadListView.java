@@ -64,7 +64,8 @@ public class HeadListView extends ListView implements SensorEventListener {
 	}
 
 	private boolean needsScrolling() {
-		return getListPaddingTop() < getChildAt(0).getTop() || getChildAt(getChildCount()-1).getBottom() > getBottom() - getListPaddingBottom();
+//		return getListPaddingTop() < getChildAt(0).getTop() || getChildAt(getChildCount()-1).getBottom() > getBottom() - getListPaddingBottom();
+		return false;
 	}
 
 	@Override
@@ -92,8 +93,9 @@ public class HeadListView extends ListView implements SensorEventListener {
 			mStartX = x;
 
 		final int position = (int) ((mStartX - x) * -1 / VELOCITY);
+//		scrollListBy((int) (mStartX-x));
 		smoothScrollToPositionFromTop(position, 0);
-		;
+//		smoothScrollToPosition(position);
 
 		if (position < 0)
 			mStartX = x;

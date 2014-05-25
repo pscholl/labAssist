@@ -9,15 +9,17 @@ import java.util.List;
  */
 public class MajorStep {
 
-	private List<SpannableString> minorSteps;
-	private SpannableString description;
+	private final List<MinorStep> minorSteps;
+	private final SpannableString description;
+	private final List<String> annotations;
 
-	public MajorStep(SpannableString description, List<SpannableString> minorSteps) {
+	public MajorStep(SpannableString description, List<MinorStep> minorSteps, List<String> annotations) {
 		this.minorSteps = minorSteps;
 		this.description = description;
+		this.annotations = annotations;
 	}
 
-	public List<SpannableString> getMinorSteps() {
+	public List<MinorStep> getMinorSteps() {
 		return minorSteps;
 	}
 
@@ -25,12 +27,29 @@ public class MajorStep {
 		return description;
 	}
 
-	public void setDescription(SpannableString description) {
-		this.description = description;
+	public List<String> getAnnotations() {
+		return annotations;
 	}
 
-	public void addMinorStep(SpannableString minorStep) {
-		minorSteps.add(minorStep);
+
+	/**
+	 * Mark the first not already done MinorStep as done
+	 */
+	public void markAsDone() {
+		for(MinorStep m: minorSteps) {
+			if (!m.isDone()) {
+				m.setDone(true);
+				break;
+			}
+		}
+	}
+
+	public boolean hasCheckableItems() {
+		return true;
+	}
+
+	public boolean hasZoomAbleImage() {
+		return false;
 	}
 }
 
