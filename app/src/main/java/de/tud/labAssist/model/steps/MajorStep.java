@@ -34,14 +34,24 @@ public class MajorStep {
 
 	/**
 	 * Mark the first not already done MinorStep as done
+	 * @return true if this major step is now completely done
 	 */
-	public void markAsDone() {
+	public boolean markNextAsDone() {
+		boolean allDone = true;
+		boolean changedOne = false;
+
 		for(MinorStep m: minorSteps) {
-			if (!m.isDone()) {
+			boolean current = m.isDone();
+			if (!current && !changedOne) {
 				m.setDone(true);
-				break;
+				current = true;
+				changedOne = true;
 			}
+
+			allDone &= current;
 		}
+
+		return allDone;
 	}
 
 	public boolean hasCheckableItems() {

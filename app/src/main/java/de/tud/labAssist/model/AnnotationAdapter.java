@@ -1,6 +1,7 @@
 package de.tud.labAssist.model;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import java.util.HashMap;
 import java.util.List;
 
 import de.tud.labAssist.R;
@@ -19,11 +21,13 @@ public class AnnotationAdapter extends BaseAdapter {
 	private final LayoutInflater inflater;
 	private final List<String> annotations;
 	private final Context context;
+	private final HashMap<String, Drawable> pictograms;
 
-	public AnnotationAdapter(Context context, List<String> annotations) {
+	public AnnotationAdapter(Context context, List<String> annotations, HashMap<String,Drawable> pictograms) {
 		this.annotations = annotations;
 		this.context = context;
 		this.inflater = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE));
+		this.pictograms = pictograms;
 	}
 
 	@Override
@@ -54,7 +58,8 @@ public class AnnotationAdapter extends BaseAdapter {
 		String annotation = getItem(position);
 
 		try {
-			v.setImageResource(R.drawable.class.getField(annotation).getInt(null));
+			v.setImageDrawable(pictograms.get(annotation));
+//			v.setImageResource(R.drawable.class.getField(annotation).getInt(null));
 		} catch (Exception e) {
 			Log.e("markdown", "unable to load image: " + annotation);
 		}

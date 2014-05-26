@@ -1,6 +1,7 @@
 package de.tud.labAssist.model;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 
 import com.google.android.glass.widget.CardScrollAdapter;
 
+import java.util.HashMap;
 import java.util.List;
 
 import de.tud.ess.AdapterGridLayout;
@@ -19,6 +21,7 @@ import de.tud.labAssist.model.steps.MajorStep;
  * Created by Ramon on 02.05.2014.
  */
 public class ProtocolAdapter extends CardScrollAdapter {
+	private static HashMap<String, Drawable> pictograms;
 	private final LayoutInflater inflater;
 	private final Context context;
 	private List<MajorStep> steps;
@@ -27,6 +30,10 @@ public class ProtocolAdapter extends CardScrollAdapter {
 		public ListView listView;
 		public AdapterGridLayout footer;
 		public TextView header;
+	}
+
+	public static void setPictograms(HashMap<String, Drawable> pictograms) {
+		ProtocolAdapter.pictograms = pictograms;
 	}
 
 
@@ -70,7 +77,12 @@ public class ProtocolAdapter extends CardScrollAdapter {
 
 		mem.header.setText(step.getHeader());
 
-		mem.footer.setAdapter(new AnnotationAdapter(context, step.getAnnotations()));
+		AnnotationAdapter aa = new AnnotationAdapter(context, step.getAnnotations(), pictograms);
+//		mem.footer.setAdapter(aa); //TODO: works, but stutters, probably need to cache pictograms
+		for (int j=0; j<aa.getCount(); ++j) {
+			mem.footer.addView(aa.getView(j, null, mem.footer));
+		}
+//		aa.notifyDataSetChanged();
 
 		mem.listView.setAdapter(new MinorStepAdapter(context, step.getMinorSteps()));
 		return v;

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
@@ -35,9 +37,9 @@ import de.tud.ess.HeadImageView;
 import de.tud.ess.VerticalBars;
 import de.tud.ess.VoiceDetection;
 import de.tud.ess.VoiceMenuDialogFragment;
-import de.tud.labAssist.model.steps.MajorStep;
 import de.tud.labAssist.model.ProtocolAdapter;
 import de.tud.labAssist.model.io.MarkdownManager;
+import de.tud.labAssist.model.steps.MajorStep;
 
 public class LabAssistActivity extends Activity implements VoiceDetection.VoiceDetectionListener, VoiceMenuDialogFragment.VoiceMenuListener {
 	protected static final String NEXT = "next slide";
@@ -76,6 +78,16 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		//TODO: workaround, precaching drawables
+		HashMap<String, Drawable> pictograms = new HashMap<>();
+		pictograms.put("incubate", getResources().getDrawable(R.drawable.incubate));
+		pictograms.put("combine", getResources().getDrawable(R.drawable.combine));
+		pictograms.put("bio", getResources().getDrawable(R.drawable.bio));
+		pictograms.put("chemical", getResources().getDrawable(R.drawable.chemical));
+//		pictograms.put("separate", getResources().getDrawable(R.drawable.separate));
+		pictograms.put("dispense", getResources().getDrawable(R.drawable.dispense));
+		ProtocolAdapter.setPictograms(pictograms);
 
     /* start a logcat instance that logs the current run on the sdcard */
 //		String now = new SimpleDateFormat("yyyy-MMM-dd-HH-mm-ss").format(new Date());
@@ -228,7 +240,14 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		onItemSelected(phrase);
 	}
 
-	protected void callAnimateTo(int position, int animate) {//TODO: ?? wtf ??
+	/**
+	 * animate a CardScrollView to position
+	 *
+	 * Workaround for CardScrollView.animateToSelection being not visible, setSelection being not implemented
+	 * @param position
+	 * @param animate should be 2 = ANIMATE_GOTO
+	 */
+	protected void callAnimateTo(int position, int animate) {
 		if (mAnimateFunc == null)
 			for (Method m : mCardScrollView.getClass().getDeclaredMethods())
 				if (m.getName().equals("animateToSelection")) {
@@ -359,8 +378,11 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 	}
 
 	private void markAsDone(MajorStep step) {
-		step.markAsDone();
+		boolean allDone = step.markNextAsDone();
 		protocolAdapter.notifyDataSetChanged();
+		if (allDone) {
+			callAnimateTo(mCardScrollView.getSelectedItemPosition() + 1, ANIMATE_GOTO);
+		}
 	}
 
 	public class VoiceConfigChanger implements OnItemSelectedListener {
