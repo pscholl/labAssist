@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
-				android:padding="5dp"
-	android:orientation="vertical">
+				android:padding="5dp">
 
 	<LinearLayout
-		android:layout_height="0dp"
-		android:layout_weight="1"
+		android:layout_alignParentTop="true"
+		android:layout_alignParentRight="true"
+		android:layout_alignParentLeft="true"
+		android:layout_height="match_parent"
 		android:layout_width="match_parent"
-		android:id="@+id/listWrapper"
-		android:orientation="vertical">
+		android:id="@+id/list_wrapper"
+		android:orientation="vertical"
+		android:layout_above="@+id/footer_wrapper">
 
 		<de.tud.ess.HeadListView
 			android:id="@+id/scrollView"
@@ -21,6 +23,10 @@
 	</LinearLayout>
 
 	<LinearLayout
+		android:id="@+id/footer_wrapper"
+		android:layout_alignParentBottom="true"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentRight="true"
 		android:layout_width="match_parent"
 		android:layout_height="30dp"
 		android:orientation="horizontal">
@@ -42,4 +48,4 @@
 
 	</LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>
