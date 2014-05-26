@@ -1,8 +1,8 @@
 apply plugin: 'android'
 
 android {
-    //compileSdkVersion "Google Inc.:Glass Development Kit Sneak Peek:15"
-	compileSdkVersion 19
+    compileSdkVersion "Google Inc.:Glass Development Kit Preview:19"
+//	compileSdkVersion 19
     buildToolsVersion '19.1'
 
     defaultConfig {
@@ -29,5 +29,5 @@ dependencies {
 	compile files('libs/GlassVoice-XE17.2.jar')
 	compile project(':bypass:platform:android:library')
 //	compile 'com.android.support:support-v4:19.+'
-	compile files('libs/gdk.jar')
+//	compile files('libs/gdk.jar')
 }
