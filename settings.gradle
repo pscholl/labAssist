@@ -1,1 +1,1 @@
-include ':app', ':bypass:platform:android:library'
+include ':app', ':bypass:platform:android:library', ':esslib:esslib:lib'

@@ -1,4 +1,4 @@
-package de.tud.ess;
+package de.tud.labAssist.views;
 
 import java.util.Random;
 

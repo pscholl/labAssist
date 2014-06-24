@@ -28,6 +28,7 @@ dependencies {
 	//compile fileTree(dir: 'libs', include: ['*.jar'])
 	compile files('libs/GlassVoice-XE17.2.jar')
 	compile project(':bypass:platform:android:library')
+	compile project(':esslib:esslib:lib')
 //	compile 'com.android.support:support-v4:19.+'
 //	compile files('libs/gdk.jar')
 }

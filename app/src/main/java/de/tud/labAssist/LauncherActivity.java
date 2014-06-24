@@ -5,9 +5,9 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 
-import de.tud.ess.Constants;
-import de.tud.ess.VoiceDetection;
-import de.tud.ess.VoiceMenuDialogFragment;
+import de.tud.ess.lib.Constants;
+import de.tud.ess.lib.VoiceDetection;
+import de.tud.ess.lib.VoiceMenuDialogFragment;
 import de.tud.labAssist.model.io.MarkdownManager;
 
 public class LauncherActivity extends Activity implements VoiceDetection.VoiceDetectionListener, VoiceMenuDialogFragment.VoiceMenuListener {

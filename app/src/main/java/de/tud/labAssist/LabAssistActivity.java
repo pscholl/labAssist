@@ -31,12 +31,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-import de.tud.ess.BearingLocalizer;
-import de.tud.ess.BearingLocalizer.BearingLocalizerListener;
-import de.tud.ess.HeadImageView;
-import de.tud.ess.VerticalBars;
-import de.tud.ess.VoiceDetection;
-import de.tud.ess.VoiceMenuDialogFragment;
+import de.tud.ess.lib.BearingLocalizer;
+import de.tud.ess.lib.BearingLocalizer.BearingLocalizerListener;
+import de.tud.ess.lib.HeadImageView;
+import de.tud.labAssist.views.VerticalBars;
+import de.tud.ess.lib.VoiceDetection;
+import de.tud.ess.lib.VoiceMenuDialogFragment;
 import de.tud.labAssist.model.ProtocolAdapter;
 import de.tud.labAssist.model.io.MarkdownManager;
 import de.tud.labAssist.model.steps.MajorStep;
