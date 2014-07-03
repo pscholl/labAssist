@@ -13,7 +13,7 @@ import com.google.android.glass.widget.CardScrollAdapter;
 import java.util.HashMap;
 import java.util.List;
 
-import de.tud.ess.lib.AdapterGridLayout;
+import de.tud.ess.AdapterGridLayout;
 import de.tud.labAssist.R;
 import de.tud.labAssist.model.steps.MajorStep;
 
