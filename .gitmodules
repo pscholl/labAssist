@@ -3,4 +3,4 @@
 	url = git@github.com:pscholl/bypass.git
 [submodule "esslib"]
 	path = esslib
-	url = git@github.com:Ray519/glass_snippets.git
+	url = git@github.com:pscholl/glass_snippets.git

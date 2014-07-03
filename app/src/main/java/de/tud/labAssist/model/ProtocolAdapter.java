@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.glass.widget.CardScrollAdapter;
@@ -14,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import de.tud.ess.AdapterGridLayout;
+import de.tud.ess.HeadScrollView;
 import de.tud.labAssist.R;
 import de.tud.labAssist.model.steps.MajorStep;
 
@@ -27,7 +27,7 @@ public class ProtocolAdapter extends CardScrollAdapter {
 	private List<MajorStep> steps;
 
 	private static class ViewMem {
-		public ListView listView;
+		public HeadScrollView scrollView;
 		public AdapterGridLayout footer;
 		public TextView header;
 	}
@@ -66,7 +66,7 @@ public class ProtocolAdapter extends CardScrollAdapter {
 			mem = new ViewMem();
 
 			mem.header = (TextView) v.findViewById(R.id.header);
-			mem.listView = (ListView) v.findViewById(R.id.scrollView);
+			mem.scrollView = (HeadScrollView) v.findViewById(R.id.scrollView);
 			mem.footer = (AdapterGridLayout) v.findViewById(R.id.footer);
 
 			v.setTag(mem);
@@ -84,7 +84,7 @@ public class ProtocolAdapter extends CardScrollAdapter {
 		}
 //		aa.notifyDataSetChanged();
 
-		mem.listView.setAdapter(new MinorStepAdapter(context, step.getMinorSteps()));
+		mem.scrollView.setAdapter(new MinorStepAdapter(context, step.getMinorSteps()));
 		return v;
 	}
 
