@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 
 import de.tud.labAssist.model.steps.MajorStep;
 import de.tud.labAssist.model.steps.MajorStepBuilder;
+import de.tud.labAssist.model.time.TimerManager;
 import de.tud.labAssist.model.visitor.MarkdownVisitor;
 import in.uncod.android.bypass.Document;
 import in.uncod.android.bypass.Element;
@@ -38,9 +39,9 @@ public class ReadInVisitor extends MarkdownVisitor {
 	private int currentCharCount;
 	private int stepNr;
 
-	public ReadInVisitor() {
+	public ReadInVisitor(TimerManager timerManager) {
 		steps = new ArrayList<>();
-		stepBuilder = new MajorStepBuilder();
+		stepBuilder = new MajorStepBuilder(timerManager);
 	}
 
 	public List<MajorStep> readIn(Document d) {

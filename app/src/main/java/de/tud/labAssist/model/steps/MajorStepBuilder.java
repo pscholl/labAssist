@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.tud.labAssist.model.Time;
+import de.tud.labAssist.model.time.TimerManager;
 
 /**
  * Created by Ramon on 05.05.2014.
@@ -25,8 +26,10 @@ public class MajorStepBuilder {
 	private List<SpannableString> paragraphs;
 	private SpannableString header;
 	private List<String> annotations;
+	private TimerManager timerManager;
 
-	public MajorStepBuilder() {
+	public MajorStepBuilder(TimerManager timerManager) {
+		this.timerManager = timerManager;
 		reset();
 	}
 
@@ -44,6 +47,7 @@ public class MajorStepBuilder {
 	}
 
 	public MajorStep build() {
+
 
 		List<MinorStep> minors = generateMinorSteps(true);
 
@@ -85,7 +89,7 @@ public class MajorStepBuilder {
 
 				Log.i(THIS, "Detected Time: " + t.toString());
 
-				minors.add(new TimedMinorStep(ss, t));
+				minors.add(new TimedMinorStep(ss, t, timerManager));
 			} else {
 				minors.add(new MinorStep(ss));
 			}

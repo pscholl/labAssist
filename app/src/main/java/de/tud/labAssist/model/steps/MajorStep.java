@@ -4,6 +4,8 @@ import android.text.SpannableString;
 
 import java.util.List;
 
+import de.tud.labAssist.model.StepListener;
+
 /**
  * Created by Ramon on 28.04.2014.
  */
@@ -12,9 +14,12 @@ public class MajorStep {
 	private final List<MinorStep> minorSteps;
 	private final SpannableString description;
 	private final List<String> annotations;
+	private int completedSteps;
 
 	public MajorStep(SpannableString description, List<MinorStep> minorSteps, List<String> annotations) {
 		this.minorSteps = minorSteps;
+		this.completedSteps = 0;
+
 		this.description = description;
 		this.annotations = annotations;
 	}
@@ -34,24 +39,38 @@ public class MajorStep {
 
 	/**
 	 * Mark the first not already done MinorStep as done
-	 * @return true if this major step is now completely done
 	 */
-	public boolean markNextAsDone() {
-		boolean allDone = true;
-		boolean changedOne = false;
+	public void markNextAsDone(final StepListener majorStepListener) {
+		if (isComplete())
+			return;
 
-		for(MinorStep m: minorSteps) {
-			boolean current = m.isDone();
-			if (!current && !changedOne) {
-				m.setDone(true);
-				current = true;
-				changedOne = true;
-			}
+		MinorStep step = minorSteps.get(completedSteps);
+		if (step instanceof TimedMinorStep) {
+			((TimedMinorStep) step).setStepListener(new StepListener() {
+				@Override
+				public void stepComplete() {
+					completedSteps++;
+					if (majorStepListener != null && isComplete()) {
+						majorStepListener.stepComplete();
+					}
 
-			allDone &= current;
+				}
+			});
+
+			step.setDone(true);
+		} else {
+
+			step.setDone(true);
+
+			completedSteps++;
+
+			if (isComplete() && majorStepListener != null)
+				majorStepListener.stepComplete();
 		}
+	}
 
-		return allDone;
+	public boolean isComplete() {
+		return completedSteps == minorSteps.size();
 	}
 
 	public boolean hasCheckableItems() {

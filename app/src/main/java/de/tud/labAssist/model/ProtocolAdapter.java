@@ -16,6 +16,7 @@ import de.tud.ess.AdapterGridLayout;
 import de.tud.ess.HeadScrollView;
 import de.tud.labAssist.R;
 import de.tud.labAssist.model.steps.MajorStep;
+import de.tud.labAssist.model.time.TimerManager;
 
 /**
  * Created by Ramon on 02.05.2014.
@@ -25,6 +26,7 @@ public class ProtocolAdapter extends CardScrollAdapter {
 	private final LayoutInflater inflater;
 	private final Context context;
 	private List<MajorStep> steps;
+	private TimerManager timerManager;
 
 	private static class ViewMem {
 		public HeadScrollView scrollView;
@@ -37,10 +39,16 @@ public class ProtocolAdapter extends CardScrollAdapter {
 	}
 
 
-	public ProtocolAdapter(Context context, List<MajorStep> steps) {
+	public ProtocolAdapter(Context context, List<MajorStep> steps, TimerManager timerManager) {
 		this.steps = steps;
 		this.context = context;
+		this.timerManager = timerManager;
 		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	}
+
+	@Override
+	public boolean hasStableIds() {
+		return true;
 	}
 
 	@Override
@@ -79,12 +87,12 @@ public class ProtocolAdapter extends CardScrollAdapter {
 
 		AnnotationAdapter aa = new AnnotationAdapter(context, step.getAnnotations(), pictograms);
 //		mem.footer.setAdapter(aa); //TODO: works, but stutters, probably need to cache pictograms
+		mem.footer.removeAllViews();
 		for (int j=0; j<aa.getCount(); ++j) {
 			mem.footer.addView(aa.getView(j, null, mem.footer));
 		}
 //		aa.notifyDataSetChanged();
-
-		mem.scrollView.setAdapter(new MinorStepAdapter(context, step.getMinorSteps()));
+		mem.scrollView.setAdapter(new MinorStepAdapter(context, step.getMinorSteps(), timerManager));
 		return v;
 	}
 

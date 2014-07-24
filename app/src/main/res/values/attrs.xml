@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<declare-styleable name="TimedStep">
+		<attr name="barelyVisibleText" format="color" />
+		<attr name="normalText" format="color" />
+	</declare-styleable>
+</resources>

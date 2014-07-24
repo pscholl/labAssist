@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				xmlns:tools="http://schemas.android.com/tools"
 			 android:layout_width="match_parent"
 			 android:layout_height="wrap_content">
 
@@ -10,15 +11,21 @@
 		android:layout_height="wrap_content"
 		android:textSize="30sp"
 		android:gravity="center"
-		/>
+		tools:text="Dies ist eine Aufgabe mit 10min Wartezeit. Und soviel Text dass sie deutlich höher ist als die Zeitangabe selbst"
+		android:visibility="visible"/>
 
-	<TextView
+	<de.tud.labAssist.views.TimeView
 		android:id="@+id/minor_time"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
+		android:layout_height="match_parent"
 		android:textSize="30sp"
 		android:gravity="center"
 		android:visibility="invisible"
+		android:background="@color/half_opaque"
+		android:layout_alignTop="@id/minor_text"
+		android:layout_alignBottom="@id/minor_text"
+		tools:text="0 hours, 10minutes, 0 seconds"
+		tools:visibility="visible"
 		/>
 
-</FrameLayout>
+</RelativeLayout>

@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.tud.labAssist.model.steps.MajorStep;
+import de.tud.labAssist.model.time.TimerManager;
 import in.uncod.android.bypass.Bypass;
 import in.uncod.android.bypass.Document;
 
@@ -42,13 +43,13 @@ public class MarkdownManager {
 		}
 	}
 
-	public static List<MajorStep> getProtocol(String md) {
+	public static List<MajorStep> getProtocol(String md, TimerManager timerManager) {
 
 		Bypass bp = new Bypass();
 		Document doc = bp.processMarkdown(md);
 		doc.toString();
 
-		List<MajorStep> steps = new ReadInVisitor().readIn(doc);
+		List<MajorStep> steps = new ReadInVisitor(timerManager).readIn(doc);
 
 		return steps;
 	}

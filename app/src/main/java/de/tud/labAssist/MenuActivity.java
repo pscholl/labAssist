@@ -27,6 +27,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import de.tud.labAssist.model.Timer;
+import de.tud.labAssist.services.TimerService;
 
 /**
  * Activity showing the options menu.

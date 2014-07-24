@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.tud.labAssist;
+package de.tud.labAssist.services;
 
 import android.app.PendingIntent;
 import android.app.Service;
@@ -25,6 +25,7 @@ import android.os.IBinder;
 import com.google.android.glass.timeline.LiveCard;
 import com.google.android.glass.timeline.LiveCard.PublishMode;
 
+import de.tud.labAssist.MenuActivity;
 import de.tud.labAssist.model.Timer;
 import de.tud.labAssist.views.TimerDrawer;
 

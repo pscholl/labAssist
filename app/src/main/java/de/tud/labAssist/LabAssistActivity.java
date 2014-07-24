@@ -31,17 +31,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-import de.tud.ess.BearingLocalizer;
-import de.tud.ess.BearingLocalizer.BearingLocalizerListener;
 import de.tud.ess.HeadImageView;
-import de.tud.labAssist.views.VerticalBars;
 import de.tud.ess.VoiceDetection;
 import de.tud.ess.VoiceMenuDialogFragment;
 import de.tud.labAssist.model.ProtocolAdapter;
+import de.tud.labAssist.model.StepListener;
 import de.tud.labAssist.model.io.MarkdownManager;
 import de.tud.labAssist.model.steps.MajorStep;
+import de.tud.labAssist.model.time.TimerManager;
+import de.tud.labAssist.views.VerticalBars;
 
-public class LabAssistActivity extends Activity implements VoiceDetection.VoiceDetectionListener, VoiceMenuDialogFragment.VoiceMenuListener {
+public class LabAssistActivity extends Activity implements VoiceDetection.VoiceDetectionListener, VoiceMenuDialogFragment.VoiceMenuListener, StepListener {
 	protected static final String NEXT = "next slide";
 	protected static final String PREVIOUS = "previous";
 	protected static final String[] STATIC_VOICECOMMANDS = new String[]
@@ -62,7 +62,6 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 	protected boolean mAttentionChallenge = false;
 	protected TextView mBarText;
 	protected Process mLogcat;
-	protected BearingLocalizer mBearinglocalizer;
 	protected Intent mBackgroundCamIntent;
 	protected boolean mBackgroundCamRunning = false;
 	protected Method mAnimateFunc;
@@ -141,7 +140,10 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 //		LabMarkdown lm = new LabMarkdown(this, mdown);
 
 		mCardScrollView = (CardScrollView) findViewById(R.id.protocol_pager);
-		protocolAdapter = new ProtocolAdapter(this, MarkdownManager.getProtocol(mdown));
+
+		TimerManager timerManager = new TimerManager();
+
+		protocolAdapter = new ProtocolAdapter(this, MarkdownManager.getProtocol(mdown, timerManager), timerManager);
 
 		mCardScrollView.setAdapter(protocolAdapter);
 		mCardScrollView.setOnItemClickListener(new LabOnClickListener());
@@ -185,20 +187,6 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 
 		getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-		mBearinglocalizer = new BearingLocalizer(getApplicationContext(),
-				new BearingLocalizerListener() {
-					@Override
-					public void leftBearing() {
-						Log.e(TAG, "left");
-					}
-
-					@Override
-					public void enteredBearing() {
-						Log.e(TAG, "enter");
-					}
-				}
-		);
-
 		Log.v(TAG, "onResume");
 	}
 
@@ -207,8 +195,6 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		super.onPause();
 		mVoiceDetection.stop();
 		mCardScrollView.deactivate();
-		mBearinglocalizer.deactivate();
-		mBearinglocalizer = null;
 
 		if (mBackgroundCamRunning)
 			toggleBackgroundCam();
@@ -357,6 +343,11 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		mVoiceDetection.changePhrases(mPhrases);
 	}
 
+	@Override
+	public void stepComplete() {
+		scrollToNextMajorStep();
+	}
+
 	private class LabOnClickListener implements OnItemClickListener {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int cur, long id) {
@@ -378,11 +369,12 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 	}
 
 	private void markAsDone(MajorStep step) {
-		boolean allDone = step.markNextAsDone();
+		step.markNextAsDone(this);
 		protocolAdapter.notifyDataSetChanged();
-		if (allDone) {
-			callAnimateTo(mCardScrollView.getSelectedItemPosition() + 1, ANIMATE_GOTO);
-		}
+	}
+
+	private void scrollToNextMajorStep() {
+		callAnimateTo(mCardScrollView.getSelectedItemPosition() + 1, ANIMATE_GOTO);
 	}
 
 	public class VoiceConfigChanger implements OnItemSelectedListener {
