@@ -4,20 +4,25 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+
+import com.google.android.glass.view.WindowUtils;
+
+import java.util.List;
 
 import de.tud.ess.Constants;
 import de.tud.ess.VoiceDetection;
 import de.tud.ess.VoiceMenuDialogFragment;
 import de.tud.labAssist.model.io.MarkdownManager;
 
-public class LauncherActivity extends Activity implements VoiceDetection.VoiceDetectionListener, VoiceMenuDialogFragment.VoiceMenuListener {
+public class LauncherActivity extends Activity implements VoiceDetection.VoiceDetectionListener {
 
 	public static final String FILENAME = Constants.FILENAME;
 
 	private static final String HOTWORD = "protocol";
 	private static final String FRAGMENT_LOADED = "fragment_loaded";
 
-	protected String[] mPaths;
+	protected List<MarkdownManager.Document> mPaths;
 	private VoiceDetection mVoiceDetection;
 	
 
@@ -25,18 +30,25 @@ public class LauncherActivity extends Activity implements VoiceDetection.VoiceDe
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		mPaths = MarkdownManager.getMarkdownDocuments(this);
-//		mVoiceMenu = new VoiceMenu(this, "protocol", mPaths);
+		mPaths = MarkdownManager.findMarkdownDocuments(this);
 		FragmentManager fm = getFragmentManager();
+
+//		requestWindowFeature(WindowUtils.FEATURE_VOICE_COMMANDS);
+		requestWindowFeature(WindowUtils.FLAG_DISABLE_HEAD_GESTURES);
 
 		setContentView(R.layout.fragment_host);
 
-		VoiceMenuDialogFragment f = VoiceMenuDialogFragment.getInstance(fm, HOTWORD, mPaths);
+		String[] names = new String[mPaths.size()];
+		int i = 0;
+		for (MarkdownManager.Document d: mPaths) {
+			names[i++] = d.getName();
+		}
+
+		VoiceMenuDialogFragment f = VoiceMenuDialogFragment.getInstance(fm, HOTWORD, names);
 		if (savedInstanceState == null || !savedInstanceState.getBoolean(FRAGMENT_LOADED))
 			fm.beginTransaction().replace(R.id.host, f, VoiceMenuDialogFragment.FRAGMENT_TAG).commit();
-//		f.show(fm, Constants.VOICE_MENU_FRAGMENT);
-//		mVoiceMenu = new VoiceMenu(this, "protocol", mPaths);
-		mVoiceDetection = new VoiceDetection(this, HOTWORD, this, mPaths);
+
+		mVoiceDetection = new VoiceDetection(this, HOTWORD, this, names);
 	}
 
 	@Override
@@ -56,23 +68,28 @@ public class LauncherActivity extends Activity implements VoiceDetection.VoiceDe
 	}
 
 	@Override
+	public boolean onCreatePanelMenu(int featureId, Menu menu) {
+		if (featureId == WindowUtils.FEATURE_VOICE_COMMANDS) {
+//			return onCreateVoiceMenu(menu);//plugin voice menu here, if google updates this functionality with automatic scrolling
+			return false;
+		} else {
+			return super.onCreatePanelMenu(featureId, menu);
+		}
+	}
+
+	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putBoolean(FRAGMENT_LOADED, true);
 	}
 
-	private void onItemSelected(String item) {
+	private void onItemSelected(int index, String item) {
 		if (item == null)
 			return;
 
-		for (String path : mPaths)
-			if (item.equals(path)) {
-				Intent i = new Intent();
-				i.setClassName(this, LabAssistActivity.class.getName());
-				i.putExtra(FILENAME, item + ".md");
-				startActivity(i);
-				return;
-			}
+		Intent intent = new Intent(this, LabAssistActivity.class);
+		intent.putExtra(FILENAME, mPaths.get(index));
+		startActivity(intent);
 	}
 
 	@Override
@@ -82,11 +99,6 @@ public class LauncherActivity extends Activity implements VoiceDetection.VoiceDe
 
 	@Override
 	public void onPhraseDetected(int index, String phrase) {
-		onItemSelected(phrase);
-	}
-
-	@Override
-	public void onPhraseSelected(String phrase) {
-		onItemSelected(phrase);
+		onItemSelected(index, phrase);
 	}
 }

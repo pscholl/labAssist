@@ -17,20 +17,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.glass.media.Sounds;
+import com.google.android.glass.view.WindowUtils;
 import com.google.android.glass.widget.CardScrollView;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Scanner;
 
+import de.tud.ess.CameraService;
 import de.tud.ess.HeadImageView;
 import de.tud.ess.VoiceDetection;
 import de.tud.ess.VoiceMenuDialogFragment;
@@ -41,7 +37,9 @@ import de.tud.labAssist.model.steps.MajorStep;
 import de.tud.labAssist.model.time.TimerManager;
 import de.tud.labAssist.views.VerticalBars;
 
-public class LabAssistActivity extends Activity implements VoiceDetection.VoiceDetectionListener, VoiceMenuDialogFragment.VoiceMenuListener, StepListener {
+public class LabAssistActivity extends Activity implements VoiceDetection.VoiceDetectionListener, StepListener {
+	private static final String TAG = LabAssistActivity.class.getSimpleName();
+
 	protected static final String NEXT = "next slide";
 	protected static final String PREVIOUS = "previous";
 	protected static final String[] STATIC_VOICECOMMANDS = new String[]
@@ -54,17 +52,12 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 	protected static final String BAR = "bar changed";
 	protected static final String TOGGLEREC = "toggle video recording";
 	protected static final String OKGLASS = "ok glass";
-	protected static final String CAM_SERVICE = "de.tud.ess.CameraService";
-	protected static final int ANIMATE_GOTO = 2;
+
 	protected static final float SCALE_STEP = 0.5F;
-	private static final String TAG = "labAssist";
 	protected CardScrollView mCardScrollView;
 	protected boolean mAttentionChallenge = false;
 	protected TextView mBarText;
-	protected Process mLogcat;
 	protected Intent mBackgroundCamIntent;
-	protected boolean mBackgroundCamRunning = false;
-	protected Method mAnimateFunc;
 	protected String mBarColor = "";
 	protected String mBarPosition = "";
 	private AudioManager mAudio;
@@ -77,6 +70,10 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.d(TAG, "labAssistActivity");
+
+		requestWindowFeature(WindowUtils.FLAG_DISABLE_HEAD_GESTURES);
+		getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 		//TODO: workaround, precaching drawables
 		HashMap<String, Drawable> pictograms = new HashMap<>();
@@ -88,20 +85,6 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		pictograms.put("dispense", getResources().getDrawable(R.drawable.dispense));
 		ProtocolAdapter.setPictograms(pictograms);
 
-    /* start a logcat instance that logs the current run on the sdcard */
-//		String now = new SimpleDateFormat("yyyy-MMM-dd-HH-mm-ss").format(new Date());
-//		String path = new File(getExternalFilesDir(null), "logcat_" + now + ".log").toString();
-//		try {
-//			mLogcat = Runtime.getRuntime().exec(new String[]{
-//					"logcat", "-c"});
-//			mLogcat.waitFor();
-//			mLogcat = Runtime.getRuntime().exec(new String[]{
-//					"logcat", "-v", "time", "-f", path, "-r", "1024", "-s", TAG});
-//		} catch (Exception e) {
-//			Log.e(TAG, "logcat execution failed: " + e.toString());
-//			e.printStackTrace();
-//		}
-//		Log.e(TAG, path);
 		Intent intent = getIntent();
 		if (intent == null) {
 			Log.e(TAG, String.format("missing argument for '%s'", LauncherActivity.FILENAME));
@@ -109,41 +92,27 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 			return;
 		}
 
-		String file = getIntent().getExtras().getString(LauncherActivity.FILENAME);
-		String mdown = null;
+		MarkdownManager.Document doc = (MarkdownManager.Document) getIntent().getExtras().getSerializable(LauncherActivity.FILENAME);
 
-		try {
-			mdown = toString(getAssets().open(file));
-		} catch (IOException e) {
-			File ext = getExternalFilesDir(null);
-			if (ext == null) {
-				Log.e(TAG, "external storage not mounted");
-				return;
-			}
-			try {
-				mdown = toString(new FileInputStream(new File(ext, file)));
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			}
-			e.printStackTrace();
-		}
-
-		if (file.contains("Lego")) {//TODO: remove!!
-			setContentView(R.layout.barlayout);
-			mAttentionChallenge = true;
-			mBarText = (TextView) findViewById(R.id.bartext);
-		} else
-			setContentView(R.layout.protocol_pager);
+//		if (file.contains("Lego")) {//TODO: remove!!
+//			setContentView(R.layout.barlayout);
+//			mAttentionChallenge = true;
+//			mBarText = (TextView) findViewById(R.id.bartext);
+//		} else
+		setContentView(R.layout.protocol_pager);
 
 		mVoiceDetection = new VoiceDetection(this, OKGLASS, this);
-
-//		LabMarkdown lm = new LabMarkdown(this, mdown);
 
 		mCardScrollView = (CardScrollView) findViewById(R.id.protocol_pager);
 
 		TimerManager timerManager = new TimerManager();
 
-		protocolAdapter = new ProtocolAdapter(this, MarkdownManager.getProtocol(mdown, timerManager), timerManager);
+		try {
+			protocolAdapter = new ProtocolAdapter(this, doc.read(this, timerManager), timerManager);
+		} catch (IOException e) {
+			Log.e(TAG, "Could not open file", e);
+			throw new RuntimeException("Could not open file", e);
+		}
 
 		mCardScrollView.setAdapter(protocolAdapter);
 		mCardScrollView.setOnItemClickListener(new LabOnClickListener());
@@ -151,32 +120,16 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 
 		mAudio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-//		mBackgroundCamIntent = new Intent();
-//		mBackgroundCamIntent.setClassName("de.tud.ess", CAM_SERVICE);
-//		mBackgroundCamIntent.putExtra("height", 50);
-//		mBackgroundCamIntent.putExtra("width", 70);
-//		mBackgroundCamIntent.putExtra("y", 640 - 50);
-//		mBackgroundCamIntent.putExtra("rate", 5.f);
-//
-//		mBackgroundCamRunning = false;
-		//toggleBackgroundCam();
+		mBackgroundCamIntent = new Intent(this, CameraService.class);
+		mBackgroundCamIntent.putExtra("height", 50);
+		mBackgroundCamIntent.putExtra("width", 70);
+		mBackgroundCamIntent.putExtra("y", 640 - 50);
+		mBackgroundCamIntent.putExtra("rate", 5.f);
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-
-		if (mLogcat != null) {
-			mLogcat.destroy();
-			mLogcat = null;
-		}
-	}
-
-	private String toString(InputStream is) {
-		Scanner scanner = new Scanner(is, "UTF-8").useDelimiter("\\A");
-		String str = scanner.hasNext() ? scanner.next() : "";
-		scanner.close();
-		return str;
 	}
 
 	@Override
@@ -184,8 +137,6 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		super.onResume();
 		mCardScrollView.activate();
 		mVoiceDetection.start();
-
-		getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 		Log.v(TAG, "onResume");
 	}
@@ -195,10 +146,6 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		super.onPause();
 		mVoiceDetection.stop();
 		mCardScrollView.deactivate();
-
-		if (mBackgroundCamRunning)
-			toggleBackgroundCam();
-
 
 //		Log.v(TAG, "onPause");
 	}
@@ -216,62 +163,29 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		if (mVoiceMenuVisible)
 			mVoiceMenu.dismiss();
 
-		onItemSelected(phrase);
+		onItemSelected(index, phrase);
 	}
 
-	@Override
-	public void onPhraseSelected(String phrase) {
-		mVoiceMenu.dismiss();
-
-		onItemSelected(phrase);
-	}
-
-	/**
-	 * animate a CardScrollView to position
-	 *
-	 * Workaround for CardScrollView.animateToSelection being not visible, setSelection being not implemented
-	 * @param position
-	 * @param animate should be 2 = ANIMATE_GOTO
-	 */
-	protected void callAnimateTo(int position, int animate) {
-		if (mAnimateFunc == null)
-			for (Method m : mCardScrollView.getClass().getDeclaredMethods())
-				if (m.getName().equals("animateToSelection")) {
-					mAnimateFunc = m;
-					break;
-				}
-
-		try {
-			mAnimateFunc.invoke(mCardScrollView, position, animate);
-		} catch (Exception e) {
-			Log.e(TAG, e.toString());
-		}
-
-		//Log.e(TAG, String.format("switch to item (%d)", position));
-	}
-
-	private void onItemSelected(String literal) {
+	private void onItemSelected(int index, String literal) {//TODO unify, use index, let the list of detectable keywords be constant
 		try {
 			int cur = mCardScrollView.getSelectedItemPosition();
 			MajorStep step = protocolAdapter.getItem(cur);
 			HeadImageView im = (HeadImageView) mCardScrollView
 					.getSelectedView().findViewById(R.id.imview);
 
-			if (PREVIOUS.equals(literal))
-				callAnimateTo(cur - 1, ANIMATE_GOTO);
-			else if (NEXT.equals(literal))
-				callAnimateTo(cur + 1, ANIMATE_GOTO);
-			else if (CHECK.equals(literal) || DONE.equals(literal))
+			if (PREVIOUS.equalsIgnoreCase(literal))
+				mCardScrollView.animate(cur - 1, CardScrollView.Animation.NAVIGATION);
+			else if (NEXT.equalsIgnoreCase(literal))
+				mCardScrollView.animate(cur + 1, CardScrollView.Animation.NAVIGATION);
+			else if (CHECK.equalsIgnoreCase(literal) || DONE.equalsIgnoreCase(literal))
 				markAsDone(step);
-			else if (ZOOM_IN.equals(literal))
+			else if (ZOOM_IN.equalsIgnoreCase(literal))
 				im.setScaleFactor(im.getScaleFactor() + SCALE_STEP);
-			else if (ZOOM_OUT.equals(literal))
+			else if (ZOOM_OUT.equalsIgnoreCase(literal))
 				im.setScaleFactor(im.getScaleFactor() - SCALE_STEP);
-			else if (BAR.equals(literal))
+			else if (BAR.equalsIgnoreCase(literal))
 				toggleBarText(true, true);
-			else if (OKGLASS.equals(literal))
-				toggleBarText(true, true);
-			else if (TOGGLEREC.equals(literal))
+			else if (TOGGLEREC.equalsIgnoreCase(literal))
 				toggleBackgroundCam();
 			else
 				mAudio.playSoundEffect(Sounds.ERROR);
@@ -280,13 +194,16 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		}
 	}
 
-	protected void toggleBackgroundCam() {
-		if (mBackgroundCamRunning)
-			stopService(mBackgroundCamIntent);
-		else
-			startService(mBackgroundCamIntent);
+	protected void toggleBackgroundCam() {// remembering state should not be necessary, service should be able to handle multiple starts / stops, bind if you need to know if it is running, and to share our priority
 
-		mBackgroundCamRunning = !mBackgroundCamRunning;
+	}
+
+	private void startBackgroundCam() {
+		startService(mBackgroundCamIntent);
+	}
+
+	private void stopBackgroundCam() {
+		stopService(mBackgroundCamIntent);
 	}
 
 	protected void toggleBarText(boolean color, boolean bar) {
@@ -374,7 +291,8 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 	}
 
 	private void scrollToNextMajorStep() {
-		callAnimateTo(mCardScrollView.getSelectedItemPosition() + 1, ANIMATE_GOTO);
+//		callAnimateTo(mCardScrollView.getSelectedItemPosition() + 1, ANIMATE_GOTO);
+		mCardScrollView.animate(mCardScrollView.getSelectedItemPosition()+1, CardScrollView.Animation.NAVIGATION);
 	}
 
 	public class VoiceConfigChanger implements OnItemSelectedListener {
