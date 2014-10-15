@@ -25,6 +25,7 @@ proguard/
 # IntelliJ Project Files
 *.iml
 .idea/
+.navigation
 
 # Eclipse Project Files
 .project
