@@ -11,7 +11,7 @@ buildscript {
 
 ext {
 	compileSdkVersion = "Google Inc.:Glass Development Kit Preview:19"
-	buildToolsVersion = '20.0.0'
+	buildToolsVersion = '21.0.2'
 }
 
 apply plugin: 'eclipse'
