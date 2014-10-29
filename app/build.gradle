@@ -26,7 +26,21 @@ android {
     }
 }
 
+afterEvaluate {
+	tasks.matching {
+		it.name.startsWith('dex')
+	}.each { dx ->
+		if (dx.additionalParameters == null) {
+			dx.additionalParameters = []
+		}
+		dx.additionalParameters += '--multi-dex'
+		dx.additionalParameters += "--main-dex-list=$projectDir/multidex.keep".toString()
+	}
+}
+
 dependencies {
 	compile project(':bypass:platform:android:library')
 	compile project(':esslib:lib')
+	compile files('libs/android-support-multidex.jar')
+	compile 'com.fasterxml.jackson.core:jackson-databind:2.4.+'
 }
