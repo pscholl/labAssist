@@ -44,11 +44,11 @@ public class LauncherActivity extends Activity implements VoiceDetection.VoiceDe
 			names[i++] = d.getName();
 		}
 
-		VoiceMenuDialogFragment f = VoiceMenuDialogFragment.getInstance(fm, HOTWORD, names);
+		mVoiceDetection = new VoiceDetection(this, HOTWORD, this, false, names);
+
+		VoiceMenuDialogFragment f = VoiceMenuDialogFragment.getInstance(fm, mVoiceDetection);
 		if (savedInstanceState == null || !savedInstanceState.getBoolean(FRAGMENT_LOADED))
 			fm.beginTransaction().replace(R.id.host, f, VoiceMenuDialogFragment.FRAGMENT_TAG).commit();
-
-		mVoiceDetection = new VoiceDetection(this, HOTWORD, this, names);
 	}
 
 	@Override

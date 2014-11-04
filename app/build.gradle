@@ -12,6 +12,7 @@ android {
         targetSdkVersion 19
         versionCode 1
         versionName "1.0"
+		multiDexEnabled = true
     }
 
     compileOptions {
@@ -20,27 +21,20 @@ android {
     }
     buildTypes {
         release {
-            runProguard false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
-}
 
-afterEvaluate {
-	tasks.matching {
-		it.name.startsWith('dex')
-	}.each { dx ->
-		if (dx.additionalParameters == null) {
-			dx.additionalParameters = []
-		}
-		dx.additionalParameters += '--multi-dex'
-		dx.additionalParameters += "--main-dex-list=$projectDir/multidex.keep".toString()
+	packagingOptions {
+		exclude 'META-INF/LICENSE'
+		exclude 'META-INF/NOTICE'
 	}
 }
 
 dependencies {
 	compile project(':bypass:platform:android:library')
 	compile project(':esslib:lib')
-	compile files('libs/android-support-multidex.jar')
-	compile 'com.fasterxml.jackson.core:jackson-databind:2.4.+'
+	compile 'com.android.support:multidex:1.0.0'
+	compile 'com.fasterxml.jackson.core:jackson-databind:2.4.3'
 }

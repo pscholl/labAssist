@@ -21,10 +21,7 @@ import com.google.android.glass.view.WindowUtils;
 import com.google.android.glass.widget.CardScrollView;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 import de.tud.ess.CameraService;
 import de.tud.ess.HeadImageView;
@@ -40,18 +37,17 @@ import de.tud.labAssist.views.VerticalBars;
 public class LabAssistActivity extends Activity implements VoiceDetection.VoiceDetectionListener, StepListener {
 	private static final String TAG = LabAssistActivity.class.getSimpleName();
 
-	protected static final String NEXT = "next slide";
-	protected static final String PREVIOUS = "previous";
-	protected static final String[] STATIC_VOICECOMMANDS = new String[]
-			//{ NEXT, PREVIOUS, TOGGLEREC  };
-			{NEXT, PREVIOUS};
-	protected static final String DONE = "mark as done";
-	protected static final String CHECK = "check this step";
-	protected static final String ZOOM_IN = "enlarge image";
-	protected static final String ZOOM_OUT = "scale down";
-	protected static final String BAR = "bar changed";
-	protected static final String TOGGLEREC = "toggle video recording";
-	protected static final String OKGLASS = "ok glass";
+	protected static final int NEXT_SLIDE = 0;
+	protected static final int PREVIOUS_SLIDE = 1;
+	private static final int START_VIDEO_RECORDING = 2;
+	private static final int STOP_VIDEO_RECORDING = 3;
+	private static final int MARK_AS_DONE = 4;
+	private static final int ZOOM_IN = 5;
+	private static final int ZOOM_OUT = 6;
+	private static final int BAR_CHANGED = 7;
+	public static final int CHECK = 8;
+	protected static final String OK_GLASS = "ok glass";
+	protected static final String[] VOICE_COMMANDS = new String[]{ "next slide", "previous slide", "start video recording", "stop video recording", "mark as done", "enlarge image", "zoom out", "bar changed", "check"};
 
 	protected static final float SCALE_STEP = 0.5F;
 	protected CardScrollView mCardScrollView;
@@ -101,7 +97,7 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 //		} else
 		setContentView(R.layout.protocol_pager);
 
-		mVoiceDetection = new VoiceDetection(this, OKGLASS, this);
+		mVoiceDetection = new VoiceDetection(this, OK_GLASS, this, true, VOICE_COMMANDS);
 
 		mCardScrollView = (CardScrollView) findViewById(R.id.protocol_pager);
 
@@ -153,7 +149,7 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 	@Override
 	public void onHotwordDetected() {
 		FragmentManager fm = getFragmentManager();
-		mVoiceMenu = VoiceMenuDialogFragment.getInstance(fm, OKGLASS, mPhrases);
+		mVoiceMenu = VoiceMenuDialogFragment.getInstance(fm, mVoiceDetection);
 		mVoiceMenu.show(fm, VoiceMenuDialogFragment.FRAGMENT_TAG);
 		mVoiceMenuVisible = true;
 	}
@@ -166,36 +162,40 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		onItemSelected(index, phrase);
 	}
 
-	private void onItemSelected(int index, String literal) {//TODO unify, use index, let the list of detectable keywords be constant
+	private void onItemSelected(int phraseID, String literal) {
 		try {
 			int cur = mCardScrollView.getSelectedItemPosition();
 			MajorStep step = protocolAdapter.getItem(cur);
 			HeadImageView im = (HeadImageView) mCardScrollView
 					.getSelectedView().findViewById(R.id.imview);
 
-			if (PREVIOUS.equalsIgnoreCase(literal))
-				mCardScrollView.animate(cur - 1, CardScrollView.Animation.NAVIGATION);
-			else if (NEXT.equalsIgnoreCase(literal))
-				mCardScrollView.animate(cur + 1, CardScrollView.Animation.NAVIGATION);
-			else if (CHECK.equalsIgnoreCase(literal) || DONE.equalsIgnoreCase(literal))
-				markAsDone(step);
-			else if (ZOOM_IN.equalsIgnoreCase(literal))
-				im.setScaleFactor(im.getScaleFactor() + SCALE_STEP);
-			else if (ZOOM_OUT.equalsIgnoreCase(literal))
-				im.setScaleFactor(im.getScaleFactor() - SCALE_STEP);
-			else if (BAR.equalsIgnoreCase(literal))
-				toggleBarText(true, true);
-			else if (TOGGLEREC.equalsIgnoreCase(literal))
-				toggleBackgroundCam();
-			else
-				mAudio.playSoundEffect(Sounds.ERROR);
+			switch (phraseID) {
+				case NEXT_SLIDE:
+					mCardScrollView.animate(cur + 1, CardScrollView.Animation.NAVIGATION);
+					break;
+				case PREVIOUS_SLIDE:
+					mCardScrollView.animate(cur - 1, CardScrollView.Animation.NAVIGATION);
+					break;
+				case MARK_AS_DONE:
+					markAsDone(step);
+					break;
+				case ZOOM_IN:
+					im.setScaleFactor(im.getScaleFactor() + SCALE_STEP);
+					break;
+				case ZOOM_OUT:
+					im.setScaleFactor(im.getScaleFactor() - SCALE_STEP);
+					break;
+				case START_VIDEO_RECORDING:
+					startBackgroundCam();
+					break;
+				case STOP_VIDEO_RECORDING:
+					stopBackgroundCam();
+				default:
+					mAudio.playSoundEffect(Sounds.ERROR);
+			}
 		} catch (Exception e) {
 			Log.e(TAG, e.toString());
 		}
-	}
-
-	protected void toggleBackgroundCam() {// remembering state should not be necessary, service should be able to handle multiple starts / stops, bind if you need to know if it is running, and to share our priority
-
 	}
 
 	private void startBackgroundCam() {
@@ -241,23 +241,17 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		mBarText.setText(String.format("%s - %s", mBarColor.trim(), mBarPosition.trim()));
 	}
 
-	protected void recreateVoiceMenu(MajorStep step) { //TODO: always use all Commands, just ignore and hide those not applicable right now (-> prevent recreating VoiceConfig)
-		List<String> c = new LinkedList<>(Arrays.asList(STATIC_VOICECOMMANDS));
+	protected void updateVoiceMenu(MajorStep step) {
+		boolean hasImage = step.hasZoomAbleImage();
+		mVoiceDetection.setEnabled(ZOOM_IN, hasImage);
+		mVoiceDetection.setEnabled(ZOOM_OUT, hasImage);
 
-		if (step.hasZoomAbleImage()) {
-			c.add(ZOOM_IN);
-			c.add(ZOOM_OUT);
-		}
-		if (step.hasCheckableItems()) {
-			c.add(CHECK);
-			c.add(DONE);
-		}
-		if (mAttentionChallenge) {
-			c.add(BAR);
-		}
+		boolean isCheckable = step.hasCheckableItems();
+		mVoiceDetection.setEnabled(CHECK, isCheckable);
 
-		mPhrases = c.toArray(new String[c.size()]);
-		mVoiceDetection.changePhrases(mPhrases);
+		mVoiceDetection.setEnabled(BAR_CHANGED, mAttentionChallenge);
+
+		mVoiceDetection.update();
 	}
 
 	@Override
@@ -300,7 +294,7 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		public void onItemSelected(AdapterView<?> parent, View view, int position,//TODO: remove
 								   long id) {
 			MajorStep step = (MajorStep) parent.getItemAtPosition(position);
-			recreateVoiceMenu(step);
+			updateVoiceMenu(step);
 		}
 
 		@Override
