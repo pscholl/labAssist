@@ -2,6 +2,8 @@ package de.tud.labAssist.model.steps;
 
 import android.text.SpannableString;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 
 import de.tud.labAssist.model.StepListener;
@@ -69,6 +71,7 @@ public class MajorStep {
 		}
 	}
 
+	@JsonIgnore
 	public boolean isComplete() {
 		return completedSteps == minorSteps.size();
 	}

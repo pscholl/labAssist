@@ -35,4 +35,8 @@ public class Protocol {
 			e.printStackTrace();
 		}
 	}
+
+	public void saveMarkdown() {
+		throw new UnsupportedOperationException();
+	}
 }

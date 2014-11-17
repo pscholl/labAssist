@@ -44,7 +44,7 @@ public class LauncherActivity extends Activity implements VoiceDetection.VoiceDe
 			names[i++] = d.getName();
 		}
 
-		mVoiceDetection = new VoiceDetection(this, HOTWORD, this, false, names);
+		mVoiceDetection = new VoiceDetection(this, HOTWORD, this, true, names);
 
 		VoiceMenuDialogFragment f = VoiceMenuDialogFragment.getInstance(fm, mVoiceDetection);
 		if (savedInstanceState == null || !savedInstanceState.getBoolean(FRAGMENT_LOADED))

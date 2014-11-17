@@ -33,6 +33,8 @@ public class MarkdownManager {
 		public abstract Protocol read(Context context, TimerManager timerManager) throws IOException;
 
 		public abstract FileOutputStream getStateOutput(Context context);
+
+//		public abstract FileOutputStream getOutput(Context context);
 	}
 
 	public static class ExternalDocument extends Document implements Serializable {
@@ -86,7 +88,8 @@ public class MarkdownManager {
 		@Override
 		public FileOutputStream getStateOutput(Context context) {
 			try {
-				return new FileOutputStream(new File(FileLocations.getStateOutputDir(context), name+".state"));
+				File output = new File(FileLocations.getStateOutputDir(context), name+".state");
+				return new FileOutputStream(output);
 			} catch (FileNotFoundException e) {
 				throw new RuntimeException(e);
 			}

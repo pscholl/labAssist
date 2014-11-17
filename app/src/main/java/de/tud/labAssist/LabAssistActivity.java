@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.view.WindowUtils;
 import com.google.android.glass.widget.CardScrollView;
+import com.google.glass.logging.FormattingLoggers;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -66,11 +67,12 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "labAssistActivity");
+		FormattingLoggers.setMinLevelForDevelopment(1);
 
 		requestWindowFeature(WindowUtils.FLAG_DISABLE_HEAD_GESTURES);
 		getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-		//TODO: workaround, precaching drawables
+		//TODO: using these drawables still causes stutter
 		HashMap<String, Drawable> pictograms = new HashMap<>();
 		pictograms.put("incubate", getResources().getDrawable(R.drawable.incubate));
 		pictograms.put("combine", getResources().getDrawable(R.drawable.combine));
@@ -129,10 +131,15 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 	}
 
 	@Override
+	protected void onStart() {
+		super.onStart();
+		mCardScrollView.activate();// No explanation why cardscrollview needs this
+		mVoiceDetection.start();
+	}
+
+	@Override
 	protected void onResume() {
 		super.onResume();
-		mCardScrollView.activate();
-		mVoiceDetection.start();
 
 		Log.v(TAG, "onResume");
 	}
@@ -140,8 +147,6 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 	@Override
 	protected void onPause() {
 		super.onPause();
-		mVoiceDetection.stop();
-		mCardScrollView.deactivate();
 
 //		Log.v(TAG, "onPause");
 	}
@@ -149,6 +154,9 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 	@Override
 	protected void onStop() {
 		super.onStop();
+
+		mVoiceDetection.stop();
+		mCardScrollView.deactivate();
 
 		protocol.saveState(this);
 	}
