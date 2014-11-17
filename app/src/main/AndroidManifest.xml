@@ -36,7 +36,8 @@
 		</activity>
 		<activity 
 			android:name=".LabAssistActivity"
-			android:label="@string/app_name">
+			android:label="@string/app_name"
+			android:parentActivityName=".LauncherActivity">
 		</activity>
 		<activity
 			android:name=".MenuActivity"

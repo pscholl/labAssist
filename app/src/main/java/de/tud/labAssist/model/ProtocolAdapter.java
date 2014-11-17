@@ -39,8 +39,8 @@ public class ProtocolAdapter extends CardScrollAdapter {
 	}
 
 
-	public ProtocolAdapter(Context context, List<MajorStep> steps, TimerManager timerManager) {
-		this.steps = steps;
+	public ProtocolAdapter(Context context, Protocol protocol, TimerManager timerManager) {
+		this.steps = protocol.getSteps();//maybe make list immutable
 		this.context = context;
 		this.timerManager = timerManager;
 		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

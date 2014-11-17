@@ -5,13 +5,13 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.14.1'
+        classpath 'com.android.tools.build:gradle:0.14.2'
     }
 }
 
 ext {
 	compileSdkVersion = "Google Inc.:Glass Development Kit Preview:19"
-	buildToolsVersion = '21.1'
+	buildToolsVersion = '21.1.1'
 }
 
 allprojects {

@@ -27,6 +27,7 @@ import de.tud.ess.CameraService;
 import de.tud.ess.HeadImageView;
 import de.tud.ess.VoiceDetection;
 import de.tud.ess.VoiceMenuDialogFragment;
+import de.tud.labAssist.model.Protocol;
 import de.tud.labAssist.model.ProtocolAdapter;
 import de.tud.labAssist.model.StepListener;
 import de.tud.labAssist.model.io.MarkdownManager;
@@ -54,13 +55,11 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 	protected boolean mAttentionChallenge = false;
 	protected TextView mBarText;
 	protected Intent mBackgroundCamIntent;
-	protected String mBarColor = "";
-	protected String mBarPosition = "";
 	private AudioManager mAudio;
 	private VoiceDetection mVoiceDetection;
-	private String[] mPhrases;
 	private boolean mVoiceMenuVisible = false;
 	private VoiceMenuDialogFragment mVoiceMenu;
+	private Protocol protocol;
 	private ProtocolAdapter protocolAdapter;
 
 	@Override
@@ -104,7 +103,8 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		TimerManager timerManager = new TimerManager();
 
 		try {
-			protocolAdapter = new ProtocolAdapter(this, doc.read(this, timerManager), timerManager);
+			protocol = doc.read(this, timerManager);
+			protocolAdapter = new ProtocolAdapter(this, protocol, timerManager);
 		} catch (IOException e) {
 			Log.e(TAG, "Could not open file", e);
 			throw new RuntimeException("Could not open file", e);
@@ -144,6 +144,13 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		mCardScrollView.deactivate();
 
 //		Log.v(TAG, "onPause");
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+
+		protocol.saveState(this);
 	}
 
 	@Override

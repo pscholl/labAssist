@@ -6,6 +6,7 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -13,8 +14,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-import de.tud.labAssist.model.steps.MajorStep;
+import de.tud.labAssist.model.Protocol;
 import de.tud.labAssist.model.time.TimerManager;
+import de.tud.labAssist.resources.FileLocations;
 import in.uncod.android.bypass.Bypass;
 
 /**
@@ -28,7 +30,9 @@ public class MarkdownManager {
 
 		public abstract String getName();
 
-		public abstract List<MajorStep> read(Context context, TimerManager timerManager) throws IOException;
+		public abstract Protocol read(Context context, TimerManager timerManager) throws IOException;
+
+		public abstract FileOutputStream getStateOutput(Context context);
 	}
 
 	public static class ExternalDocument extends Document implements Serializable {
@@ -47,8 +51,17 @@ public class MarkdownManager {
 		}
 
 		@Override
-		public List<MajorStep> read(Context context, TimerManager timerManager) throws FileNotFoundException {
-			return getProtocol(MarkdownManager.toString(new FileInputStream(path)), timerManager);
+		public Protocol read(Context context, TimerManager timerManager) throws FileNotFoundException {
+			return getProtocol(MarkdownManager.toString(new FileInputStream(path)), timerManager, this);
+		}
+
+		@Override
+		public FileOutputStream getStateOutput(Context context) {
+			try {
+				return new FileOutputStream(path+".state");
+			} catch (FileNotFoundException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
@@ -66,8 +79,17 @@ public class MarkdownManager {
 		}
 
 		@Override
-		public List<MajorStep> read(Context context, TimerManager timerManager) throws IOException {
-			return getProtocol(MarkdownManager.toString(context.getAssets().open(name + ".md")), timerManager);
+		public Protocol read(Context context, TimerManager timerManager) throws IOException {
+			return getProtocol(MarkdownManager.toString(context.getAssets().open(name + ".md")), timerManager, this);
+		}
+
+		@Override
+		public FileOutputStream getStateOutput(Context context) {
+			try {
+				return new FileOutputStream(new File(FileLocations.getStateOutputDir(context), name+".state"));
+			} catch (FileNotFoundException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
@@ -108,14 +130,12 @@ public class MarkdownManager {
 		return str;
 	}
 
-	private static List<MajorStep> getProtocol(String md, TimerManager timerManager) {
+	private static Protocol getProtocol(String md, TimerManager timerManager, Document origin) {
 
 		Bypass bp = new Bypass();
 		in.uncod.android.bypass.Document doc = bp.processMarkdown(md);
 
-		List<MajorStep> steps = new ReadInVisitor(timerManager).readIn(doc);
-
-		return steps;
+		return new Protocol(new ReadInVisitor(timerManager).readIn(doc), origin);
 	}
 }
 
