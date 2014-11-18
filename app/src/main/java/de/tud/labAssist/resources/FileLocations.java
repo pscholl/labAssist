@@ -1,6 +1,7 @@
 package de.tud.labAssist.resources;
 
 import android.content.Context;
+import android.os.Environment;
 
 import java.io.File;
 
@@ -10,5 +11,12 @@ import java.io.File;
 public class FileLocations {
 	public static File getStateOutputDir(Context context) {
 		return context.getExternalFilesDir("Protocols");
+	}
+
+	public static File getExportDir(Context context) {
+		File dir = Environment.getExternalStoragePublicDirectory("ProtocolExport");
+		dir.mkdirs();
+
+		return dir;
 	}
 }

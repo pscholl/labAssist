@@ -159,6 +159,7 @@ public class LabAssistActivity extends Activity implements VoiceDetection.VoiceD
 		mCardScrollView.deactivate();
 
 		protocol.saveState(this);
+		protocol.exportMarkdown(this);
 	}
 
 	@Override
